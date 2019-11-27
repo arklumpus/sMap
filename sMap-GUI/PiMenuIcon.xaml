@@ -1,0 +1,30 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="sMap_GUI.PiMenuIcon">
+  <Viewbox>
+    <Canvas Width="100" Height="100">
+      <Canvas Name="FixCanvas" Width="100" Height="100" IsVisible="True">
+        <Ellipse Width="100" Height="100" Fill="#f0f0f0"></Ellipse>
+        <Path Fill="#22b14c" Data="M50,50 L100,50 A50,50 120 0 1 25,93.3 Z"></Path>
+        <Ellipse Width="100" Height="100" Stroke="Black" StrokeThickness="3"></Ellipse>
+      </Canvas>
+      <Canvas Name="DirichletCanvas" Width="100" Height="100" IsVisible="False">
+        <Path Fill="#00a2e8" StrokeThickness="3" Data="M0,85 L0,15 Q50,75 100,85 Z" Opacity="0.15"></Path>
+        <Path Stroke="#00a2e8" StrokeThickness="3" Data="M0,15 Q50,75 100,85 "></Path>
+      </Canvas>
+      <Canvas Name="MultinomialCanvas" Width="100" Height="100" IsVisible="False">
+        <Path Fill="#ea1c24" StrokeThickness="3" Data="M0,15 L20,15 L20,85 L0,85 Z" Opacity="0.15"></Path>
+        <Path Stroke="#ea1c24" StrokeThickness="3" Data="M0,15 L20,15 L20,85 L100,85 "></Path>
+      </Canvas>
+      <Canvas Name="EqualCanvas" Width="100" Height="100" IsVisible="False">
+        <Path Stroke="Black" StrokeThickness="10" Data="M25,35 L75,35 M25,65 L75,65" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+      </Canvas>
+      <Canvas Name="MLCanvas" Width="100" Height="100" IsVisible="False">
+        <Path Stroke="Black" StrokeThickness="6" Data="M20,65 L20,35 L32.5,50 L45,35 L45,65 M62.5,35 L62.5,65 L80,65" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeJoin="Round"></Path>
+      </Canvas>
+    </Canvas>
+  </Viewbox>
+</UserControl>

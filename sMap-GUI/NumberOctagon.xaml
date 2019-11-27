@@ -1,0 +1,13 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="sMap_GUI.NumberOctagon" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Canvas Width="100" Height="100">
+    <Path Data="M28.289,0 L70.711,0 L100,29.289 L100,70.711 L70.711,100 L29.289,100 L0,70.711 L0,29.289 Z" Name="OuterPath" Fill="Black"></Path>
+    <Viewbox Width="90" Height="90" Margin="5">
+      <TextBlock Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,1" Name="NumberBlock">1</TextBlock>
+    </Viewbox>
+  </Canvas>
+</UserControl>

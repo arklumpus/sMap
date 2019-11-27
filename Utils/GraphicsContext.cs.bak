@@ -1,0 +1,335 @@
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System;
+using System.Collections.Generic;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Text;
+
+namespace Utils
+{
+    public class GraphicsContext
+    {
+        public enum TextBaselines { Top, Bottom, Middle, Baseline }
+        public enum LineCaps { Butt, Round, Square }
+        public enum LineJoins { Bevel, Miter, Round }
+
+
+        public interface IGraphicsContext
+        {
+            double Width { get; }
+            double Height { get; }
+
+            void Save();
+            void Restore();
+            void Translate(double x, double y);
+
+            void Rotate(double angle);
+            (BaseFont font, float size) Font { get; set; }
+
+            (double Width, double Height) MeasureText(string text);
+
+            TextBaselines TextBaseline { get; set; }
+
+            void FillText(string text, double x, double y);
+
+            void StrokeText(string text, double x, double y);
+
+            void MoveTo(double x, double y);
+
+            void LineTo(double x, double y);
+
+            void Stroke();
+
+            BaseColor FillStyle { get; }
+
+            void SetFillStyle((int r, int g, int b, double a) style);
+
+            void SetFillStyle(BaseColor style);
+
+            BaseColor StrokeStyle { get; }
+
+            void SetStrokeStyle((int r, int g, int b, double a) style);
+
+            void SetStrokeStyle(BaseColor style);
+
+            void Arc(double cX, double cY, double radius, double startAngle, double endAngle);
+
+            void Rectangle(double x0, double y0, double width, double height);
+
+            void Fill();
+
+            double LineWidth { get; set; }
+
+            
+            LineCaps LineCap { set; }
+
+            LineJoins LineJoin { set; }
+
+            void SetLineDash(float unitsOn, float unitsOff, float phase);
+        }
+
+
+        public class PdfContext : IGraphicsContext
+        {
+            public bool Kerning { get; set; } = false;
+
+            private readonly double _Width, _Height;
+
+            public double Width { get { return _Width; } }
+            public double Height { get { return _Height; } }
+
+            private PdfContentByte contentByte;
+
+            public PdfContext(PdfContentByte cb, double width, double height)
+            {
+                contentByte = cb;
+                try
+                {
+                    Font = (BaseFont.CreateFont(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "OpenSans-Regular.ttf"), BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 12);
+                }
+                catch
+                {
+                    Font = (BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED), 12);
+                }
+
+                LineWidth = 1;
+                _Width = width;
+                _Height = height;
+                LineJoin = LineJoins.Round;
+                LineCap = LineCaps.Round;
+                SetStrokeStyle((0, 0, 0, 1));
+                SetFillStyle((0, 0, 0, 1));
+            }
+
+            public void Save()
+            {
+                contentByte.SaveState();
+            }
+
+            public void Restore()
+            {
+                contentByte.RestoreState();
+            }
+
+            public void Translate(double x, double y)
+            {
+                Matrix mat = new Matrix();
+                mat.Translate((float)x, (float)(-y));
+                contentByte.Transform(mat);
+            }
+
+            public void Rotate(double angle)
+            {
+                Matrix mat = new Matrix();
+                mat.Rotate((float)angle);
+                contentByte.Transform(mat);
+            }
+
+            private BaseFont currentFont;
+            private float currentFontSize;
+
+            public (BaseFont font, float size) Font
+            {
+                get
+                {
+                    return (currentFont, currentFontSize);
+                }
+
+                set
+                {
+                    contentByte.SetFontAndSize(value.font, value.size);
+                    currentFont = value.font;
+                    currentFontSize = value.size;
+                }
+            }
+
+            public (double Width, double Height) MeasureText(string text)
+            {
+                contentByte.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
+                return (contentByte.GetEffectiveStringWidth(text, Kerning), currentFont.GetAscentPoint(text, currentFontSize) - currentFont.GetDescentPoint(text, currentFontSize));
+            }
+
+            public TextBaselines TextBaseline { get; set; } = TextBaselines.Baseline;
+
+            public void FillText(string text, double x, double y)
+            {
+                contentByte.BeginText();
+                switch (TextBaseline)
+                {
+                    case TextBaselines.Baseline:
+                        contentByte.MoveText((float)x, (float)(Height - y));
+                        break;
+                    case TextBaselines.Top:
+                        contentByte.MoveText((float)x, (float)(Height - (y + currentFont.GetAscentPoint(text, currentFontSize))));
+                        break;
+                    case TextBaselines.Bottom:
+                        contentByte.MoveText((float)x, (float)(Height - (y + currentFont.GetDescentPoint(text, currentFontSize))));
+                        break;
+                    case TextBaselines.Middle:
+                        contentByte.MoveText((float)x, (float)(Height - (y + (currentFont.GetAscentPoint(text, currentFontSize) + currentFont.GetDescentPoint(text, currentFontSize)) * 0.5)));
+                        break;
+                }
+                contentByte.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
+                contentByte.ShowText(text);
+                contentByte.EndText();
+            }
+
+            public void StrokeText(string text, double x, double y)
+            {
+                contentByte.BeginText();
+                switch (TextBaseline)
+                {
+                    case TextBaselines.Baseline:
+                        contentByte.MoveText((float)x, (float)(Height - y));
+                        break;
+                    case TextBaselines.Top:
+                        contentByte.MoveText((float)x, (float)(Height - (y + currentFont.GetAscentPoint(text, currentFontSize))));
+                        break;
+                    case TextBaselines.Bottom:
+                        contentByte.MoveText((float)x, (float)(Height - (y + currentFont.GetDescentPoint(text, currentFontSize))));
+                        break;
+                    case TextBaselines.Middle:
+                        contentByte.MoveText((float)x, (float)(Height - (y + (currentFont.GetAscentPoint(text, currentFontSize) + currentFont.GetDescentPoint(text, currentFontSize)) * 0.5)));
+                        break;
+                }
+                contentByte.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_STROKE);
+                contentByte.ShowText(text);
+                contentByte.EndText();
+            }
+
+            public void MoveTo(double x, double y)
+            {
+                contentByte.MoveTo((float)x, (float)(Height - y));
+            }
+
+            public void LineTo(double x, double y)
+            {
+                contentByte.LineTo((float)x, (float)(Height - y));
+            }
+
+            public void Stroke()
+            {
+                contentByte.Stroke();
+            }
+
+            public BaseColor FillStyle { get; private set; }
+
+            public void SetFillStyle((int r, int g, int b, double a) style)
+            {
+                FillStyle = new BaseColor(style.r, style.g, style.b, (int)(style.a * 255));
+
+                PdfGState gState = new PdfGState();
+                gState.FillOpacity = (float)style.a;
+                contentByte.SetGState(gState);
+
+                contentByte.SetColorFill(FillStyle);
+            }
+
+            public void SetFillStyle(BaseColor style)
+            {
+                FillStyle = style;
+                contentByte.SetColorFill(FillStyle);
+            }
+
+            public BaseColor StrokeStyle { get; private set; }
+
+            public void SetStrokeStyle((int r, int g, int b, double a) style)
+            {
+                StrokeStyle = new BaseColor(style.r, style.g, style.b, (int)(style.a * 255));
+
+                PdfGState gState = new PdfGState();
+                gState.StrokeOpacity = (float)style.a;
+                contentByte.SetGState(gState);
+
+                contentByte.SetColorStroke(StrokeStyle);
+            }
+
+            public void SetStrokeStyle(BaseColor style)
+            {
+                StrokeStyle = style;
+                contentByte.SetColorStroke(StrokeStyle);
+            }
+
+            public void Arc(double cX, double cY, double radius, double startAngle, double endAngle)
+            {
+                double x1 = cX - radius;
+                double y1 = cY - radius;
+                double x2 = cX + radius;
+                double y2 = cY + radius;
+
+                contentByte.Arc((float)x1, (float)(Height - y1), (float)x2, (float)(Height - y2), (float)(startAngle * 180.0 / Math.PI), (float)((endAngle - startAngle) * 180.0 / Math.PI));
+            }
+
+            public void Rectangle(double x0, double y0, double width, double height)
+            {
+                contentByte.Rectangle((float)x0, (float)(Height - y0), (float)(width), (float)(-height));
+            }
+
+            public void Fill()
+            {
+                contentByte.Fill();
+            }
+
+            private double currentLineWidth;
+
+            public double LineWidth
+            {
+                get
+                {
+                    return currentLineWidth;
+                }
+                set
+                {
+                    contentByte.SetLineWidth((float)value);
+                    currentLineWidth = value;
+                }
+            }
+
+            public LineCaps LineCap
+            {
+                set
+                {
+                    switch (value)
+                    {
+                        case LineCaps.Butt:
+                            contentByte.SetLineCap(PdfContentByte.LINE_CAP_BUTT);
+                            break;
+                        case LineCaps.Round:
+                            contentByte.SetLineCap(PdfContentByte.LINE_CAP_ROUND);
+                            break;
+                        case LineCaps.Square:
+                            contentByte.SetLineCap(PdfContentByte.LINE_CAP_PROJECTING_SQUARE);
+                            break;
+                    }
+                }
+            }
+
+            
+            public LineJoins LineJoin
+            {
+                set
+                {
+                    switch (value)
+                    {
+                        case LineJoins.Bevel:
+                            contentByte.SetLineJoin(PdfContentByte.LINE_JOIN_BEVEL);
+                            break;
+                        case LineJoins.Round:
+                            contentByte.SetLineJoin(PdfContentByte.LINE_JOIN_ROUND);
+                            break;
+                        case LineJoins.Miter:
+                            contentByte.SetLineJoin(PdfContentByte.LINE_JOIN_MITER);
+                            break;
+                    }
+                }
+            }
+
+            public void SetLineDash(float unitsOn, float unitsOff, float phase)
+            {
+                contentByte.SetLineDash(unitsOn, unitsOff, phase);
+            }
+        }
+
+    }
+}

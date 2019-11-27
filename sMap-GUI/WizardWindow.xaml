@@ -1,0 +1,834 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+        mc:Ignorable="d" Width="1120" Height="600"
+        x:Class="sMap_GUI.WizardWindow"
+        Title="WizardWindow" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" Closed="WizardClosed">
+
+  <!---->
+  <Window.Styles>
+    <Style Selector="Button.Purple">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ba77bb" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#a349a4" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Purple:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#b164b2" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ba77bb" BorderThickness="{TemplateBinding BorderThickness}" Background="#b164b2"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Purple:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#a349a4" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ba77bb" BorderThickness="{TemplateBinding BorderThickness}" Background="#a349a4"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Blue">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#6f76d9" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#3f48cc" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Blue:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#5c63d4" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#6f76d9" BorderThickness="{TemplateBinding BorderThickness}" Background="#5c63d4"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Blue:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#3f48cc" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#6f76d9" BorderThickness="{TemplateBinding BorderThickness}" Background="#3f48cc"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.Cyan">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#40b9ee" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#00a2e8" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#26b0eb" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#26b0eb"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#00a2e8" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#00a2e8"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Green">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#59c579" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#22b14c" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Green:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#43bd67" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#59c579" BorderThickness="{TemplateBinding BorderThickness}" Background="#43bd67"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Green:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#22b14c" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#59c579" BorderThickness="{TemplateBinding BorderThickness}" Background="#22b14c"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Orange">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff9f5d" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff7f27" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Orange:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff9247" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff9f5d" BorderThickness="{TemplateBinding BorderThickness}" Background="#ff9247"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Orange:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff7f27" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff9f5d" BorderThickness="{TemplateBinding BorderThickness}" Background="#ff7f27"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Red">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#f2555b" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ed1c24" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Red:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#f03e45" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#f2555b" BorderThickness="{TemplateBinding BorderThickness}" Background="#f03e45"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Red:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ed1c24" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#f2555b" BorderThickness="{TemplateBinding BorderThickness}" Background="#ed1c24"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="CheckBox">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Grid ColumnDefinitions="Auto,*">
+            <Border Name="border"
+                    Background="White"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Width="18"
+                    Height="18"
+                    VerticalAlignment="Center">
+              <Panel>
+                <Path Name="checkMark"
+                      Fill="{TemplateBinding BorderBrush}"
+                      Width="11"
+                      Height="10"
+                      Stretch="Uniform"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M 1145.607177734375,430 C1145.607177734375,430 1141.449951171875,435.0772705078125 1141.449951171875,435.0772705078125 1141.449951171875,435.0772705078125 1139.232177734375,433.0999755859375 1139.232177734375,433.0999755859375 1139.232177734375,433.0999755859375 1138,434.5538330078125 1138,434.5538330078125 1138,434.5538330078125 1141.482177734375,438 1141.482177734375,438 1141.482177734375,438 1141.96875,437.9375 1141.96875,437.9375 1141.96875,437.9375 1147,431.34619140625 1147,431.34619140625 1147,431.34619140625 1145.607177734375,430 1145.607177734375,430 z"/>
+                <Rectangle Name="indeterminateMark"
+                           Fill="{DynamicResource HighlightBrush}"
+                           Width="10"
+                           Height="10"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+              </Panel>
+            </Border>
+            <ContentPresenter Name="PART_ContentPresenter"
+                              TextBlock.Foreground="{TemplateBinding Foreground}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Content="{TemplateBinding Content}"
+                              Margin="{TemplateBinding Padding}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Grid.Column="1"/>
+          </Grid>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="CheckBox:pointerover /template/ Border#border">
+      <Setter Property="Opacity" Value="0.75"/>
+      <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}"/>
+    </Style>
+
+    <Style Selector="ButtonSpinner:right">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Name="border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Margin="{TemplateBinding Padding}"
+                  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                  VerticalAlignment="{TemplateBinding VerticalAlignment}">
+            <Grid ColumnDefinitions="*,Auto">
+              <ContentPresenter Name="PART_ContentPresenter" Grid.Column="0"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Content="{TemplateBinding Content}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Padding="{TemplateBinding Padding}"/>
+              <Grid Grid.Column="1" RowDefinitions="*,*" IsVisible="{TemplateBinding ShowButtonSpinner}">
+                <RepeatButton Grid.Row="0" Name="PART_IncreaseButton" />
+                <RepeatButton Grid.Row="1" Name="PART_DecreaseButton"/>
+              </Grid>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="ButtonSpinner:pointerover /template/ Border#border">
+      <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}"/>
+    </Style>
+
+    <Style Selector="ButtonSpinner /template/ RepeatButton#PART_IncreaseButton">
+      <Setter Property="Content">
+        <Template>
+          <Path Fill="{TemplateBinding BorderBrush}"
+                Width="8"
+                Height="4"
+                Stretch="Uniform"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Data="M0,5 L4.5,.5 9,5 6,5 4.5,3.5 3,5 z"/>
+        </Template>
+      </Setter>
+    </Style>
+    <Style Selector="ButtonSpinner /template/ RepeatButton#PART_DecreaseButton">
+      <Setter Property="Content">
+        <Template>
+          <Path Fill="{TemplateBinding BorderBrush}"
+                Width="8"
+                Height="4"
+                Stretch="Uniform"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Data="M0,0 L3,0 4.5,1.5 6,0 9,0 4.5,4.5 z"/>
+        </Template>
+      </Setter>
+    </Style>
+  </Window.Styles>
+  <!---->
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" />
+      <ColumnDefinition Width="300" />
+    </Grid.ColumnDefinitions>
+
+    <Grid Margin="10" Name="sMapTitle" Grid.ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Canvas Width="81" Height="60" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
+      </Canvas>
+      <Canvas Grid.Column="1" Height="60">
+        <Canvas.Background>
+          <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+            <GradientStop Color="#3f48cc" Offset="0.2"></GradientStop>
+            <GradientStop Color="#00a2e8" Offset="0.4"></GradientStop>
+            <GradientStop Color="#22b14c" Offset="0.6"></GradientStop>
+            <GradientStop Color="#ff7f27" Offset="0.8"></GradientStop>
+            <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+          </LinearGradientBrush>
+        </Canvas.Background>
+        <Path Fill="#a349a4" Data="M0,60 L0,0 L-25,0 Z"></Path>
+      </Canvas>
+      <Canvas ZIndex="-1" Grid.Column="2" Height="60">
+        <Path Fill="#ed1c24" Data="M0,60 L25,60 L0,0 Z"></Path>
+      </Canvas>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock FontWeight="Bold" FontSize="36" Margin="5,3.5,0,0" Foreground="White">sMap Wizard</TextBlock>
+      </StackPanel>
+      <Canvas Width="47" Height="60" ClipToBounds="True" Grid.Column="2">
+        <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
+      </Canvas>
+    </Grid>
+    <ScrollViewer Grid.Row="1" Margin="20,10" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Name="MainScrollViewer">
+      <StackPanel>
+        <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10">
+          <local:OctagonNumberLabel Number="1" Text="Choose data" Fill="#a349a4"></local:OctagonNumberLabel>
+        </Viewbox>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#a349a4" Name="CharacterDataOctagon"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#a349a4" VerticalAlignment="Center">Character state data:</TextBlock>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChooseDataFileButton" Click="ChooseDataFileClicked">Choose file...</Button>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ViewDataButton" IsVisible="False" Click="ViewDataClicked">View...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="TreesPanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#a349a4" Name="TreesOctagon"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#a349a4" VerticalAlignment="Center">Tree(s):</TextBlock>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChooseTreeFileButton" Click="ChooseTreeFileClicked">Choose file...</Button>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ViewTreesButton" IsVisible="False" Click="ViewTreesClicked">View...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="SummaryTreePanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#a349a4" Name="SummaryTreeOctagon" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#a349a4" VerticalAlignment="Center">Summary tree:</TextBlock>
+          <CheckBox Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" Name="UseConsensusTreeBox" Click="UseConsensusClicked" BorderBrush="#a349a4">Use consensus</CheckBox>
+          <StackPanel Name="ConsensusOptions">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock VerticalAlignment="Center">Branch lengths:</TextBlock>
+              <ComboBox SelectedIndex="0" Margin="5,0,5,5" Padding="5,5,5,5" BorderBrush="#a349a4" Name="ConsensusBranchLengths">
+                <ComboBox.Items>
+                  <ComboBoxItem IsSelected="True">Median</ComboBoxItem>
+                  <ComboBoxItem>Mean</ComboBoxItem>
+                </ComboBox.Items>
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock VerticalAlignment="Center" >Threshold:</TextBlock>
+              <NumericUpDown Padding="0" VerticalAlignment="Center" Margin="10,0,0,0" Minimum="0" Maximum="1" Value="0" Name="ConsensusThreshold" Width="60" BorderBrush="#a349a4"></NumericUpDown>
+            </StackPanel>
+          </StackPanel>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" IsVisible="False" Name="ChooseSummaryTreeFileButton" Click="ChooseSummaryTreeFileClicked">Choose file...</Button>
+          <Button Classes="Purple" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ViewSummaryTreeButton" Click="ViewSummaryTreeClicked">View...</Button>
+        </StackPanel>
+
+        <Button HorizontalAlignment="Left" Padding="10,5,10,5" Margin="15,0,0,10" Classes="Purple" IsVisible="False" Name="ConfirmDataButton" Click="ConfirmDataClicked">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="18" Height="18">
+              <local:Octagon Fill="White" IsTick="True"></local:Octagon>
+            </Viewbox>
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0">Confirm</TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10" Name="DefineModelHeader" IsVisible="False">
+          <local:OctagonNumberLabel Number="2" Text="Define model" Fill="#3f48cc"></local:OctagonNumberLabel>
+        </Viewbox>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="DependencyModelPanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#3f48cc" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#3f48cc" VerticalAlignment="Center">Dependency model:</TextBlock>
+          <Border Margin="10,0,0,0" BorderBrush="#3f48cc" BorderThickness="1" CornerRadius="7.5" VerticalAlignment="Center" Padding="20,5,20,5" Background="#ecedfa">
+            <TextBlock VerticalAlignment="Center" FontStyle="Italic" Name="DependencyNameBlock">All independent</TextBlock>
+          </Border>
+          <Button Classes="Blue" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="EditDependencyButton" Click="EditDependencyClicked">Edit...</Button>
+          <Button Classes="Blue" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChooseDependencyFileButton" Click="ChooseDependencyFileClicked">Load from file...</Button>
+        </StackPanel>
+
+        <Button HorizontalAlignment="Left" Padding="10,5,10,5" Margin="15,0,0,10" Classes="Blue" IsVisible="False" Name="ConfirmDependenciesButton" Click="ConfirmDependenciesClicked">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="18" Height="18">
+              <local:Octagon Fill="White" IsTick="True"></local:Octagon>
+            </Viewbox>
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0">Confirm</TextBlock>
+          </StackPanel>
+        </Button>
+
+        <StackPanel Orientation="Horizontal" Name="DefineParametersHeader" IsVisible="False">
+          <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10">
+            <local:OctagonNumberLabel Number="3" Text="Define parameters" Fill="#00a2e8"></local:OctagonNumberLabel>
+          </Viewbox>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,10" Name="LoadParametersButton" Click="LoadParametersClicked">Load from previous run...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="PisModelPanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#00a2e8" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#00a2e8" VerticalAlignment="Center">Pis:</TextBlock>
+          <Border Margin="10,0,0,0" BorderBrush="#00a2e8" BorderThickness="1" CornerRadius="7.5" VerticalAlignment="Center" Padding="20,5,20,5" Background="#e6f6fd">
+            <TextBlock VerticalAlignment="Center" FontStyle="Italic" Name="PisNameBlock">Fixed</TextBlock>
+          </Border>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="EditPisButton" Click="EditPisClicked">Edit...</Button>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChoosePisFileButton" Click="ChoosePiFileClicked">Load from file...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="CondProbsModelPanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#00a2e8" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#00a2e8" VerticalAlignment="Center">Conditioned probabilities:</TextBlock>
+          <Border Margin="10,0,0,0" BorderBrush="#00a2e8" BorderThickness="1" CornerRadius="7.5" VerticalAlignment="Center" Padding="20,5,20,5" Background="#e6f6fd">
+            <TextBlock VerticalAlignment="Center" FontStyle="Italic" Name="CondProbsNameBlock">Fixed</TextBlock>
+          </Border>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="EditCondProbsButton" Click="EditCondProbsClicked">Edit...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="RatesModelPanel" IsVisible="False">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#00a2e8" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#00a2e8" VerticalAlignment="Center">Rates:</TextBlock>
+          <Border Margin="10,0,0,0" BorderBrush="#00a2e8" BorderThickness="1" CornerRadius="7.5" VerticalAlignment="Center" Padding="20,5,20,5" Background="#e6f6fd">
+            <TextBlock VerticalAlignment="Center" FontStyle="Italic" Name="RatesNameBlock">Fixed</TextBlock>
+          </Border>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="EditRatesButton" Click="EditRatesClicked">Edit...</Button>
+          <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChooseRatesFileButton" Click="ChooseRatesFileClicked">Load from file...</Button>
+        </StackPanel>
+
+        <Button HorizontalAlignment="Left" Padding="10,5,10,5" Margin="15,0,0,10" Classes="Cyan" IsVisible="False" Name="ConfirmParametersButton" Click="ConfirmParametersClicked">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="18" Height="18">
+              <local:Octagon Fill="White" IsTick="True"></local:Octagon>
+            </Viewbox>
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0">Confirm</TextBlock>
+          </StackPanel>
+        </Button>
+
+        <StackPanel Orientation="Horizontal" Name="AdvancedSettingsHeader" IsVisible="False">
+          <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10">
+            <local:OctagonNumberLabel Number="4" Text="Advanced settings" Fill="#22b14c"></local:OctagonNumberLabel>
+          </Viewbox>
+
+          <Button Padding="10,5,10,5" Margin="15,0,0,10" Classes="Green" IsVisible="True" VerticalAlignment="Center" Click="SettingsButtonClicked" Width="100">
+            <StackPanel Orientation="Horizontal">
+              <Viewbox Width="18" Height="18">
+                <Canvas Width="100" Height="100">
+                  <Path Data="M10,30 L50,70 L90,30" StrokeThickness="25" Name="ShowSettingsPath" IsVisible="True" Stroke="White"></Path>
+                  <Path Data="M10,70 L50,30 L90,70" StrokeThickness="25" Name="HideSettingsPath" IsVisible="False" Stroke="White"></Path>
+                </Canvas>
+              </Viewbox>
+              <TextBlock Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0" Name="SettingsActionBlock">Show</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Padding="10,5,10,5" Margin="15,0,0,10" Classes="Green" IsVisible="False" VerticalAlignment="Center" Click="VeryAdvancedSettingsButtonClicked" Width="125" Name="VeryAdvancedSettingsButton">
+            <StackPanel Orientation="Horizontal">
+              <Viewbox Width="14" Height="14">
+                <Canvas Width="100" Height="100">
+                  <Path Data="M10,30 L50,70 L90,30" StrokeThickness="25" Name="ShowVeryAdvancedSettingsPath" IsVisible="True" Stroke="White"></Path>
+                  <Path Data="M10,70 L50,30 L90,70" StrokeThickness="25" Name="HideVeryAdvancedSettingsPath" IsVisible="False" Stroke="White"></Path>
+                </Canvas>
+              </Viewbox>
+              <TextBlock Foreground="White" Margin="10,0,0,0" Name="VeryAdvancedSettingsActionBlock">Show more</TextBlock>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <StackPanel Name="AdvancedSettingsPanel" IsVisible="False">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Number of simulations:</TextBlock>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Value="1000" Name="NumSimBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Seed:</TextBlock>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Name="SeedBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="NormBox">Normalise trees</CheckBox>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Classes="VeryAdvanced" Name="NormValueBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="CoerceBox">Coerce minimum branch length on simulation trees</CheckBox>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0.000001" Name="CoerceValueBox" Value="0.001"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Number of threads: </TextBlock>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1" Name="ThreadsBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Maximum-likelihood strategy: </TextBlock>
+            <TextBox Width="300" Margin="10,0,0,0" Padding="5,5,5,5" VerticalAlignment="Center" Name="MLStrategy">IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot)</TextBox>
+            <Button Classes="Green" VerticalAlignment="Center" Margin="10" Click="EditMLStrategyClicked">Edit...</Button>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="PollBox">Poll for interrupts</CheckBox>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" IsChecked="False" BorderBrush="#22b14c" Name="PPBox">Sample</CheckBox>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Name="PPMultiplicityBox" Value="100"></NumericUpDown>
+            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">posterior-predictive replicates and</TextBlock>
+            <StackPanel Margin="10,0,0,0">
+              <RadioButton Margin="0,0,0,2.5" GroupName="DTestOrPP" IsChecked="True" Name="DTestRadio">Perform D-test</RadioButton>
+              <RadioButton Margin="0,2.5,0,0" GroupName="DTestOrPP" Name="PPRadio">Save them</RadioButton>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
+              <TextBlock FontWeight="Bold" Foreground="#22b14c" FontSize="18" Margin="0,0,0,0" VerticalAlignment="Center">MCMC options</TextBlock>
+              <Button Padding="10,5,10,5" Margin="15,0,0,0" Classes="Green" IsVisible="True" VerticalAlignment="Center" Width="90" Name="MCMCOptionsShowButton" Click="MCMCOptionsShowClicked">
+                <StackPanel Orientation="Horizontal">
+                  <Viewbox Width="14" Height="14">
+                    <Canvas Width="100" Height="100">
+                      <Path Data="M10,30 L50,70 L90,30" StrokeThickness="25" Name="ShowMCMCOptionsPath" IsVisible="True" Stroke="White"></Path>
+                      <Path Data="M10,70 L50,30 L90,70" StrokeThickness="25" Name="HideMCMCOptionsPath" IsVisible="False" Stroke="White"></Path>
+                    </Canvas>
+                  </Viewbox>
+                  <TextBlock Foreground="White" Margin="10,0,0,0" Name="MCMCOptionsActionBlock">Show</TextBlock>
+                </StackPanel>
+              </Button>
+            </StackPanel>
+
+            <StackPanel Margin="20,0,0,0" Name="MCMCOptionsPanel" IsVisible="False">
+              <StackPanel Orientation="Horizontal">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Number of runs: </TextBlock>
+                <NumericUpDown Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2" Name="NumRunsBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Number of chains: </TextBlock>
+                <NumericUpDown Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="4" Name="NumChainsBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Temperature coefficient: </TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Classes="VeryAdvanced" Name="TempBox"></NumericUpDown>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Sampling frequency: </TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="sfBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Swap frequency: </TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="wfBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Diagnostic frequency:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="1000" FormatString="0" Name="dfBox"></NumericUpDown>
+              </StackPanel>
+
+              <TextBlock FontWeight="Bold" Foreground="#22b14c" Margin="10,10,0,0" VerticalAlignment="Center">Convergence criteria:</TextBlock>
+
+              <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Minimum samples:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2000" Name="MinSamplesBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Maximum CoV: </TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Name="MaxCoVBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Minimum ESS: </TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="200" Name="MinESSBox"></NumericUpDown>
+
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="EstimateStepsBox">Estimate step sizes</CheckBox>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Tuning attempts:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="TuningAttemptsBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Tuning steps:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="100" Name="TuningStepsBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Target acceptance</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.37" Name="AcceptanceRateBox"></NumericUpDown>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Step size multipliers:</TextBlock>
+                <TextBox Width="400" Margin="10,0,10,0" Padding="5,5,5,5" VerticalAlignment="Center" Name="StepSizeMultipliersBox">1</TextBox>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <CheckBox VerticalAlignment="Center" IsChecked="False" BorderBrush="#22b14c" Name="PriorBox">Estimate parameters under prior</CheckBox>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="SSBox">Stepping-stone analysis</CheckBox>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Stepping-stone steps:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="8" Name="SSStepsBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Shape parameter:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.3" Name="SSShapeBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Samples per step:</TextBlock>
+                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1000" Name="SSSamplesBox"></NumericUpDown>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Classes="VeryAdvanced" Margin="20,0,0,0">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" IsChecked="True" Name="SSEstimateStepsBox">Estimate step sizes for each step</CheckBox>
+              </StackPanel>
+
+            </StackPanel>
+
+
+
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Pre-sampled parameters:</TextBlock>
+            <TextBox Width="300" Margin="10,0,0,0" Padding="5,5,5,5" VerticalAlignment="Center" Name="ParameterFileBox"></TextBox>
+            <Button Classes="Green" VerticalAlignment="Center" Margin="10" Click="BrowsePreSampledParametersClicked">Browse...</Button>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Plot width:</TextBlock>
+            <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="500" Name="PlotWidthBox"></NumericUpDown>
+            <TextBlock VerticalAlignment="Center">Plot height:</TextBlock>
+            <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="0" Name="PlotHeightBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced" Margin="0,0,0,10">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Histogram bin rule:</TextBlock>
+            <ComboBox SelectedIndex="5" Name="BinRuleBox" Margin="10,0,0,0" Padding="5,0,5,0">
+              <ComboBox.Items>
+                <ComboBoxItem>Square root</ComboBoxItem>
+                <ComboBoxItem>Sturges</ComboBoxItem>
+                <ComboBoxItem>Rice</ComboBoxItem>
+                <ComboBoxItem>Doane</ComboBoxItem>
+                <ComboBoxItem>Scott</ComboBoxItem>
+                <ComboBoxItem>Freedman – Diaconis</ComboBoxItem>
+              </ComboBox.Items>
+            </ComboBox>
+          </StackPanel>
+
+        </StackPanel>
+
+
+        <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10" Name="RunAnalysisHeader" IsVisible="False">
+          <local:OctagonNumberLabel Number="5" Text="Run analysis" Fill="#ff7f27"></local:OctagonNumberLabel>
+        </Viewbox>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" IsVisible="False" Name="OutputPrefixPanel">
+          <Viewbox Width="24" Height="24">
+            <local:Octagon Fill="#ff7f27" Name="OutputOctagon" IsTick="True"></local:Octagon>
+          </Viewbox>
+          <TextBlock FontWeight="Bold" FontSize="24" Margin="10,0,0,3" Foreground="#ff7f27" VerticalAlignment="Center">Output prefix:</TextBlock>
+          <CheckBox Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" Name="UseTempOutputBox" Click="UseTemporaryFolderClicked" BorderBrush="#ff7f27">Temporary folder</CheckBox>
+          <Button Classes="Orange" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" IsVisible="False" Name="ChooseOutputFolderButton" Click="ChooseOutputPrefixClicked">Browse...</Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" IsVisible="False" Name="SaveButtonsPanel">
+          <Button Classes="Orange" Padding="10,2.5" VerticalAlignment="Center" Margin="0,0,0,0" Click="SaveSummaryTreeClicked">Save summary tree...</Button>
+          <Button Classes="Orange" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Click="SaveModelFileClicked">Save model file...</Button>
+          <Button Classes="Orange" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Click="SaveAnalysisArchiveClicked">Save analysis archive...</Button>
+        </StackPanel>
+
+        <Button HorizontalAlignment="Left" Padding="10,5,10,5" Margin="15,0,0,10" Classes="Orange" IsVisible="False" Name="RunAnalysisButton" Click="RunAnalysisClicked">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="18" Height="18">
+              <local:Octagon Fill="White" IsTick="True"></local:Octagon>
+            </Viewbox>
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0">Run analysis</TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Viewbox Height="40" HorizontalAlignment="Left" Margin="0,0,0,10" Name="PlotResultsHeader" IsVisible="False">
+          <local:OctagonNumberLabel Number="6" Text="Save results" Fill="#ed1c24"></local:OctagonNumberLabel>
+        </Viewbox>
+
+        <WrapPanel Width="700" HorizontalAlignment="Left" Margin="20,0,0,0" Name="PlotResultsButtonsPanel" IsVisible="False">
+
+        </WrapPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" IsVisible="False" Name="SaveResultsButtonsPanel" >
+          <Button Classes="Red" Padding="10,2.5" VerticalAlignment="Center" Margin="0,0,0,0" Name="SaveSMapButton" Click="SaveSMapClicked">Save sMap run file...</Button>
+          <Button Classes="Red" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Click="SaveAllOutputFilesClicked">Save all output files...</Button>
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+    <local:TipContainer Grid.Row="1" Grid.Column="1" Name="Tips"></local:TipContainer>
+  </Grid>
+</Window>

@@ -1,0 +1,41 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="120"
+             x:Class="sMap_GUI.Spinner">
+  <UserControl.Styles>
+    <Style Selector="Canvas.AnimatedCanvas">
+      <Style.Animations>
+        <Animation Duration="0:0:4" RepeatCount="Loop">
+          <KeyFrame Cue="0%">
+            <Setter Property="RotateTransform.Angle" Value="0" />
+            <Setter Property="ScaleTransform.ScaleX" Value="1" />
+            <Setter Property="ScaleTransform.ScaleY" Value="1" />
+          </KeyFrame>
+          <KeyFrame Cue="25%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.5" />
+            <Setter Property="ScaleTransform.ScaleY" Value="0.5" />
+          </KeyFrame>
+          <KeyFrame Cue="50%">
+            <Setter Property="ScaleTransform.ScaleX" Value="0.5" />
+            <Setter Property="ScaleTransform.ScaleY" Value="0.5" />
+          </KeyFrame>
+          <KeyFrame Cue="75%">
+            <Setter Property="ScaleTransform.ScaleX" Value="1" />
+            <Setter Property="ScaleTransform.ScaleY" Value="1" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RotateTransform.Angle" Value="360" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+      
+    </Style>
+  </UserControl.Styles>
+  <Canvas Width="120" Height="120">
+    <Canvas Width="100" Height="100" Margin="10" Classes="AnimatedCanvas">
+      <Path Data="M0,28.289 L28.289,0 L39.498,0 L54.498,15 L35.503,15 L0,50.503 Z M49.497,0 L70.711,0 L100,29.289 L100,39.497 L85,54.497 L85,35.503 Z M100,49.497 L100,70.710 L70.710,100 L60.503,100 L45.503,85 L64.497,85 Z M50.503,100 L29.289,100 L0,70.710 L0,60.503 L15,45.503 L15,64.497 Z" Name="SpinnerPath"></Path>
+    </Canvas>
+  </Canvas>
+</UserControl>

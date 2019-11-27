@@ -1,0 +1,12 @@
+#NEXUS
+
+Begin Rates;
+	
+	Character: 0;
+	
+	Rates:
+		A > P: ML
+		P > A: Equal(A > P)
+		;
+		
+End;

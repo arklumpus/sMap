@@ -1,0 +1,102 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="600" Height="180"
+        x:Class="sMap_GUI.LoadParametersFromRunWindow"
+        Title="Load parameters from previous run" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Window.Styles>
+    <Style Selector="Button.Cyan">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#40b9ee" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#00a2e8" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#26b0eb" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#26b0eb"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#00a2e8" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#00a2e8"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+  </Window.Styles>
+
+  <Grid  Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold">Character set:</TextBlock>
+        <ComboBox Name="SetComboBox" SelectedIndex="0" VerticalAlignment="Center" BorderBrush="#00a2e8"></ComboBox>
+      </StackPanel>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Margin="0,10,10,0" FontWeight="Bold" VerticalAlignment="Center">sMap run file:</TextBlock>
+        <TextBox Grid.Column="1" Margin="0,10,10,0" BorderBrush="#00a2e8" Name="RunFileBox"></TextBox>
+        <Button Grid.Column="2" VerticalAlignment="Center" Padding="10,5,10,5" Margin="0,10,0,0" Classes="Cyan" Click="BrowseButtonClicked">Browse...</Button>
+      </Grid>
+      <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+        <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold">Action:</TextBlock>
+        <ComboBox Name="ActionComboBox" SelectedIndex="0" VerticalAlignment="Center" Margin="0,0,10,0" BorderBrush="#00a2e8" SelectionChanged="ActionSelectionChanged">
+          <ComboBoxItem>Fix to estimate average</ComboBoxItem>
+          <ComboBoxItem>Use mean for Bayesian prior</ComboBoxItem>
+          <ComboBoxItem>Other</ComboBoxItem>
+        </ComboBox>
+        <Button Padding="10,0,10,0" Classes="Cyan" Click="AdvancedButtonClicked">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="14" Height="14">
+              <Canvas Width="100" Height="100">
+                <Path Data="M10,30 L50,70 L90,30" StrokeThickness="25" Name="ShowScriptPath" IsVisible="True" Stroke="White"></Path>
+                <Path Data="M10,70 L50,30 L90,70" StrokeThickness="25" Name="HideScriptPath" IsVisible="False" Stroke="White"></Path>
+              </Canvas>
+            </Viewbox>
+            <TextBlock Foreground="White" Margin="10,5,0,0" Name="VeryAdvancedSettingsActionBlock">Advanced</TextBlock>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </StackPanel>
+    <TextBox Grid.Row="1" Margin="0,10,0,0" BorderBrush="#00a2e8" AcceptsReturn="True" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Roboto Mono" Name="AdvancedScriptBox" IsVisible="False" KeyUp="ScriptKeyUp"></TextBox>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="1" Padding="10,5,10,5" Margin="0,10,0,0" Classes="Cyan" Click="OKButtonClicked">OK</Button>
+      <Button Grid.Column="3" Padding="10,5,10,5" Margin="0,10,0,0" Classes="Cyan" Click="CancelButtonClicked">Cancel</Button>
+    </Grid>
+  </Grid>
+</Window>

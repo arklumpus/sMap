@@ -1,0 +1,217 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+    mc:Ignorable="d" Width="650" Height="600"
+    x:Class="sMap_GUI.EditMLStrategyWindow"
+    Title="Edit likelihood optimisation strategy" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock FontWeight="Bold" FontSize="24" TextAlignment="Center">Likelihood optimisation strategy</TextBlock>
+    <Panel Background="Black" Height="1" Grid.Row="1" Margin="0,5,0,5" />
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <TextBlock FontWeight="Bold">Current strategy:</TextBlock>
+      <TextBlock FontWeight="Bold" Grid.Column="1">Available strategies:</TextBlock>
+      <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="1" Padding="5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="1">Sampling</TextBlock>
+              <local:AddButton Type="Add" Margin="0,0,10,0" PointerPressed="AddSampling"></local:AddButton>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="1">Iterative sampling</TextBlock>
+              <local:AddButton Type="Add" Margin="0,0,10,0" PointerPressed="AddIterativeSampling"></local:AddButton>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="1">Random walk</TextBlock>
+              <local:AddButton Type="Add" Margin="0,0,10,0" PointerPressed="AddRandomWalk"></local:AddButton>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="1">Nesterov climbing</TextBlock>
+              <local:AddButton Type="Add" Margin="0,0,10,0" PointerPressed="AddNesterovClimbing"></local:AddButton>
+            </Grid>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+      <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Padding="5" Margin="0,0,5,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Name="CurrentStrategyPanel">
+
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+    <Grid Grid.Row="3">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <TextBlock FontWeight="Bold">Strategy properties:</TextBlock>
+      <Grid Grid.Row="1" Margin="5,0,0,0" Name="SamplingGrid" IsVisible="False">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock VerticalAlignment="Center">Minimum sampled value:</TextBlock>
+        <NumericUpDown Value="0.0001" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="0" Name="SamplingMinBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <TextBlock Grid.Column="2" VerticalAlignment="Center">Maximum sampled value:</TextBlock>
+        <NumericUpDown Value="10.0001" Grid.Column="3" VerticalAlignment="Center" Margin="5,5,0,5" Minimum="0" Name="SamplingMaxBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1">Resolution:</TextBlock>
+        <NumericUpDown Value="0.1" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="0" Name="SamplingResolutionBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <CheckBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" IsChecked="True" Name="SamplingPlotBox" Click="PlotChanged">Plot progress</CheckBox>
+      </Grid>
+      <Grid Grid.Row="1" Margin="5,0,0,0" Name="IterativeSamplingGrid" IsVisible="False">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock VerticalAlignment="Center">Minimum sampled value:</TextBlock>
+        <NumericUpDown Value="0.0001" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="0" Name="IterativeSamplingMinBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <TextBlock Grid.Column="2" VerticalAlignment="Center">Maximum sampled value:</TextBlock>
+        <NumericUpDown Value="10.0001" Grid.Column="3" VerticalAlignment="Center" Margin="5,5,0,5" Minimum="0" Name="IterativeSamplingMaxBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <Grid Grid.Row="1" Grid.ColumnSpan="4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1*" />
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center">Resolution:</TextBlock>
+          <NumericUpDown Value="0.1" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="0" Name="IterativeSamplingResolutionBox" ValueChanged="ValueChanged"></NumericUpDown>
+          <TextBlock VerticalAlignment="Center" Grid.Column="2">Threshold:</TextBlock>
+          <NumericUpDown Value="0.001" Grid.Column="3" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="0" Name="IterativeSamplingThresholdBox" ValueChanged="ValueChanged"></NumericUpDown>
+          <CheckBox Grid.Column="4" Grid.ColumnSpan="2" IsChecked="True" Name="IterativeSamplingPlotBox" Click="PlotChanged">Plot progress</CheckBox>
+        </Grid>
+      </Grid>
+      <Grid Grid.Row="1" Margin="5,0,0,0" Name="RandomWalkGrid" IsVisible="False">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock VerticalAlignment="Center">Steps:</TextBlock>
+        <NumericUpDown Value="10000" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="1" Increment="1" Name="RandomWalkStepsBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <CheckBox Grid.Column="2" Grid.ColumnSpan="2" IsChecked="True" Name="RandomWalkPlotBox" Click="PlotChanged">Plot progress</CheckBox>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center">Criterion:</TextBlock>
+        <ComboBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" SelectedIndex="0" Name="RandomWalkCriterionBox" SelectionChanged="CriterionChanged">
+          <ComboBox.Items>
+            <ComboBoxItem>Value</ComboBoxItem>
+            <ComboBoxItem>Variables</ComboBoxItem>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="2">Threshold:</TextBlock>
+        <NumericUpDown Value="0.001" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Margin="5,5,0,5" Minimum="0" Name="RandomWalkThresholdBox" ValueChanged="ValueChanged"></NumericUpDown>
+      </Grid>
+      <Grid Grid.Row="1" Margin="5,0,0,0" Name="NesterovClimbingGrid" IsVisible="False">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock VerticalAlignment="Center">Steps:</TextBlock>
+        <NumericUpDown Value="10000" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" Minimum="1" Increment="1" Name="NesterovClimbingStepsBox" ValueChanged="ValueChanged"></NumericUpDown>
+        <CheckBox Grid.Column="2" Grid.ColumnSpan="2" IsChecked="True" Name="NesterovClimbingPlotBox" Click="PlotChanged">Plot progress</CheckBox>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center">Criterion:</TextBlock>
+        <ComboBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="5,5,10,5" SelectedIndex="0" Name="NesterovClimbingCriterionBox" SelectionChanged="CriterionChanged">
+          <ComboBox.Items>
+            <ComboBoxItem>Value</ComboBoxItem>
+            <ComboBoxItem>Variables</ComboBoxItem>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="2">Threshold:</TextBlock>
+        <NumericUpDown Value="0.001" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Margin="5,5,0,5" Minimum="0" Name="NesterovClimbingThresholdBox" ValueChanged="ValueChanged"></NumericUpDown>
+      </Grid>
+    </Grid>
+    <Grid Grid.Row="5" Name="PlotsGrid">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <TextBlock FontWeight="Bold">Test strategy:</TextBlock>
+      <TextBlock Grid.Row="1">Estimate:</TextBlock>
+      <TextBlock Grid.Row="1" Grid.Column="1" Margin="5,0,0,0">Sampled values:</TextBlock>
+      <Button Grid.Row="2" Grid.Column="2" Padding="10,5,10,5" Margin="5,0,5,0" Name="StartTestButton" VerticalAlignment="Center" Click="TestButtonClicked">Start test</Button>
+      <Canvas Grid.Row="2" Grid.Column="1" Width="150" Height="150" Margin="5">
+        <Image Name="SampledValuesImage"></Image>
+      </Canvas>
+      <Canvas Grid.Row="2"  Height="150" Margin="0,0,5,0">
+        <Image Name="EstimateImage"></Image>
+      </Canvas>
+    </Grid>
+    <Grid Grid.Row="6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="1" Width="100" Click="OKClicked">OK</Button>
+      <Button Grid.Column="3" Width="100" Click="CancelClicked">Cancel</Button>
+    </Grid>
+  </Grid>
+</Window>

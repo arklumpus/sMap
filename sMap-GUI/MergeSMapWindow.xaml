@@ -1,0 +1,97 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+        mc:Ignorable="d" Width="800" Height="450"
+        x:Class="sMap_GUI.MergeSMapWindow"
+        Title="Merge sMap" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" Closed="WindowClosed">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#ed1c24" StrokeThickness="010" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Width="153" Height="40" ZIndex="-1">
+        <Path Fill="#ed1c24" Data="M0,40 L178,40 L153,0 L-25,0 Z" Opacity="0.15" Name="BGPath"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ed1c24" Name="Label">Merge sMap</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
+      </Canvas>
+    </StackPanel>
+    <Grid Grid.Row="1" Margin="10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="3*" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="30" />
+          <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="2" />
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" FontWeight="Bold">sMap file</TextBlock>
+        <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" FontWeight="Bold">Characters</TextBlock>
+        <Canvas Background="Black" Grid.Row="1" Grid.ColumnSpan="4"></Canvas>
+      </Grid>
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled" Grid.Row="1" VerticalScrollBarVisibility="Visible">
+        <Grid Name="sMapFileContainer">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="30" />
+          </Grid.ColumnDefinitions>
+        </Grid>
+      </ScrollViewer>
+      <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="2*" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="30" />
+          <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="2" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Canvas Background="Black" Grid.ColumnSpan="5" />
+        <Button Grid.Row="1" HorizontalAlignment="Center" Margin="10" Padding="10,0,10,0" Click="AddFileClicked">
+          <StackPanel Orientation="Horizontal">
+            <local:AddButton Type="Add" Margin="0,0,5,0"></local:AddButton>
+            <TextBlock>Add sMap file...</TextBlock>
+          </StackPanel>
+        </Button>
+        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">Total characters:</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Name="TotalCharsBlock">0</TextBlock>
+      </Grid>
+    </Grid>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="1*" />
+      </Grid.ColumnDefinitions>
+      <StackPanel Orientation="Horizontal" Grid.Row="2">
+        <TextBlock VerticalAlignment="Center" Margin="10">Number of merged simulations:</TextBlock>
+        <NumericUpDown Padding="0" VerticalAlignment="Center" Width="120" Value="1000" Minimum="1" FormatString="0" Name="FinalCountBox"></NumericUpDown>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Column="1">
+        <TextBlock VerticalAlignment="Center" Margin="10">Random number seed:</TextBlock>
+        <NumericUpDown Padding="0" VerticalAlignment="Center" Width="120" Value="0" Minimum="0" FormatString="0" Name="SeedBox"></NumericUpDown>
+      </StackPanel>
+    </Grid>
+    <Button Grid.Row="3" Margin="10" HorizontalAlignment="Center" Padding="20,5,20,5" Click="SaveSMapClicked">Save merged sMap...</Button>
+  </Grid>
+</Window>

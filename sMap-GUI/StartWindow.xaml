@@ -1,0 +1,438 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="500"
+        x:Class="sMap_GUI.StartWindow"
+        Title="StartWindow" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <!---->
+  <Window.Styles>
+    <Style Selector="Button.Rainbow">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Cursor="Hand">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" Opacity="0.75">
+                <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+              </LinearGradientBrush>
+            </Border.Background>
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}">
+              <ContentPresenter.BorderBrush>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                  <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                  <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                  <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                  <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                  <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                  <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                  <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+                </LinearGradientBrush>
+              </ContentPresenter.BorderBrush>
+              
+            </ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Rainbow:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Cursor="Hand" Background="{x:Null}">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}">
+              <ContentPresenter.Background>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" Opacity="0.85">
+                  <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                  <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                  <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                  <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                  <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                  <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                  <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+                </LinearGradientBrush>
+              </ContentPresenter.Background>
+              <ContentPresenter.BorderBrush>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" Opacity="0.75">
+                  <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                  <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                  <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                  <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                  <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                  <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                  <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+                </LinearGradientBrush>
+              </ContentPresenter.BorderBrush>
+            </ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Rainbow:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{x:Null}" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}">
+              <ContentPresenter.Background>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                  <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                  <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                  <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                  <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                  <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                  <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                  <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+                </LinearGradientBrush>
+              </ContentPresenter.Background>
+              <ContentPresenter.BorderBrush>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" Opacity="0.75">
+                  <GradientStop Color="#a349a4" Offset="0"></GradientStop>
+                  <GradientStop Color="#3f48cc" Offset="0.167"></GradientStop>
+                  <GradientStop Color="#00a2e8" Offset="0.333"></GradientStop>
+                  <GradientStop Color="#22b14c" Offset="0.5"></GradientStop>
+                  <GradientStop Color="#ffd900" Offset="0.667"></GradientStop>
+                  <GradientStop Color="#ff7f27" Offset="0.833"></GradientStop>
+                  <GradientStop Color="#ed1c24" Offset="1"></GradientStop>
+                </LinearGradientBrush>
+              </ContentPresenter.BorderBrush>
+            </ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.Yellow">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ffd900" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#f2c200" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Yellow:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#f2c200" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ffd900" BorderThickness="{TemplateBinding BorderThickness}" Background="#f2c200"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Yellow:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ebb000" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ffd900" BorderThickness="{TemplateBinding BorderThickness}" Background="#ebb000"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    
+    
+    <Style Selector="Button.Purple">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ba77bb" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#a349a4" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Purple:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#b164b2" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ba77bb" BorderThickness="{TemplateBinding BorderThickness}" Background="#b164b2"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Purple:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#a349a4" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ba77bb" BorderThickness="{TemplateBinding BorderThickness}" Background="#a349a4"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Blue">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#6f76d9" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#3f48cc" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Blue:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#5c63d4" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#6f76d9" BorderThickness="{TemplateBinding BorderThickness}" Background="#5c63d4"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Blue:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#3f48cc" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#6f76d9" BorderThickness="{TemplateBinding BorderThickness}" Background="#3f48cc"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.Cyan">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#40b9ee" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#00a2e8" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#26b0eb" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#26b0eb"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Cyan:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#00a2e8" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#40b9ee" BorderThickness="{TemplateBinding BorderThickness}" Background="#00a2e8"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Green">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#59c579" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#22b14c" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Green:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#43bd67" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#59c579" BorderThickness="{TemplateBinding BorderThickness}" Background="#43bd67"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Green:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#22b14c" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#59c579" BorderThickness="{TemplateBinding BorderThickness}" Background="#22b14c"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Orange">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff9f5d" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff7f27" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Orange:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff9247" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff9f5d" BorderThickness="{TemplateBinding BorderThickness}" Background="#ff9247"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Orange:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ff7f27" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ff9f5d" BorderThickness="{TemplateBinding BorderThickness}" Background="#ff7f27"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+
+    <Style Selector="Button.Red">
+      <Setter Property="Button.Foreground" Value="White"></Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#f2555b" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#ed1c24" BorderThickness="{TemplateBinding BorderThickness}"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Red:pointerover">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#f03e45" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="1" ScaleY="1"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#f2555b" BorderThickness="{TemplateBinding BorderThickness}" Background="#f03e45"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Red:pressed">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#ed1c24" Cursor="Hand">
+            <Border.RenderTransform>
+              <ScaleTransform ScaleX="0.95" ScaleY="0.95"></ScaleTransform>
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}" BorderBrush="#f2555b" BorderThickness="{TemplateBinding BorderThickness}" Background="#ed1c24"></ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+  </Window.Styles>
+  <!---->
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1.5*"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="1*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" />
+      <ColumnDefinition Width="1*" />
+    </Grid.ColumnDefinitions>
+    <Grid Margin="10" Name="sMapTitle" Grid.ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Canvas Width="81" Height="60" ClipToBounds="True">
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
+      </Canvas>
+      <Canvas Grid.Column="1" Height="60" Background="#00a2e8">
+        <Path Fill="#00a2e8" Data="M0,60 L0,0 L-25,0 Z"></Path>
+      </Canvas>
+      <Canvas ZIndex="-1" Grid.Column="2" Height="60">
+        <Path Fill="#00a2e8" Data="M0,60 L25,60 L0,0 Z"></Path>
+      </Canvas>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock FontWeight="Bold" FontSize="36" Margin="5,3.5,0,0" Foreground="White">Welcome to sMap-GUI</TextBlock>
+      </StackPanel>
+      <Canvas Width="47" Height="60" ClipToBounds="True" Grid.Column="2">
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
+      </Canvas>
+    </Grid>
+    <TextBlock Grid.Row="1" FontWeight="Bold" FontSize="30" Margin="20, 0, 0, 0" Grid.ColumnSpan="2">Choose action to perform:</TextBlock>
+
+    <Button Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="30" Padding="20" Classes="Rainbow" BorderThickness="5" Click="sMapWizardClicked" Name="sMapWizardButton">sMap Wizard</Button>
+
+    <Button Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Purple" BorderThickness="5" Click="sMapClicked">sMap (advanced mode)</Button>
+    <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Blue" BorderThickness="5" Click="NodeInfoClicked">Node Info</Button>
+    <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Green" BorderThickness="5" Click="PlotSMapClicked">Plot sMap</Button>
+    <Button Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Cyan" BorderThickness="5" Click="StatSMapClicked">Stat sMap</Button>
+    <Button Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Yellow" BorderThickness="5" Click="BlendSMapClicked">Blend sMap</Button>
+    <Button Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Orange" BorderThickness="5" Click="MergeSMapClicked">Merge sMap</Button>
+    <Button Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="20, 10, 20, 10" Classes="Red" BorderThickness="5" Click="ScriptSMapClicked">Script sMap</Button>
+  </Grid>
+</Window>

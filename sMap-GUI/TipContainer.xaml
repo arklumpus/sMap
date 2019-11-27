@@ -1,0 +1,172 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Width="300" d:DesignHeight="600"
+             x:Class="sMap_GUI.TipContainer" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" MaxWidth="100"/>
+        <ColumnDefinition Width="2*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <Viewbox Height="100" Grid.RowSpan="2" VerticalAlignment="Top">
+        <Canvas Width="100" Height="100">
+          <Path Name="BulbPath" Fill="Black" StrokeThickness="1" Data="M40.680,72.537 L40.680,63.217 L27.5,50.037 L27.5,31.397 L40.680,18.217 L59.32,18.217 L72.5,31.397 L72.5,50.037 L59.32,63.217 L59.32,72.537 Z M45.68,67.537 L45.68,61.146 L32.5,47.966 L32.5,33.469 L42.751,23.217 L57.249,23.217 L67.5,33.469 L67.5,47.996 L54.32,61.146 L54.32,67.537 Z M40.68,74.867 L40.68,79.526 L59.32,79.526 L59.32,74.867 Z M40.68,81.856 L40.68,86.516 L59.32,86.516 L59.32,81.856 Z M44.175,88.846 L44.175,93.506 L55.824,93.506 L55.824,88.846 Z M17.691,56.806 M23.168301,49.12526 L25.081711,53.74466 L17.690671,56.80613 L15.777261,52.18674 Z M23.168293,32.30911 L25.081708,27.68971 L17.690669,24.62824 L15.777254,29.24763 Z M36.972526,15.7989 L41.591924,13.88548 L38.530456,6.49444 L33.911059,8.40786 Z M63.027474,15.79889 L58.408076,13.88547 L61.469544,6.49442999999997 L66.088941,8.40784999999997 Z M76.8317,49.12526 L74.91829,53.74466 L82.30933,56.80613 L84.22274,52.18674 Z M76.831707,32.30911 L74.918292,27.68971 L82.309331,24.62824 L84.222746,29.24763 Z "></Path>
+        </Canvas>
+      </Viewbox>
+      <TextBlock Grid.Column="1" FontWeight="Bold" FontSize="40" Foreground="Black" Margin="10,0,10,0" Name="TipsHeader">Tips:</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip1Header" IsVisible="False" MaxWidth="200">Input data file</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip2Header" IsVisible="False" MaxWidth="200">Tree file</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip3Header" IsVisible="False" MaxWidth="200">Summary tree</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip4Header" IsVisible="False" MaxWidth="200">Dependency model</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip5Header" MaxWidth="200" IsVisible="False">Pis, rates and conditioned probabilities</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip6Header" MaxWidth="200" IsVisible="False">Running the analysis</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip7Header" MaxWidth="200" IsVisible="False">Results of the analysis</TextBlock>
+    </Grid>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1"  Margin="10" Padding="0,0,0,0">
+      <Grid>
+        <StackPanel Grid.Row="1" Name="Tip1" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The input data should be in a relaxed PHYLIP-like format.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The first line of the input file should contain the number of taxa, one or more spaces (or tabulations), and the number of characters.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Following this, one line per taxon should contain the taxon name, one or more spaces (or tabulations) and character data.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Example:
+          </TextBlock>
+          <TextBlock FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Roboto Mono" TextWrapping="Wrap" Margin="10,0,0,10" Background="#E0E0E0" Text="5 2&#10;Fish        C O&#10;Amphibians  C O&#10;Squamates   C O&#10;Birds       N F&#10;Mammals     N O"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip2" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The tree file should be in Newick format.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            You can provide either a single Newick tree, or a file with multiple trees (one per line) - e.g. posterior samples from a Bayesian phylogenetic analysis.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If the file contains multiple trees, in the next step you will also be asked for a summary tree, which will be used to summarise the results.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            All trees must be rooted and should also be clock-like (i.e. the length from the root to any of the tips should be the same).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Example:
+          </TextBlock>
+          <TextBlock FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Roboto Mono" TextWrapping="Wrap" Margin="10,0,0,10" Background="#E0E0E0">
+            ((A:2,B:2):3,(C:1,D:1):4);
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip3" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The summary tree will be used to display the results of the analysis.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            You can use a consensus of the trees found in the tree file or provide your own summary tree.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The consensus threshold determines which groups are included in the tree: clades with support lower than the threshold will be excluded, and polytomies will be created.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If the tree file only contains one tree you will not be prompted for a consensus tree.
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip4" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            You can specify the relationships between characters either by using a NEXUS file containing Dependency blocks, or by using a graphical interface.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If you click on "Edit...", a window will open which will allow you to graphically edit the relationships between characters.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Drag an independent character over another to make them dependent or conditioned on one another, or drag a dependent character in an empty space to make it independent. Experiment!
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">
+            If you provide data for only one character, you will not be asked for a dependency model.
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip5" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Pis, rates and conditioned probabilities are the parameters of the evolutionary model.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Pis represent the prior probabilities for each state at the root node. You can fix them to specific values, make them equal to one another, or estimate them using Bayesian inference (by providing the parameter for a Dirichlet prior distribution). Use the "..." button in the window to do so.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Rates represent how often each state change happens. You can fix each rate to a specific value, make it equal to another rate, estimate it using Maximum-Likelihood, or provide a prior distribution to use for Bayesian inference. Click on the rate in the window to do so.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">
+            Conditioned probabilities are used only for conditioned characters. They define the probability that the conditioned character is in a certain state, given the states of the conditioning characters. You can fix them to specific values, make them equal to one another, and estimate them using Maximum-Likelihood, or Bayesian inference (by providing the parameter for a Dirichlet or Multinomial prior distribution). Use the "..." button in the window to do so.
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip6" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            It's time to start the analysis! When you click on the button, a new window will open, which will display the progress of the analysis.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If you feel brave, you can also have a look at the advanced settings (these correspond to the parameters of the command-line version of sMap).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            You can also save your choices to be able to quickly re-run an analysis.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The summary tree will be saved in Newick format.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The model file will be saved as a NEXUS file. You can provide this file when defining character dependencies, pis and rates to load these settings.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The analysis archive contains everything that's necessary to replicate the analysis you're about to run: data, trees, model and parameters. You can also provide it to the "--archive" option of the command-line version of sMap - handy if you want to setup an analysis to run on a cluster!
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip7" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Now that the analysis has finished, you can have a look at the results.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            It's probably a good idea to save the all the output files somewhere, in case something happens... You can never be too sure!
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            You can provide the sMap run files to the Plot-sMap or NodeInfo to produce plots or gather information about the nodes, respectively.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If you click on the "Plot..." buttons, you will be able to produce PDF and PNG plots of the results of the analysis of each independent group of characters.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Click the "Plot preview..." button in the window that will open, and experiment with the settings to make the plot yours!
+          </TextBlock>
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Button Margin="10" Width="110" Name="PreviousTipButton" Click="PreviousTipClicked">« Previous tip</Button>
+      <Button Margin="10" Grid.Column="2" Width="110" Name="NextTipButton" Click="NextTipClicked">Next tip »</Button>
+    </Grid>
+  </Grid>
+</UserControl>

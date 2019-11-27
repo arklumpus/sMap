@@ -1,0 +1,50 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="500" Height="200"
+        x:Class="sMap_GUI.MessageBox"
+        Title="MessageBox"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" Opened="MessageBoxOpened">
+  <Grid Width="500" Height="200">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="1*" />
+    </Grid.ColumnDefinitions>
+    <Canvas Width="80" Height="80" Margin="10" Name="WarningCanvas" IsVisible="False">
+      <Path Fill="#ffc801" Data="M0,80 L67.5,80 L63.75,72.5 L3.75,72.5 Z M5.985,68.03 L13.485,68.03 L43.75,7.5 L40,0 Z M46.25,12.5 L80,80 L72.5,80 L42.5,20"></Path>
+      <Path Fill="Black" Data="M36.233,32.955 L43.855,32.955 L42.731,54.476 L37.357,54.476 Z "></Path>
+      <Ellipse Fill="Black" Width="7.751" Height="7.751" Margin="36.065,58.084"></Ellipse>
+    </Canvas>
+    <Canvas Width="80" Height="80" Margin="10" Name="TickCanvas" IsVisible="False">
+      <Path Stroke="#22b14c" StrokeThickness="15" Data="M7.5,47.5 L40,72.5 L72.5,7.5"></Path>
+    </Canvas>
+    <Grid Grid.Column="1" Margin="10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="1*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <TextBlock TextWrapping="Wrap" Grid.Row="1" Width="380" Name="Message">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dapibus urna nisi, eu vestibulum tortor tempus sed. Cras finibus condimentum gravida.
+      </TextBlock>
+    </Grid>
+    <Button Grid.Row="1" Margin="10" Width="100" Grid.ColumnSpan="2" Click="OKClicked" IsVisible="False" Name="OKButton">OK</Button>
+    <Grid Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False" Name="YesNoButtons">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"></ColumnDefinition>
+        <ColumnDefinition Width="Auto"></ColumnDefinition>
+        <ColumnDefinition Width="1*"></ColumnDefinition>
+        <ColumnDefinition Width="Auto"></ColumnDefinition>
+        <ColumnDefinition Width="1*"></ColumnDefinition>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Row="1" Margin="10" Width="100" Click="YesClicked" Grid.Column="1">Yes</Button>
+      <Button Grid.Row="1" Margin="10" Width="100" Click="NoClicked" Grid.Column="3">No</Button>
+    </Grid>
+  </Grid>
+</Window>

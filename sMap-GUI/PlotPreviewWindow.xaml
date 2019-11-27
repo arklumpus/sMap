@@ -1,0 +1,69 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="sMap_GUI.PlotPreviewWindow"
+        Title="Plot preview"
+        xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15"
+        PropertyChanged="PropertyChangedEvent" Opened="WindowOpened">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Width="158" Height="40" ZIndex="-1">
+        <Path Fill="#0eceaf" Data="M0,40 L183,40 L158,0 L-25,0 Z" Opacity="0.15" Name="BGPath"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#0eceaf" Name="Label">Plot preview</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
+      </Canvas>
+    </StackPanel>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <paz:ZoomBorder Stretch="None" ZoomSpeed="1.2" ClipToBounds="True" Focusable="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="TreeContainer">
+        <Image Name="PlotContainer">
+          
+        </Image>        
+      </paz:ZoomBorder>
+      <StackPanel Grid.Column="1" Margin="0,0,10,0">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+          <Canvas Width="15" Height="25" Margin="10,0,0,0">
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L15,11 M7.5,0 L7.5,11" ></Path>
+            <Path Stroke="#ff9900" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+          </Canvas>
+          <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Zoom</TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Canvas Width="15" Height="25" Margin="10,0,0,0">
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+            <Path Fill="#ff9900" Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L7.5,11 L7.5,0 A7.5,7.5,90,0,0,0,7.5 Z" ></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M7.5,11 L15,11 M7.5,0 L7.5,11" ></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+          </Canvas>
+          <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Pan</TextBlock>
+        </StackPanel>
+        <Button Padding="10,0,10,0" Margin="0,10,0,10" Click="FitButtonClicked">Fit</Button>
+      </StackPanel>
+    </Grid>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="1" Margin="10" Width="120" Click="SavePlotClicked">Save Plot...</Button>
+    </Grid>
+  </Grid>
+</Window>

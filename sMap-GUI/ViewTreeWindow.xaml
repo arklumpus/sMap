@@ -1,0 +1,59 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="sMap_GUI.ViewTreeWindow"
+        Title="View tree"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+      </Canvas>
+      <Grid Height="40" ZIndex="-1" Background="#f1e4f1" >
+        <Path Fill="#f1e4f1" Data="M0,40 L0,0 L-25,0 Z"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#a349a4" Name="HeaderBlock">Summary tree</TextBlock>
+        <Path Width="0" Fill="#f1e4f1" Data="M25,40 L0,40 L0,0 Z" HorizontalAlignment="Right"></Path>
+      </Grid>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+      </Canvas>
+    </StackPanel>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+      <StackPanel Orientation="Horizontal" Name="MultiTreePanel" IsVisible="False">
+        <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Tree: </TextBlock>
+        <NumericUpDown VerticalAlignment="Center" Padding="5,0,5,0" Minimum="1" Value="1" Name="MultiTreeIndex" FormatString="0" ValueChanged="TreeIndexChanged"></NumericUpDown>
+        <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Name="MultiTreeTotalBlock">/ 1000</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+        <Canvas Width="15" Height="25" Margin="10,0,0,0">
+          <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+          <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L15,11 M7.5,0 L7.5,11" ></Path>
+          <Path Stroke="#ff9900" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+        </Canvas>
+        <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Zoom</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Canvas Width="15" Height="25" Margin="10,0,0,0">
+          <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+          <Path Fill="#ff9900" Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L7.5,11 L7.5,0 A7.5,7.5,90,0,0,0,7.5 Z" ></Path>
+          <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M7.5,11 L15,11 M7.5,0 L7.5,11" ></Path>
+          <Path Stroke="#6f8ec6" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+        </Canvas>
+        <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Pan</TextBlock>
+      </StackPanel>
+      <Button Padding="20,0,20,0" Margin="0,10,0,10" Click="FitButtonClicked">Fit</Button>
+
+
+    </StackPanel>
+    <paz:ZoomBorder Stretch="None" ZoomSpeed="1.2" ClipToBounds="True" Focusable="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="TreeContainer" Grid.Row="2">
+    </paz:ZoomBorder>
+  </Grid>
+</Window>

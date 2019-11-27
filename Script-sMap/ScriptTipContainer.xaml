@@ -1,0 +1,275 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Width="300" d:DesignHeight="600"
+             x:Class="Script_sMap.ScriptTipContainer" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Open Sans" FontSize="15">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" MaxWidth="100"/>
+        <ColumnDefinition Width="2*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <Viewbox Height="100" Grid.RowSpan="2" VerticalAlignment="Top">
+        <Canvas Width="100" Height="100">
+          <Path Name="BulbPath" Fill="Black" StrokeThickness="1" Data="M40.680,72.537 L40.680,63.217 L27.5,50.037 L27.5,31.397 L40.680,18.217 L59.32,18.217 L72.5,31.397 L72.5,50.037 L59.32,63.217 L59.32,72.537 Z M45.68,67.537 L45.68,61.146 L32.5,47.966 L32.5,33.469 L42.751,23.217 L57.249,23.217 L67.5,33.469 L67.5,47.996 L54.32,61.146 L54.32,67.537 Z M40.68,74.867 L40.68,79.526 L59.32,79.526 L59.32,74.867 Z M40.68,81.856 L40.68,86.516 L59.32,86.516 L59.32,81.856 Z M44.175,88.846 L44.175,93.506 L55.824,93.506 L55.824,88.846 Z M17.691,56.806 M23.168301,49.12526 L25.081711,53.74466 L17.690671,56.80613 L15.777261,52.18674 Z M23.168293,32.30911 L25.081708,27.68971 L17.690669,24.62824 L15.777254,29.24763 Z M36.972526,15.7989 L41.591924,13.88548 L38.530456,6.49444 L33.911059,8.40786 Z M63.027474,15.79889 L58.408076,13.88547 L61.469544,6.49442999999997 L66.088941,8.40784999999997 Z M76.8317,49.12526 L74.91829,53.74466 L82.30933,56.80613 L84.22274,52.18674 Z M76.831707,32.30911 L74.918292,27.68971 L82.309331,24.62824 L84.222746,29.24763 Z "></Path>
+        </Canvas>
+      </Viewbox>
+      <TextBlock Grid.Column="1" FontWeight="Bold" FontSize="40" Foreground="Black" Margin="10,0,10,0" Name="TipsHeader">Tips:</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip1Header" IsVisible="False" MaxWidth="200">Welcome to Script-sMap</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip2Header" IsVisible="False" MaxWidth="200">C# reference for R users</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip3Header" IsVisible="False" MaxWidth="200">Useful commands</TextBlock>
+      <TextBlock Grid.Column="1" Grid.Row="1" FontWeight="Bold" FontSize="24" Foreground="Black" Margin="10,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" Name="Tip4Header" IsVisible="False" MaxWidth="200">Useful commands</TextBlock>
+    </Grid>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1"  Margin="10" Padding="0,0,0,0">
+      <Grid>
+        <StackPanel Grid.Row="1" Name="Tip1" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            This is a C# REPL, loaded with some useful assemblies to deal with sMap data.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            The following tips will illustrate some useful commands and coding patterns.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+            Read more about the C# REPL:
+          </TextBlock>
+          <Border BorderBrush="Blue" BorderThickness="0,0,0,1" HorizontalAlignment="Left" Padding="0,0,0,-3" Cursor="Hand" PointerPressed="ScriptConsoleLinkClicked" Margin="0,-5,0,10">
+            <TextBlock TextWrapping="Wrap" Foreground="Blue" HorizontalAlignment="Left">
+              https://git.io/JeCrj
+            </TextBlock>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip2" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            C# is a type-safe language, and variable declaration statements should explicitly declare the variable's type. E.g.:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            string test = "I am a string";
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            This statement declares the variable test, of type string, and assigns to it the value "I am a string". Subsequent assignments to the variable do not need to specify the variable type:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            test = "I am another string";
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Commonly used types are: string, int (to store integer values), double (to store non-integer numbers) and bool (to store boolean value - true or false).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            All C# statements should end with a semicolon (;). The only exception is, here in the script console, when the statement is actually an expression whose value you want to inspect. For example:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            test
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Will print the value of the variable called "test" (if such a variable exists). In any case, missing semicolons will cause a quite explanatory compilation error message.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            In C#, the dot (.) is an operator used to access an object's properties, thus it cannot be used to in the name of variables. For example:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            test.Length
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Will print the value of the property "Length" of the variable "test" (if such a variable exists and it has such a property). If "test" is e.g. a string, this will print the length of the string (in characters).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Array types (similar to vectors in R) are defined by appending square brackets ("[ ]") to the variable type declaration. For example:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            int[] myArray = new int[5];
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Declares a variable called "myArray" that holds an array of 5 integer numbers. Note that the length of an array cannot be changed after the array has been initialized (except by creating a new array with the same name - which destroys the data in the array).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Elements of the array can be accessed using single square brackets:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            myArray[3] = 42;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Note that array indices are 0-based (thus, for example, valid index values for the "myArray" array are 0, 1, 2, 3 and 4).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            For loops in C# are defined using three statements: an initialization statement, a condition and an increment:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13" Text="for (initialization; condition; increment)&#10;{&#10;    //Code to be run in the loop&#10;}" />
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            For example:
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13" Text="for (int i = 0; i &lt; 10; i++)&#10;{&#10;    Console.WriteLine(i);&#10;}" />
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Will print the numbers from 0 through 9.
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip3" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            string newick = File.ReadAllText("tree.nwk");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Read a text file and save its contents into a string variable called "newick".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            TreeNode tree = TreeNode.Parse(newick);
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Parse a Newick-format tree into a TreeNode variable called "tree".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            Str(tree);
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get a list of all the methods and properties available for an object such as "tree".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            List&lt;TreeNode&gt; children = tree.GetChildrenRecursive();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get a list of all the nodes in the tree.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            TreeNode tip = tree.GetBranchFromName("Dog");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get the node corresponding to the tip named "Dog".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            tip.Drop();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Remove the node (and all its children, if any) from the tree.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            TreeNode lca = tree.GetMonophyleticGroup("Cat", "Lion");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get the node corresponding to the last common ancestor of tips "Cat" and "Lion".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double length = lca.Length;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get the branch length.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double support = lca.Support;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get the support value (e.g. bootstrap support or posterior probability).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double totalLength = tree.TotalLength();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get the total length of the tree (i.e. the sum of all the branch lenghts).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            List&lt;string&gt; leafNames = tree.GetLeafNames();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Get a list of the names of the tips of the tree.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            bool isClockLike = tree.IsClockLike();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Determine whether the tree is clock-like (or ultrametric, i.e. whether all the tips are contemporaneous).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            string newick = tree.ToString();
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Convert the tree object to a Newick-format tree string.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            File.WriteAllText(newick, "tree.tre");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Save the Newick string to a file called "tree.tre".
+          </TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Name="Tip4" IsVisible="False" Margin="0,0,15,0">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            SerializedRun run = SerializedRun.Deserialize("smap.bin");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Read a sMap run file called "smap.bin" and save it into a variable called "run".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            TreeNode tree = run.SummaryTree;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Access the summary tree object.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            string[] states = run.AllPossibleStates;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Access an array of the combined states for all characters in the sMap analysis.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double scale = run.AgeScale;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Access the value that was used to normalise the tree height in the sMap analysis (if the trees were not normalised, this will be 1).
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            TaggedHistory[] histories = run.Histories;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Access an array of the simulated character histories.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            run.Serialize("run.bin");
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Save the run as a file called "run.bin".
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            DTest test = run.ComputeDTest(0, 1);
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Compute the D-test (Huelsenbeck et al., 2003) between characters 0 and 1.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double prob = test.P;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Obtain the posterior predictive p-value computed by the D-test.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Roboto Mono" Background="#E0E0E0" FontSize="13">
+            double D = test.DStats.D;
+            double[,] dij = test.Dstats.dij;
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            Obtain the raw D and d_ij values computed by the D-test.
+          </TextBlock>
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Button Margin="10" Width="110" Name="PreviousTipButton" Click="PreviousTipClicked">« Previous tip</Button>
+      <Button Margin="10" Grid.Column="2" Width="110" Name="NextTipButton" Click="NextTipClicked">Next tip »</Button>
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,0 +1,19 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="400" Height="110"
+        x:Class="sMap_GUI.RenderingProgressWindow"
+        Title="Plotting..." FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" HasSystemDecorations="False" WindowStartupLocation="CenterOwner"
+         Opened="WindowOpened">
+  <Border BorderBrush="Gray" BorderThickness="5">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+      </Grid.RowDefinitions>
+      <TextBlock Margin="10" HorizontalAlignment="Center" Name="ProgressText">Rendering plot...</TextBlock>
+      <ProgressBar Grid.Row="1" Margin="10,20,10,20" IsIndeterminate="True"></ProgressBar>
+    </Grid>
+  </Border>
+</Window>

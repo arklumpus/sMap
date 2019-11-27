@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+             x:Class="sMap_GUI.OctagonNumberLabel" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <StackPanel Orientation="Horizontal">
+    <Canvas Width="100" Height="100">
+      <Viewbox Height="100" Width="100" Margin="29.29,0,0,0">
+        <local:NumberOctagon Fill="White" Number=""></local:NumberOctagon>
+      </Viewbox>
+      <Viewbox Height="100" Width="100">
+        <local:NumberOctagon Fill="Black" Name="NumberOctagon"></local:NumberOctagon>
+      </Viewbox>
+    </Canvas>
+    <Grid Background="Black" ZIndex="-1" Name="GridContainer">
+      <Viewbox Height="100" Width="100" Margin="0,0,-29.29,0" HorizontalAlignment="Right">
+        <local:NumberOctagon Fill="Black" Number="" Name="BackgroundOctagon"></local:NumberOctagon>
+      </Viewbox>
+      <TextBlock FontSize="70" FontWeight="Bold" VerticalAlignment="Center" Margin="58.58,0,14.64,5" Foreground="White" Name="TextBlock">Text</TextBlock>
+    </Grid>
+    <Canvas Width="29.29"></Canvas>
+  </StackPanel>
+</UserControl>

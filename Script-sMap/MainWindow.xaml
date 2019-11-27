@@ -1,0 +1,25 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sc="clr-namespace:ScriptConsoleLibrary;assembly=ScriptConsoleLibrary"
+        xmlns:local="clr-namespace:Script_sMap;assembly=Script-sMap"
+        mc:Ignorable="d" Width="978" Height="514"
+        x:Class="Script_sMap.MainWindow"
+        Title="Script SMap" FontFamily="resm:Script-sMap.Fonts.?assembly=Script-sMap#Open Sans">
+  <Grid Name="MainGrid">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="8" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+    <local:ScriptTipContainer Grid.Column="2"></local:ScriptTipContainer>
+    <Button Grid.Column="1" Padding="0,0,0,0" Click="OpenCloseTipClicked">
+      <Canvas Width="4" Height="8">
+        <Path Fill="Black" Data="M0,0 L4,4 L0,8 Z" Name="CloseTipPath"/>
+        <Path Fill="Black" Data="M4,0 L0,4 L4,8 Z" Name="OpenTipPath" IsVisible="False"/>
+      </Canvas>
+    </Button>
+    <sc:ScriptConsoleControl Name="scc"></sc:ScriptConsoleControl>
+  </Grid>
+</Window>

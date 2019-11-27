@@ -1,0 +1,62 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+             mc:Ignorable="d" Width="18" Height="18"
+             x:Class="sMap_GUI.AddButton">
+  <UserControl.Styles>
+    <Style Selector="Ellipse">
+      <Setter Property="Fill" Value="#EEEEEE" />
+    </Style>
+    <Style Selector="Ellipse:pointerover">
+      <Setter Property="Fill" Value="#DEDEDE" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Add] #RemovePath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Add] #UpPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Add] #DownPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    
+    <Style Selector="local|AddButton[Type=Remove] #AddPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Remove] #UpPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Remove] #DownPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <Style Selector="local|AddButton[Type=Up] #AddPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Up] #RemovePath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Up] #DownPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <Style Selector="local|AddButton[Type=Down] #AddPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Down] #RemovePath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Down] #UpPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+  </UserControl.Styles>
+  <Canvas>
+    <Ellipse Stroke="#808080" StrokeThickness="1.5" Width="18" Height="18" Cursor="Hand"></Ellipse>
+    <Path Data="M5,9 L13,9 M9,5 L9,13" Stroke="#22b14c" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="AddPath"></Path>
+    <Path Data="M5,9 L13,9" Stroke="#ea1c24" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="RemovePath"></Path>
+    <Path Data="M5,10 L9,6 L13,10" Stroke="#006996" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="UpPath"></Path>
+    <Path Data="M5,8 L9,12 L13,8" Stroke="#006996" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="DownPath"></Path>
+  </Canvas>
+</UserControl>

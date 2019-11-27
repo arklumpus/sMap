@@ -1,0 +1,520 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sMap_GUI;assembly=sMap-GUI"
+        mc:Ignorable="d" Width="900" Height="500"
+        x:Class="sMap_GUI.RunWindow"
+        Title="sMap-GUI - Analysis in progress"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Window.Styles>
+    <Style Selector=".AnimationInactive">
+      <Setter Property="IsVisible" Value="false"/>
+    </Style>
+    <Style Selector=".ShortAnimationActive">
+      <Style.Animations>
+        <Animation Duration="0:0:2" RepeatCount="Loop">
+          <KeyFrame Cue="0%">
+            <Setter Property="Margin" Value="-50,0,0,0" />
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="50%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Margin" Value="130,0,0,0" />
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector=".LongAnimationActive">
+      <Style.Animations>
+        <Animation Duration="0:0:3" RepeatCount="Loop">
+          <KeyFrame Cue="0%">
+            <Setter Property="Margin" Value="-50,0,0,0" />
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="50%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Margin" Value="205,0,0,0" />
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="Rectangle.AnimationItem">
+      <Setter Property="Fill">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+            <LinearGradientBrush.GradientStops>
+              <GradientStop Color="#00FFFFFF" Offset="0" />
+              <GradientStop Color="#80FFFFFF" Offset="0.5" />
+              <GradientStop Color="#00FFFFFF" Offset="1" />
+            </LinearGradientBrush.GradientStops>
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Styles>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+      </Grid.ColumnDefinitions>
+      <Canvas Height="25" Background="#a349a4" Name="MarginCanvasLeft"></Canvas>
+      <Canvas Grid.Column="2" Height="25" Background="#ed1c24" Name="MarginCanvasRight"></Canvas>
+      <StackPanel Orientation="Horizontal" Grid.Column="1">
+        <Canvas Width="115" Height="25" Name="DataParsingCanvas">
+          <Path Fill="#a349a4" Data="M0,0 L0,25 L115,25 L102.5,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="5,0,0,0" Foreground="White">Data parsing</TextBlock>
+        </Canvas>
+        <Canvas Width="130" Height="25" Name="MLEstimationCanvas">
+          <Path Fill="#3f48cc" Data="M-12.5,0 L0,25 L130,25 L117.5,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="3,0,0,0" Foreground="White">ML estimation</TextBlock>
+        </Canvas>
+        <Canvas Width="160" Height="25" Name="BayesianSamplingCanvas">
+          <Path Fill="#00a2e8" Data="M-12.5,0 L0,25 L160,25 L147.5,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="3,0,0,0" Foreground="White">Bayesian sampling</TextBlock>
+        </Canvas>
+        <Canvas Width="205" Height="25" Name="SteppingStoneSamplingCanvas">
+          <Path Fill="#22b14c" Data="M-12.5,0 L0,25 L205,25 L192.5,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="3,0,0,0" Foreground="White">Stepping-stone sampling</TextBlock>
+        </Canvas>
+        <Canvas Width="110" Height="25" Name="NodeStatesCanvas">
+          <Path Fill="#ff7f27" Data="M-12.5,0 L0,25 L110,25 L97.5,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="3,0,0,0" Foreground="White">Node states</TextBlock>
+        </Canvas>
+        <Canvas Width="100" Height="25" Name="SimulationsCanvas">
+          <Path Fill="#ed1c24" Data="M-12.5,0 L0,25 L100,25 L100,0 Z"></Path>
+          <Rectangle Width="50" Height="25" Classes="AnimationItem AnimationInactive"></Rectangle>
+          <TextBlock FontWeight="Bold" Margin="3,0,0,0" Foreground="White">Simulations</TextBlock>
+        </Canvas>
+      </StackPanel>
+    </Grid>
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Padding="10" Name="MainScrollViewer">
+      <StackPanel HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+          <Canvas Width="64" Height="40" ClipToBounds="True">
+            <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+          </Canvas>
+          <Canvas Width="163" Height="40" ZIndex="-1">
+            <Path Fill="#a349a4" Data="M0,40 L188,40 L163,0 L-25,0 Z" Opacity="0.15"></Path>
+            <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#a349a4">Data parsing</TextBlock>
+          </Canvas>
+          <Canvas Width="30" Height="40" ClipToBounds="True">
+            <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+          </Canvas>
+          <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+            <local:Spinner Fill="#a349a4" Name="DataParsingSpinner"></local:Spinner>
+          </Viewbox>
+        </StackPanel>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,0,0,0">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0">
+              <local:Octagon Fill="#a349a4"></local:Octagon>
+            </Viewbox>
+            <TextBlock FontWeight="Bold">Character state data:</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,0" Name="ReadingStateDataInfo">
+            <TextBlock Margin="22,0,0,0">Reading input file...</TextBlock>
+            <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+              <local:Spinner Fill="#a349a4"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0" Name="ReadStateDataInfo" IsVisible="False">
+            <TextBlock Margin="22,0,5,0" FontStyle="Italic" VerticalAlignment="Center">Taxa:</TextBlock>
+            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" Name="TaxaCountBlock">5</TextBlock>
+            <TextBlock Margin="22,0,5,0" FontStyle="Italic" VerticalAlignment="Center">Characters:</TextBlock>
+            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" Name="CharCountBlock">5</TextBlock>
+            <TextBlock Margin="22,0,5,0" FontStyle="Italic" VerticalAlignment="Center">States:</TextBlock>
+            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" Name="StateCountBlock">5, 5, 2</TextBlock>
+            <Button Padding="10,0,10,0" Margin="22,0,0,0" Click="ViewParsedDataClicked">View...</Button>
+          </StackPanel>
+        </Grid>
+        <Grid IsVisible="False" Name="TreeDataGrid" Margin="0,15,0,0">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,0,0,0">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0">
+              <local:Octagon Fill="#a349a4"></local:Octagon>
+            </Viewbox>
+            <TextBlock FontWeight="Bold">Tree data:</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,0" Name="ReadingTreesInfo">
+            <TextBlock Margin="22,0,0,0">Reading tree file...</TextBlock>
+            <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+              <local:Spinner Fill="#a349a4"></local:Spinner>
+            </Viewbox>
+            <ProgressBar Foreground="#a349a4" Margin="10,0,0,0" Background="#f1e4f1" Maximum="100" Value="50" Name="ReadTreeProgressBar"></ProgressBar>
+            <TextBlock Margin="10,0,0,0" Name="ReadTreeProgressDesc">1000 / 10000</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0" IsVisible="False" Name="ReadTreesInfo">
+            <TextBlock Margin="22,0,5,0" FontStyle="Italic" VerticalAlignment="Center">Trees:</TextBlock>
+            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" Name="TotalReadTrees">5</TextBlock>
+          </StackPanel>
+          <Button Grid.Row="3" Margin="32,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" Name="ViewMeanTreeButton" IsVisible="False" Click="ViewMeanTreeClicked">View mean tree...</Button>
+        </Grid>
+        <Grid IsVisible="False" Name="ModelDataGrid" Margin="0,15,0,30">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,0,0,0">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0">
+              <local:Octagon Fill="#a349a4"></local:Octagon>
+            </Viewbox>
+            <TextBlock FontWeight="Bold">Evolutionary model:</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Margin="32,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewDependenciesClicked">View dependencies...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewRatesClicked">View rates...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewPiClicked">View pis...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="False" Name="ViewCondProbsModelButton" Click="ViewCondProbsClicked">View conditioned probabilities...</Button>
+          </StackPanel>
+        </Grid>
+        <Grid Name="MLSamplingGrid" IsVisible="False">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Canvas Width="64" Height="40" ClipToBounds="True">
+              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            </Canvas>
+            <Canvas Width="393" Height="40" ZIndex="-1">
+              <Path Fill="#3f48cc" Data="M0,40 L418,40 L393,0 L-25,0 Z" Opacity="0.15"></Path>
+              <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#3f48cc">Maximum-likelihood estimation</TextBlock>
+            </Canvas>
+            <Canvas Width="30" Height="40" ClipToBounds="True">
+              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            </Canvas>
+            <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+              <local:Spinner Fill="#3f48cc" Name="MLSamplingSpinner"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <Grid Grid.Row="1" Margin="0,0,0,30">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Canvas Width="600" Height="300" HorizontalAlignment="Left">
+              <Path Stroke="Black" StrokeThickness="2" Data="M10,10 L10,290 L590,290"></Path>
+              <Path Data="M10,5 L15,20 L5,20 Z" Fill="Black"></Path>
+              <Path Data="M600,290 L585,285 L585,295 Z" Fill="Black"></Path>
+              <TextBlock Text="Step" Foreground="Black" Margin="560,260,0,0" FontWeight="Bold"></TextBlock>
+              <TextBlock Text="ML estimate" Foreground="Black" Margin="20,0,0,0" FontWeight="Bold"></TextBlock>
+              <Canvas Name="MLPlotContainer">
+
+              </Canvas>
+            </Canvas>
+            <ScrollViewer Grid.Column="1" Margin="10,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="300">
+              <StackPanel>
+                <StackPanel Name="SetNameContainer">
+
+                </StackPanel>
+                <Button HorizontalAlignment="Left" Width="160" Margin="5" IsVisible="False" Name="ViewMLRatesButton" Click="ViewMLRatesClicked" Padding="10,0,10,0">View rates...</Button>
+                <Button HorizontalAlignment="Left" Width="160" Margin="5" IsVisible="False" Name="ViewMLCondProbsButton" Click="ViewMLCondProbsClicked" Padding="10,0,10,0">View cond. probs...</Button>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+        </Grid>
+        <StackPanel Name="BayesianSamplingPanel" IsVisible="False">
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Canvas Width="64" Height="40" ClipToBounds="True">
+              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            </Canvas>
+            <Canvas Width="233" Height="40" ZIndex="-1">
+              <Path Fill="#00a2e8" Data="M0,40 L258,40 L233,0 L-25,0 Z" Opacity="0.15"></Path>
+              <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#00a2e8">Bayesian sampling</TextBlock>
+            </Canvas>
+            <Canvas Width="30" Height="40" ClipToBounds="True">
+              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            </Canvas>
+            <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+              <local:Spinner Fill="#00a2e8" Name="BayesianSamplingSpinner"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,0,0,5">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+              <local:Octagon Fill="#00a2e8"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center" FontWeight="Bold">MCMC Sampling:</TextBlock>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+            <TextBlock Margin="22,0,10,0" VerticalAlignment="Center">Set:</TextBlock>
+            <ComboBox Name="BayesianSetChoiceBox" SelectionChanged="BayesianSetChoiceChanged"></ComboBox>
+            <StackPanel Orientation="Horizontal" Name="BurnInProgressPanel" IsVisible="False">
+              <TextBlock Margin="20,0,0,0" VerticalAlignment="Center" Name="BurnInName">Burn-in and step sizes...</TextBlock>
+              <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+                <local:Spinner Fill="#00a2e8"></local:Spinner>
+              </Viewbox>
+              <ProgressBar Foreground="#00a2e8" Margin="10,0,0,0" Background="#d9f1fc" Maximum="1" Value="0.5" Name="BurnInProgressBar" VerticalAlignment="Center" Height="21"></ProgressBar>
+              <TextBlock Margin="10,0,0,0" Name="BurnInDesc" VerticalAlignment="Center">50%</TextBlock>
+            </StackPanel>
+            <Button Width="140" Margin="20,0,0,0" IsVisible="False" Name="ViewStepSizesButton" Click="ViewStepSizesClicked" VerticalAlignment="Center" Padding="10,0,10,0">View step sizes...</Button>
+            <StackPanel Orientation="Horizontal" Name="BayesianParameterChoicePanel" IsVisible="False">
+              <TextBlock Margin="20,0,10,0" VerticalAlignment="Center">Parameter:</TextBlock>
+              <ComboBox Name="BayesianParameterChoiceBox" SelectionChanged="BayesianSetChoiceChanged" Padding="10,0,10,0"></ComboBox>
+            </StackPanel>
+          </StackPanel>
+          <Grid Margin="0,0,0,10" IsVisible="False" Name="BayesianPlotGrid">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Canvas Width="600" Height="300" HorizontalAlignment="Left">
+              <Canvas Name="BayesianPlotContainer">
+
+              </Canvas>
+              <Path Stroke="Black" StrokeThickness="2" Data="M10,10 L10,290 L590,290"></Path>
+              <Path Data="M10,5 L15,20 L5,20 Z" Fill="Black"></Path>
+              <Path Data="M600,290 L585,285 L585,295 Z" Fill="Black"></Path>
+              <Grid Width="600" Height="300">
+                <TextBlock Text="Step" Foreground="Black" Margin="0,260,0,0" FontWeight="Bold" Name="BayesianXLabel" HorizontalAlignment="Right"></TextBlock>
+              </Grid>
+
+              <TextBlock Text="Value" Foreground="Black" Margin="20,0,0,0" FontWeight="Bold" Name="BayesianYLabel"></TextBlock>
+            </Canvas>
+            <ScrollViewer Grid.Column="1" Margin="10,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="300">
+              <StackPanel>
+                <StackPanel Name="BayesianStatsContainer">
+
+                </StackPanel>
+                <Button HorizontalAlignment="Left" Width="120" Margin="5,20,5,5" IsVisible="True" Name="BayesianInterruptButton" Click="BayesianInterrupt" Padding="10,0,10,0">Interrupt</Button>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+          <StackPanel IsVisible="False" Name="BayesianViewParametersPanel">
+            <StackPanel Orientation="Horizontal" Margin="10,0,0,5">
+              <Viewbox Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+                <local:Octagon Fill="#00a2e8"></local:Octagon>
+              </Viewbox>
+              <TextBlock VerticalAlignment="Center" FontWeight="Bold">Sampled parameters:</TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Button HorizontalAlignment="Left" MinWidth="120" Margin="32,5,5,30" Click="ViewBayesianRatesClicked" Padding="10,0,10,0">View rates...</Button>
+              <Button HorizontalAlignment="Left" MinWidth="120" Margin="5,5,5,30" Click="ViewBayesianPisClicked" Padding="10,0,10,0">View pis...</Button>
+              <Button HorizontalAlignment="Left" MinWidth="120" Margin="5,5,5,30" IsVisible="False" Name="ViewBayesianCondProbsButton" Click="ViewBayesianCondProbsClicked" Padding="10,0,10,0">View conditioned probabilities...</Button>
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Name="SteppingStoneSamplingPanel" IsVisible="False">
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Canvas Width="64" Height="40" ClipToBounds="True">
+              <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            </Canvas>
+            <Canvas Width="303" Height="40" ZIndex="-1">
+              <Path Fill="#22b14c" Data="M0,40 L328,40 L303,0 L-25,0 Z" Opacity="0.15"></Path>
+              <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#22b14c">Stepping-stone sampling</TextBlock>
+            </Canvas>
+            <Canvas Width="30" Height="40" ClipToBounds="True">
+              <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            </Canvas>
+            <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+              <local:Spinner Fill="#22b14c" Name="SteppingStoneSamplingSpinner"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,0,0,5">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center" FontWeight="Bold">Stepping-stone analysis:</TextBlock>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+            <TextBlock Margin="22,0,10,0" VerticalAlignment="Center">Set:</TextBlock>
+            <ComboBox Name="SteppingStoneSetChoiceBox" SelectionChanged="SteppingStoneChoiceChanged"></ComboBox>
+            <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Step:</TextBlock>
+            <ComboBox Name="SteppingStoneStepChoiceBox" SelectionChanged="SteppingStoneChoiceChanged"></ComboBox>
+            <StackPanel Orientation="Horizontal" Name="SteppingStoneStepProgressPanel" IsVisible="True">
+              <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+                <local:Spinner Fill="#22b14c"></local:Spinner>
+              </Viewbox>
+              <ProgressBar Foreground="#22b14c" Margin="10,0,0,0" Background="#def3e4" Maximum="8" Value="0" Name="SteppingStoneStepProgressBar" VerticalAlignment="Center" Height="21"></ProgressBar>
+              <TextBlock Margin="10,0,0,0" Name="SteppingStoneStepDesc" VerticalAlignment="Center">0 / 8</TextBlock>
+            </StackPanel>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,5,0,5">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center" FontWeight="Bold">MCMC Sampling:</TextBlock>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+            <StackPanel Orientation="Horizontal" Name="SteppingStoneBurnInProgressPanel" IsVisible="False">
+              <TextBlock Margin="20,0,0,0" VerticalAlignment="Center" Name="SteppingStoneBurnInName">Burn-in and step sizes...</TextBlock>
+              <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+                <local:Spinner Fill="#22b14c"></local:Spinner>
+              </Viewbox>
+              <ProgressBar Foreground="#22b14c" Margin="10,0,0,0" Background="#def3e4" Maximum="1" Value="0.5" Name="SteppingStoneBurnInProgressBar" VerticalAlignment="Center" Height="21"></ProgressBar>
+              <TextBlock Margin="10,0,0,0" Name="SteppingStoneBurnInDesc" VerticalAlignment="Center">50%</TextBlock>
+            </StackPanel>
+            <Button Width="140" Margin="20,0,0,0" IsVisible="False" Name="SteppingStoneViewStepSizesButton" Click="SteppingStoneViewStepSizesClicked" VerticalAlignment="Center" Padding="10,0,10,0">View step sizes...</Button>
+            <StackPanel Orientation="Horizontal" Name="SteppingStoneParameterChoicePanel" IsVisible="False">
+              <TextBlock Margin="20,0,10,0" VerticalAlignment="Center">Parameter:</TextBlock>
+              <ComboBox Name="SteppingStoneParameterChoiceBox" SelectionChanged="SteppingStoneChoiceChanged" Padding="10,0,10,0"></ComboBox>
+            </StackPanel>
+          </StackPanel>
+          <TextBlock Margin="32,5,0,5" Name="SteppingStoneContribution" IsVisible="False">Contribution to log marginal likelihood:</TextBlock>
+          <Grid IsVisible="False" Name="SteppingStonePlotGrid">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Canvas Width="600" Height="300" HorizontalAlignment="Left">
+              <Canvas Name="SteppingStonePlotContainer">
+
+              </Canvas>
+              <Path Stroke="Black" StrokeThickness="2" Data="M10,10 L10,290 L590,290"></Path>
+              <Path Data="M10,5 L15,20 L5,20 Z" Fill="Black"></Path>
+              <Path Data="M600,290 L585,285 L585,295 Z" Fill="Black"></Path>
+              <Grid Width="600" Height="300">
+                <TextBlock Text="Step" Foreground="Black" Margin="0,260,0,0" FontWeight="Bold" Name="SteppingStoneXLabel" HorizontalAlignment="Right"></TextBlock>
+              </Grid>
+
+              <TextBlock Text="Value" Foreground="Black" Margin="20,0,0,0" FontWeight="Bold" Name="SteppingStoneYLabel"></TextBlock>
+            </Canvas>
+            <ScrollViewer Grid.Column="1" Margin="10,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="300">
+              <StackPanel>
+                <StackPanel Name="SteppingStoneStatsContainer">
+
+                </StackPanel>
+                <Button HorizontalAlignment="Left" Width="120" Margin="5,20,5,5" IsVisible="True" Name="SteppingStoneInterruptButton" Click="BayesianInterrupt" Padding="10,0,10,0">Interrupt</Button>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+          <Grid Margin="0,5,0,10" Name="MarginalLikelihoodsContainerGrid" IsVisible="False">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Margin="10,0,0,5" Grid.ColumnSpan="2">
+              <Viewbox Width="12" Height="12" Margin="0,0,10,0" VerticalAlignment="Center">
+                <local:Octagon Fill="#22b14c"></local:Octagon>
+              </Viewbox>
+              <TextBlock VerticalAlignment="Center" FontWeight="Bold">Marginal likelihoods:</TextBlock>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+        <Grid Name="NodeStatesGrid" IsVisible="False">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Canvas Width="64" Height="40" ClipToBounds="True">
+              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            </Canvas>
+            <Canvas Width="298" Height="40" ZIndex="-1">
+              <Path Fill="#ff7f27" Data="M0,40 L323,40 L298,0 L-25,0 Z" Opacity="0.15"></Path>
+              <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state probabilities</TextBlock>
+            </Canvas>
+            <Canvas Width="30" Height="40" ClipToBounds="True">
+              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            </Canvas>
+            <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+              <local:Spinner Fill="#ff7f27" Name="NodeStatesSpinner"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,0">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0">
+              <local:Octagon Fill="#ff7f27"></local:Octagon>
+            </Viewbox>
+            <TextBlock FontWeight="Bold">Node state probabilities:</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0" Name="ComputingProbsInfo">
+            <TextBlock Margin="22,0,0,0">Computing node priors and posteriors...</TextBlock>
+            <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+              <local:Spinner Fill="#ff7f27"></local:Spinner>
+            </Viewbox>
+            <ProgressBar Foreground="#ff7f27" Margin="10,0,0,0" Background="#ffecde" Maximum="1" Value="0.5" Name="ComputingProbsProgressBar"></ProgressBar>
+            <TextBlock Margin="10,0,0,0" Name="ComputingProbsDesc">50%</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="3" Orientation="Horizontal" Name="ViewNodeProbsButtons" IsVisible="False" Margin="0,0,0,30">
+            <Button Margin="32,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewPriorsClicked">View priors...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewLikelihoodsClicked">View likelihoods...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewPosteriorsClicked">View posteriors...</Button>
+          </StackPanel>
+        </Grid>
+        <Grid Name="SimulationsGrid" IsVisible="False">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Canvas Width="64" Height="40" ClipToBounds="True">
+              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            </Canvas>
+            <Canvas Width="148" Height="40" ZIndex="-1">
+              <Path Fill="#ed1c24" Data="M0,40 L173,40 L148,0 L-25,0 Z" Opacity="0.15"></Path>
+              <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ed1c24">Simulations</TextBlock>
+            </Canvas>
+            <Canvas Width="30" Height="40" ClipToBounds="True">
+              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            </Canvas>
+            <Viewbox Width="40" Height="40" Margin="10,0,0,0">
+              <local:Spinner Fill="#ed1c24" Name="SimulationsSpinner"></local:Spinner>
+            </Viewbox>
+          </StackPanel>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,0">
+            <Viewbox Width="12" Height="12" Margin="0,0,10,0">
+              <local:Octagon Fill="#ed1c24"></local:Octagon>
+            </Viewbox>
+            <TextBlock FontWeight="Bold">Simulations:</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0" Name="RunningSimulationsInfo">
+            <TextBlock Margin="22,0,0,0">Running simulations...</TextBlock>
+            <Viewbox Width="12" Height="12" Margin="10,0,0,0">
+              <local:Spinner Fill="#ed1c24"></local:Spinner>
+            </Viewbox>
+            <ProgressBar Foreground="#ed1c24" Margin="10,0,0,0" Background="#fdddde" Maximum="1" Value="0.5" Name="SimulationsProgressBar"></ProgressBar>
+            <TextBlock Margin="10,0,0,0" Name="SimulationsDesc">50%</TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Row="4" Orientation="Horizontal" Name="SimulationsButtons" IsVisible="False">
+            <Button Margin="32,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewSMapClicked">View stochastic map...</Button>
+            <Button Margin="5,5,5,0" Padding="10,0,10,0" HorizontalAlignment="Left" IsVisible="True" Click="ViewSampleSizesClicked">View sample sizes...</Button>
+          </StackPanel>
+        </Grid>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>

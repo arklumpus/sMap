@@ -1,0 +1,20 @@
+#NEXUS
+
+Begin Pi;
+
+    Character: 0;
+
+    Default: Dirichlet(1);
+
+End;
+
+Begin Rates;
+
+    Character: 0;
+
+    Rates:
+        A > P: LogNormal(-0.718590611566901, 1)
+        P > A: Equal(A > P)
+        ;
+
+End;

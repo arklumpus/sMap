@@ -1,0 +1,589 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="sMap_GUI.MainWindow"
+        Title="sMap-GUI" Padding="10" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" Opened="WindowLoaded">
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"></RowDefinition>
+      <RowDefinition Height="Auto"></RowDefinition>
+      <RowDefinition Height="1*"></RowDefinition>
+      <RowDefinition Height="Auto"></RowDefinition>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Width="360" Margin="200,0,0,0">
+      <TextBlock FontWeight="Bold" FontSize="32" Width="160" TextAlignment="Center">sMap-GUI</TextBlock>
+      <TextBlock VerticalAlignment="Bottom" Margin="10,0,0,0" FontSize="20" Name="VersionNumber"></TextBlock>
+    </StackPanel>
+    <Panel Grid.Row="1" Height="1" Background="Black" Margin="0,5,0,0"></Panel>
+    <ScrollViewer Grid.Row="2" Padding="0,0,10,0" Margin="0,5,0,5" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="0,0,10,0">
+        <TextBlock FontWeight="Bold" Margin="0,0,0,10" FontSize="17">Required parameters:</TextBlock>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid Margin="0,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Data file:</TextBlock>
+            <TextBox Grid.Column="1" Name="DataFileBox"></TextBox>
+            <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseDataFileClicked">Browse...</Button>
+          </Grid>
+          <Grid Grid.Column="1" Margin="5,0,0,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Tree file:</TextBlock>
+            <TextBox Grid.Column="1" Name="TreeFileBox"></TextBox>
+            <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseTreeFileClicked">Browse...</Button>
+          </Grid>
+        </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid Margin="0,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Number of simulations:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="1000" Increment="1" Minimum="1" Name="NumSimBox"></NumericUpDown>
+          </Grid>
+          <Grid Grid.Column="1" Margin="5,0,0,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Mean tree file:</TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="MeanTreeFileBox"></TextBox>
+            <Button Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Center" Click="BrowseMeanTreeFileClicked">Browse...</Button>
+          </Grid>
+        </Grid>
+        <Grid Margin="0,0,0,10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Output prefix:</TextBlock>
+          <TextBox Grid.Column="1" Name="OutputPrefixBox"></TextBox>
+          <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseOutputPrefixClicked">Browse...</Button>
+        </Grid>
+        <TextBlock FontWeight="Bold" Margin="0,10,0,10" FontSize="17">Optional parameters:</TextBlock>
+        <HeaderedContentControl Header="Model definition:" Background="Black">
+          <HeaderedContentControl.Styles>
+            <Style Selector="HeaderedContentControl">
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate>
+                    <Border>
+                      <Grid>
+                        <Border
+                            BorderBrush="{TemplateBinding Background}"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="10,15,10,0"
+                            Margin="0,12,0,10">
+                          <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                        <ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" VerticalAlignment="Top" Background="White" HorizontalAlignment="Left" Margin="5,0,0,0" Padding="5,0,5,0"/>
+                      </Grid>
+                    </Border>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </HeaderedContentControl.Styles>
+          <StackPanel>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+              </Grid.ColumnDefinitions>
+              <Grid Margin="0,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Dependency file:</TextBlock>
+                <TextBox Grid.Column="1" Name="DependencyFileBox"></TextBox>
+                <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseDependencyFileClicked">Browse...</Button>
+              </Grid>
+              <Grid Grid.Column="1" Margin="5,0,0,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Rate file:</TextBlock>
+                <TextBox Grid.Column="1" Name="RateFileBox"></TextBox>
+                <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseRateFileClicked">Browse...</Button>
+              </Grid>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+              </Grid.ColumnDefinitions>
+              <Grid Margin="0,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Pi file:</TextBlock>
+                <TextBox Grid.Column="1" Name="PiFileBox"></TextBox>
+                <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowsePiFileClicked">Browse...</Button>
+              </Grid>
+              <Grid Grid.Column="1" Margin="5,0,0,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Model file:</TextBlock>
+                <TextBox Grid.Column="1" Name="ModelFileBox"></TextBox>
+                <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseModelFileClicked">Browse...</Button>
+              </Grid>
+            </Grid>
+          </StackPanel>
+        </HeaderedContentControl>
+
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid Margin="0,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Seed:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="0" Increment="1" Minimum="0" Name="SeedBox"></NumericUpDown>
+          </Grid>
+          <Grid Grid.Column="1" Margin="5,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="NormBox">Normalise trees:</CheckBox>
+            <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="NormValueBox"></NumericUpDown>
+          </Grid>
+          <Grid Grid.Column="2" Margin="5,0,0,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Number of threads:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="1" Increment="1" Minimum="1" Name="ThreadsBox"></NumericUpDown>
+          </Grid>
+        </Grid>
+        <Grid Margin="0,0,0,10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum-likelihood strategy:</TextBlock>
+          <TextBox Grid.Column="1" Name="MLStrategy"></TextBox>
+          <Button Margin="10,0,0,0" Grid.Column="2" Click="EditMLClicked">Edit...</Button>
+        </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+          </Grid.ColumnDefinitions>
+          <Grid Margin="5,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="CoerceBox">Coerce branch lengths:</CheckBox>
+            <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="CoerceValueBox"></NumericUpDown>
+          </Grid>
+          <CheckBox Grid.Column="1" Margin="5,0,0,10" Name="PollBox" HorizontalAlignment="Center">Poll for interrupts</CheckBox>
+        </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1.75*" />
+          </Grid.ColumnDefinitions>
+          <Grid Margin="10,0,5,10" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="DTestBox">Perform D-test:</CheckBox>
+            <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="DTestMultiplicityBox"></NumericUpDown>
+          </Grid>
+          <Grid Margin="10,0,5,10" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="PPBox">Sample posterior-predictive distribution:</CheckBox>
+            <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="PPMultiplicityBox"></NumericUpDown>
+          </Grid>
+        </Grid>
+
+        <HeaderedContentControl Header="MCMC options:" Background="Black">
+          <HeaderedContentControl.Styles>
+            <Style Selector="HeaderedContentControl">
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate>
+                    <Border>
+                      <Grid>
+                        <Border
+                            BorderBrush="{TemplateBinding Background}"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="10,15,10,0"
+                            Margin="0,12,0,10">
+                          <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                        <ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" VerticalAlignment="Top" Background="White" HorizontalAlignment="Left" Margin="5,0,0,0" Padding="5,0,5,0"/>
+                      </Grid>
+                    </Border>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </HeaderedContentControl.Styles>
+          <StackPanel>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+              </Grid.ColumnDefinitions>
+              <Grid Margin="0,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Number of runs:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="2" Increment="1" Minimum="1" Name="NumRunsBox"></NumericUpDown>
+              </Grid>
+              <Grid Grid.Column="1" Margin="5,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Number of chains:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="4" Increment="1" Minimum="1" Name="NumChainsBox"></NumericUpDown>
+              </Grid>
+              <Grid Grid.Column="2" Margin="5,0,0,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Temperature coefficient:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="0.5" Minimum="0.0001" Name="TempBox"></NumericUpDown>
+              </Grid>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+              </Grid.ColumnDefinitions>
+              <Grid Margin="0,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Sampling frequency:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="10" Increment="1" Minimum="1" Name="sfBox"></NumericUpDown>
+              </Grid>
+              <Grid Grid.Column="1" Margin="5,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Swap frequency:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="10" Increment="1" Minimum="1" Name="wfBox"></NumericUpDown>
+              </Grid>
+              <Grid Grid.Column="2" Margin="5,0,0,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Diagnostic frequency:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="1000" Increment="1" Minimum="1" Name="dfBox"></NumericUpDown>
+              </Grid>
+            </Grid>
+            <HeaderedContentControl Header="Convergence criteria:" Background="Black">
+              <HeaderedContentControl.Styles>
+                <Style Selector="HeaderedContentControl">
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate>
+                        <Border>
+                          <Grid>
+                            <Border
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="10,15,10,0"
+                                Margin="0,12,0,10">
+                              <ContentPresenter Content="{TemplateBinding Content}" />
+                            </Border>
+                            <ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" VerticalAlignment="Top" Background="White" HorizontalAlignment="Left" Margin="5,0,0,0" Padding="5,0,5,0"/>
+                          </Grid>
+                        </Border>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </HeaderedContentControl.Styles>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Margin="0,0,5,10">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Minimum samples:</TextBlock>
+                  <NumericUpDown Grid.Column="1" Value="2000" Increment="1" Minimum="1" Name="MinSamplesBox"></NumericUpDown>
+                </Grid>
+                <Grid Grid.Column="1" Margin="5,0,5,10">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum CoV:</TextBlock>
+                  <NumericUpDown Grid.Column="1" Value="0.05" Minimum="0" Name="MaxCoVBox"></NumericUpDown>
+                </Grid>
+                <Grid Grid.Column="2" Margin="5,0,0,10">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Minimum ESS:</TextBlock>
+                  <NumericUpDown Grid.Column="1" Value="200" Minimum="1" Name="MinESSBox"></NumericUpDown>
+                </Grid>
+              </Grid>
+            </HeaderedContentControl>
+            <HeaderedContentControl Background="Black">
+              <HeaderedContentControl.Styles>
+                <Style Selector="HeaderedContentControl">
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate>
+                        <Border>
+                          <Grid>
+                            <Border
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="10,15,10,0"
+                                Margin="0,12,0,10">
+                              <ContentPresenter Content="{TemplateBinding Content}" />
+                            </Border>
+                            <ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" VerticalAlignment="Top" Background="White" HorizontalAlignment="Left" Margin="5,0,0,0" Padding="5,0,5,0"/>
+                          </Grid>
+                        </Border>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </HeaderedContentControl.Styles>
+              <HeaderedContentControl.Header>
+                <CheckBox IsChecked="true" Name="EstimateStepsBox">Estimate step sizes</CheckBox>
+              </HeaderedContentControl.Header>
+              <StackPanel>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <Grid Margin="0,0,5,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Tuning attempts:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="10" Increment="1" Minimum="1" Name="TuningAttemptsBox"></NumericUpDown>
+                  </Grid>
+                  <Grid Grid.Column="1" Margin="5,0,5,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Tuning steps:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="100" Minimum="1" Increment="1" Name="TuningStepsBox"></NumericUpDown>
+                  </Grid>
+                  <Grid Grid.Column="2" Margin="5,0,0,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Target acceptance:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="0.37" Minimum="0" Name="AcceptanceRateBox"></NumericUpDown>
+                  </Grid>
+                </Grid>
+                <Grid Margin="0,0,0,10">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Step size multipliers:</TextBlock>
+                  <TextBox Grid.Column="1" Name="StepSizeMultipliersBox">1</TextBox>
+                </Grid>
+              </StackPanel>
+            </HeaderedContentControl>
+            <CheckBox Margin="0,0,0,10" Name="PriorBox">Sample parameters under prior</CheckBox>
+            <HeaderedContentControl Background="Black">
+              <HeaderedContentControl.Styles>
+                <Style Selector="HeaderedContentControl">
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate>
+                        <Border>
+                          <Grid>
+                            <Border
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="10,15,10,0"
+                                Margin="0,12,0,10">
+                              <ContentPresenter Content="{TemplateBinding Content}" />
+                            </Border>
+                            <ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" VerticalAlignment="Top" Background="White" HorizontalAlignment="Left" Margin="5,0,0,0" Padding="5,0,5,0"/>
+                          </Grid>
+                        </Border>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </HeaderedContentControl.Styles>
+              <HeaderedContentControl.Header>
+                <CheckBox Name="SSBox">Stepping-stone analysis</CheckBox>
+              </HeaderedContentControl.Header>
+              <StackPanel>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <Grid Margin="0,0,5,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Stepping-stone steps:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="8" Increment="1" Minimum="1" Name="SSStepsBox"></NumericUpDown>
+                  </Grid>
+                  <Grid Grid.Column="1" Margin="5,0,5,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Shape parameter:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="0.3" Minimum="0" Name="SSShapeBox"></NumericUpDown>
+                  </Grid>
+                </Grid>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <Grid Margin="0,0,5,10">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Samples per step:</TextBlock>
+                    <NumericUpDown Grid.Column="1" Value="1000" Increment="1" Minimum="1" Name="SSSamplesBox"></NumericUpDown>
+                  </Grid>
+                  <CheckBox Grid.Column="1" Margin="5,0,5,10" Name="SSEstimateStepsBox">Estimate step sizes for each step</CheckBox>
+                </Grid>
+              </StackPanel>
+            </HeaderedContentControl>
+          </StackPanel>
+        </HeaderedContentControl>
+        <Grid Margin="0,0,0,10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Pre-sampled parameters:</TextBlock>
+          <TextBox Grid.Column="1" Name="ParameterFileBox"></TextBox>
+          <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseParameterFileClicked">Browse...</Button>
+        </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid Margin="0,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Plot width:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="500" Minimum="1" Name="PlotWidthBox"></NumericUpDown>
+          </Grid>
+          <Grid Grid.Column="1" Margin="5,0,0,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Plot height:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="PlotHeightBox"></NumericUpDown>
+          </Grid>
+        </Grid>
+        <Grid Margin="0,0,0,10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Histogram bin rule:</TextBlock>
+          <ComboBox Grid.Column="1" SelectedIndex="5" Name="BinRuleBox">
+            <ComboBox.Items>
+              <ComboBoxItem>Square root</ComboBoxItem>
+              <ComboBoxItem>Sturges</ComboBoxItem>
+              <ComboBoxItem>Rice</ComboBoxItem>
+              <ComboBoxItem>Doane</ComboBoxItem>
+              <ComboBoxItem>Scott</ComboBoxItem>
+              <ComboBoxItem>Freedman – Diaconis</ComboBoxItem>
+            </ComboBox.Items>
+          </ComboBox>
+        </Grid>
+      </StackPanel>
+    </ScrollViewer>
+    <Grid Grid.Row="3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="1" Padding="10,5,10,5" Click="StartAnalysisClicked">Start analysis...</Button>
+      <Button Grid.Column="3" Padding="10,5,10,5" Click="SaveScriptClicked">Save command line script...</Button>
+    </Grid>
+  </Grid>
+</Window>

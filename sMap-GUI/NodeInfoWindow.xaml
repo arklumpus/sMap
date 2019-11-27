@@ -1,0 +1,220 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="sMap_GUI.NodeInfoWindow"
+        Title="Node info"
+        xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15"
+        PropertyChanged="PropertyChangedEvent">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="2*" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Width="123" Height="40" ZIndex="-1">
+        <Path Fill="#3f48cc" Data="M0,40 L148,40 L123,0 L-25,0 Z" Opacity="0.15" Name="BGPath"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#3f48cc" Name="Label">Node info</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
+      </Canvas>
+    </StackPanel>
+    <StackPanel Grid.Row="1" Name="LegendPanel">
+      <TextBlock Margin="10,0,0,5" FontWeight="Bold" FontSize="20">Legend:</TextBlock>
+      <StackPanel Orientation="Horizontal" Name="LegendContainer" HorizontalAlignment="Center"></StackPanel>
+    </StackPanel>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <paz:ZoomBorder Stretch="None" ZoomSpeed="1.2" ClipToBounds="True" Focusable="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="TreeContainer"></paz:ZoomBorder>
+      <StackPanel Grid.Column="1" Margin="0,0,10,0">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+          <Canvas Width="15" Height="25" Margin="10,0,0,0">
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L15,11 M7.5,0 L7.5,11" ></Path>
+            <Path Stroke="#ff9900" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+          </Canvas>
+          <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Zoom</TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Canvas Width="15" Height="25" Margin="10,0,0,0">
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
+            <Path Fill="#ff9900" Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L7.5,11 L7.5,0 A7.5,7.5,90,0,0,0,7.5 Z" ></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M7.5,11 L15,11 M7.5,0 L7.5,11" ></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+          </Canvas>
+          <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Pan</TextBlock>
+        </StackPanel>
+        <Button Padding="10,0,10,0" Margin="0,10,0,10" Click="FitButtonClicked">Fit</Button>
+        <Button Padding="10,2,10,2" Margin="0,10,0,10" Name="Warning1" Click="Warning1Clicked" IsVisible="False">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="20" Height="20">
+              <Canvas Width="25" Height="25" >
+                <Path Data="M0,25 L25,25 L12.5,0 Z" StrokeJoin="Round" Fill="#ffe260"></Path>
+                <Path Data="M12.5,10 L12.5,15.5 M12.5,20 L12.5,20" StrokeJoin="Round" Stroke="#c1731b" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+              </Canvas>
+            </Viewbox>
+            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Warning</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button Padding="10,2,10,2" Margin="0,10,0,10" Name="Warning2" Click="Warning2Clicked" IsVisible="False">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="20" Height="20">
+              <Canvas Width="25" Height="25">
+                <Path Data="M0,25 L25,25 L12.5,0 Z" StrokeJoin="Round" Fill="#ffe260"></Path>
+                <Path Data="M12.5,10 L12.5,15.5 M12.5,20 L12.5,20" StrokeJoin="Round" Stroke="#c1731b" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+              </Canvas>
+            </Viewbox>
+            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Warning</TextBlock>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="3" Margin="10" MaxHeight="160">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="160" />
+        <ColumnDefinition Width="0.5*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <StackPanel Orientation="Horizontal" Margin="0,0,50,5" Grid.Column="1">
+        <TextBlock FontWeight="Bold">Node id:</TextBlock>
+        <TextBlock Margin="10,0,0,0" Name="NodeId">2</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,0,0,5">
+        <TextBlock FontStyle="Italic" Name="BranchLengthLabel">Branch length:</TextBlock>
+        <TextBlock Margin="10,0,0,0" Name="BranchLength">2</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,50,5" Grid.Column="1">
+        <TextBlock FontStyle="Italic" Name="InternalNodesLabel">Internal nodes:</TextBlock>
+        <TextBlock Margin="10,0,0,0" Name="InternalNodes">2</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Name="TipChildrenContainer" Margin="0,0,0,5">
+        <TextBlock FontStyle="Italic">Tip children:</TextBlock>
+        <TextBlock Margin="10,0,0,0" Name="TipChildren">2</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,5" Grid.ColumnSpan="2" Grid.Column="1">
+        <TextBlock FontStyle="Italic" Name="DefiningChildrenLabel" VerticalAlignment="Top">Defining children:</TextBlock>
+        <StackPanel Name="DefiningChildren" Margin="10,0,0,0">
+
+        </StackPanel>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,5" Name="PositionContainer"  Grid.ColumnSpan="2" Grid.Column="1">
+        <TextBlock FontStyle="Italic">Position along the branch:</TextBlock>
+        <TextBlock Margin="10,0,0,0" Name="Position">2</TextBlock>
+      </StackPanel>
+      <Grid Grid.Row="4" Margin="0,0,0,5" Grid.ColumnSpan="2" Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal">
+          <ComboBox SelectedIndex="0" VerticalAlignment="Center" Name="ProbTypeBox" SelectionChanged="ProbTypeSelectionChanged">
+            <ComboBox.Items>
+              <ComboBoxItem>Mean conditioned posteriors</ComboBoxItem>
+              <ComboBoxItem>Mean priors</ComboBoxItem>
+              <ComboBoxItem>Mean posteriors</ComboBoxItem>
+              <ComboBoxItem>Mean marginal conditioned posteriors</ComboBoxItem>
+              <ComboBoxItem>Mean marginal priors</ComboBoxItem>
+              <ComboBoxItem>Mean marginal posteriors</ComboBoxItem>
+            </ComboBox.Items>
+          </ComboBox>
+          <TextBlock VerticalAlignment="Center" Margin="2,0,2,0">:</TextBlock>
+        </StackPanel>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Padding="0,5,0,5">
+          <StackPanel Orientation="Horizontal" Name="ProbabilitiesContainer">
+
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+      <Viewbox Grid.Column="3" Grid.RowSpan="5" Margin="30,0,10,0" HorizontalAlignment="Left">
+        <Canvas Width="100" Height="100" Margin="2" Name="ProbPieContainer">
+
+        </Canvas>
+      </Viewbox>
+    </Grid>
+    <Grid Grid.Row="4" Name="BranchContainer" Margin="10,0,10,5">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Canvas Background="White" PointerPressed="LeftEndPressed" Cursor="Hand"></Canvas>
+        <Canvas Background="White" Grid.Column="1" PointerPressed="RightEndPressed" Cursor="Hand"></Canvas>
+      </Grid>
+      <Viewbox Grid.Row="1" Grid.ColumnSpan="3" Stretch="Fill" Margin="5,0,5,0">
+        <Canvas Width="100" Height="100" Name="BranchPlotContainer" Cursor="Hand" PointerPressed="BranchPlotClicked" PointerMoved="BranchPlotMouseMove" PointerEnter="BranchPlotMouseEnter" PointerLeave="BranchPlotMouseLeave"></Canvas>
+      </Viewbox>
+      <Grid Grid.Row="1" Grid.ColumnSpan="3" Name="PosSliderContainer" Margin="5,0,5,0" IsHitTestVisible="False">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="0" />
+          <ColumnDefinition Width="0*" />
+        </Grid.ColumnDefinitions>
+        <Canvas Width="2" Background="Black" Grid.Column="1"></Canvas>
+      </Grid>
+      <Grid Grid.Row="1" Grid.ColumnSpan="3" Name="PosMovingSliderContainer" Margin="5,0,5,0" IsHitTestVisible="False">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="0" />
+          <ColumnDefinition Width="0*" />
+        </Grid.ColumnDefinitions>
+        <Canvas Width="2" Background="#A0A0A0" Grid.Column="1"></Canvas>
+      </Grid>
+      <Grid>
+        <Path Data="M10,0 L0,4 L10,8 Z" Fill="Black" VerticalAlignment="Center" Margin="5,0,0,0"></Path>
+        <Path Data="M5,0 L30,0" Stroke="Black" StrokeThickness="2" VerticalAlignment="Center" Margin="5,0,0,0"/>
+        <Button Margin="40,0,0,5" Padding="5,0,5,0" Click="LeftEndPressed">Root-end</Button>
+      </Grid>
+      <Grid Grid.Column="2">
+        <Path Data="M0,0 L10,4 L0,8 Z" Fill="Black" VerticalAlignment="Center" Margin="0,0,5,0" HorizontalAlignment="Right"></Path>
+        <Path Data="M30,0 L5,0" Stroke="Black" StrokeThickness="2" VerticalAlignment="Center" Margin="0,0,10,0" HorizontalAlignment="Right"/>
+        <Button Margin="0,0,40,5" Padding="5,0,5,0" Click="RightEndPressed">Leaf-end</Button>
+      </Grid>
+      <Grid Grid.Row="2" Grid.ColumnSpan="3" Name="PosLabelContainer">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="0*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Right" Margin="0,0,2,0" Name="LeftPosLabel">0</TextBlock>
+        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Margin="2,0,0,0" Name="RightPosLabel"></TextBlock>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

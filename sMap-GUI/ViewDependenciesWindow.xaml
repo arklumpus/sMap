@@ -1,0 +1,73 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="450"
+        x:Class="sMap_GUI.ViewDependenciesWindow"
+        Title="View dependencies"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15" PointerReleased="MouseUp" PointerMoved="MouseMove">
+  <Window.Styles>
+    
+    <Style Selector="ContextMenu">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <ScrollViewer>
+              <Panel>
+                <ItemsPresenter Name="PART_ItemsPresenter"
+                                Items="{TemplateBinding Items}"
+                                ItemsPanel="{TemplateBinding ItemsPanel}"
+                                ItemTemplate="{TemplateBinding ItemTemplate}"
+                                KeyboardNavigation.TabNavigation="Continue"/>
+              </Panel>
+            </ScrollViewer>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+  </Window.Styles>
+  <Grid Name="MainGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" />
+      <ColumnDefinition Width="0" />
+    </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Width="298" Height="40" ZIndex="-1">
+        <Path Fill="#a349a4" Data="M0,40 L323,40 L298,0 L-25,0 Z" Opacity="0.15" Name="BgPath"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#a349a4" Name="HeaderBlock">Character dependencies</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40" Name="PostPath"></Path>
+      </Canvas>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+      <StackPanel Name="DependenciesContainer" Margin="10">
+
+      </StackPanel>
+    </ScrollViewer>
+    <Canvas Grid.Row="1" IsHitTestVisible="False" Name="OverlayCanvas">
+      
+    </Canvas>
+
+    <Grid Grid.Row="1" Grid.Column="1" Margin="10" Name="SourceGrid" IsVisible="False">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <TextBlock FontWeight="Bold" FontSize="20">Source:</TextBlock>
+      <TextBox Grid.Row="1" AcceptsReturn="True" AcceptsTab="True" Name="SourceBox" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Roboto Mono" FontSize="12"></TextBox>
+      <Button Grid.Row="2" Margin="0,10,0,0" Padding="10,0,10,0" Click="ParseButtonClicked">Parse</Button>
+    </Grid>
+  </Grid>
+</Window>

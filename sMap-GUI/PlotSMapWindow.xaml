@@ -1,0 +1,163 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="600" Height="650"
+        x:Class="sMap_GUI.PlotSMapWindow"
+        Title="Plot sMap" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Width="123" Height="40" ZIndex="-1">
+        <Path Fill="#22b14c" Data="M0,40 L148,40 L123,0 L-25,0 Z" Opacity="0.15" Name="BGPath"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#22b14c" Name="Label">Plot sMap</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
+      </Canvas>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Margin="0,0,10,0">
+      <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="10" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Plot target:</TextBlock>
+        <ComboBox Grid.Column="1" Margin="5" SelectedIndex="4" Name="PlotTargetBox">
+          <ComboBox.Items>
+            <ComboBoxItem>Tree</ComboBoxItem>
+            <ComboBoxItem>Mean posteriors</ComboBoxItem>
+            <ComboBoxItem>Mean priors</ComboBoxItem>
+            <ComboBoxItem>Mean conditioned posteriors</ComboBoxItem>
+            <ComboBoxItem>Stochastic Map</ComboBoxItem>
+            <ComboBoxItem>Sample sizes</ComboBoxItem>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Active characters:</TextBlock>
+        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Padding="5" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0">
+          <StackPanel Orientation="Horizontal" Name="ActiveCharactersContainer">
+
+          </StackPanel>
+        </ScrollViewer>
+        <TextBlock Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Plot width:</TextBlock>
+        <NumericUpDown Grid.Row="2" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="500" Name="PlotWidthBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Plot height:</TextBlock>
+        <NumericUpDown Grid.Row="3" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="500" Name="PlotHeightBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Margins:</TextBlock>
+        <NumericUpDown Grid.Row="4" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="10" Name="MarginsBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Font size:</TextBlock>
+        <NumericUpDown Grid.Row="5" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="12" Name="FontSizeBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Font family:</TextBlock>
+        <ComboBox Grid.Row="6" Grid.Column="1" Margin="5" SelectedIndex="12" Name="FontFamilyBox" SelectionChanged="FontFamilySelectionChanged">
+          <ComboBox.Items>
+            <ComboBoxItem>Helvetica</ComboBoxItem>
+            <ComboBoxItem>Helvetica Bold</ComboBoxItem>
+            <ComboBoxItem>Helvetica Italic</ComboBoxItem>
+            <ComboBoxItem>Helvetica Bold Italic</ComboBoxItem>
+            <ComboBoxItem>Courier</ComboBoxItem>
+            <ComboBoxItem>Courier Bold</ComboBoxItem>
+            <ComboBoxItem>Courier Italic</ComboBoxItem>
+            <ComboBoxItem>Courier Bold Italic</ComboBoxItem>
+            <ComboBoxItem>Times Roman</ComboBoxItem>
+            <ComboBoxItem>Times Bold</ComboBoxItem>
+            <ComboBoxItem>Times Italic</ComboBoxItem>
+            <ComboBoxItem>Times Bold Italic</ComboBoxItem>
+            <ComboBoxItem>Open Sans - Regular</ComboBoxItem>
+            <ComboBoxItem>Open Sans - Bold</ComboBoxItem>
+            <ComboBoxItem>Open Sans - Italic</ComboBoxItem>
+            <ComboBoxItem>Open Sans - Bold Italic</ComboBoxItem>
+            <ComboBoxItem>Custom...</ComboBoxItem>
+          </ComboBox.Items>
+        </ComboBox>
+
+        <TextBlock Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Pie size:</TextBlock>
+        <NumericUpDown Grid.Row="7" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="5" Name="PieSizeBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="8" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Branch width:</TextBlock>
+        <NumericUpDown Grid.Row="8" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="3" Name="BranchWidthBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="9" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Line width:</TextBlock>
+        <NumericUpDown Grid.Row="9" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="1" Name="LineWidthBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="10" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Time resolution:</TextBlock>
+        <NumericUpDown Grid.Row="10" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="2" Name="TimeResolutionBox" FormatString="0.###"></NumericUpDown>
+
+        <Button Grid.Column="3" Margin="10" Width="120" Click="LoadSettingsClicked" HorizontalAlignment="Center" Grid.ColumnSpan="2">Load settings...</Button>
+       
+        <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">State colours:</TextBlock>
+        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Padding="5" Grid.Row="1" Grid.Column="4" Margin="5,0,5,0">
+          <StackPanel Orientation="Horizontal" Name="StateColoursContainer">
+
+          </StackPanel>
+        </ScrollViewer>
+
+        <TextBlock Grid.Column="3" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Node ids</TextBlock>
+        <CheckBox Grid.Column="4" Grid.Row="2" Margin="5" VerticalAlignment="Center" Name="NodeIdsBox"></CheckBox>
+
+        <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Scale axis</TextBlock>
+        <CheckBox Grid.Row="3" Grid.Column="4" Margin="5" VerticalAlignment="Center" Name="ScaleAxisBox"></CheckBox>
+
+        <TextBlock Grid.Row="4" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Scale spacing:</TextBlock>
+        <NumericUpDown Grid.Row="4" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="0.2" Name="ScaleSpacingBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Scale digits:</TextBlock>
+        <NumericUpDown Grid.Row="5" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="3" Name="ScaleDigitsBox" FormatString="0"></NumericUpDown>
+
+        <TextBlock Grid.Row="6" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Scale grid</TextBlock>
+        <CheckBox Grid.Row="6" Grid.Column="4" Margin="5" VerticalAlignment="Center" Name="ScaleGridBox"></CheckBox>
+
+        <TextBlock Grid.Row="7" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Grid spacing:</TextBlock>
+        <NumericUpDown Grid.Row="7" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="0.1" Name="GridSpacingBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="8" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Grid colour:</TextBlock>
+        <Button Grid.Row="8" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Click="GridColourClicked">
+          <Border Width="20" Height="20" BorderBrush="Black" BorderThickness="1" Background="#c8c8c8" Name="GridColourContainer" />
+        </Button>
+
+        <TextBlock Grid.Row="9" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Grid width:</TextBlock>
+        <NumericUpDown Grid.Row="9" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="0.5" Name="GridWidthBox" FormatString="0.###"></NumericUpDown>
+
+        <TextBlock Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">Tree age scale:</TextBlock>
+        <NumericUpDown Grid.Row="10" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="1" Name="TreeAgeScaleBox" FormatString="0.###"></NumericUpDown>
+      </Grid>
+    </ScrollViewer>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="1" Margin="10" Width="120" Click="PlotPreviewClicked">Plot preview...</Button>
+      <Button Grid.Column="3" Margin="10" Width="120" Click="SaveSettingsClicked">Save settings...</Button>
+    </Grid>
+  </Grid>
+</Window>

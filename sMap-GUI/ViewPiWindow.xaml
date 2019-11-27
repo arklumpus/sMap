@@ -1,0 +1,56 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="450" Height="600"
+        x:Class="sMap_GUI.ViewPiWindow"
+        Title="View pis"
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid Name="MainGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" />
+      <ColumnDefinition Width="0" />
+    </Grid.ColumnDefinitions>
+    <Grid Margin="10" HorizontalAlignment="Center" Name="PiHeader" Grid.ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+      </Canvas>
+      <Canvas Grid.Column="1" Background="#a349a4" Opacity="0.15" Name="BgCanvas"/>
+      <Path Grid.Column="1" Fill="#a349a4" Data="M0,40 L-25,0 L0,0 Z" Name="BgPath1" Opacity="0.15"></Path>
+      <Path Width="0" Grid.Column="1" Fill="#a349a4" Data="M0,40 L25,40 L0,0 Z" Name="BgPath2" HorizontalAlignment="Right" Opacity="0.15"></Path>
+      <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#a349a4" Name="HeaderBlock" Grid.Column="1">Pis</TextBlock>
+      <Canvas Width="30" Height="40" ClipToBounds="True" Grid.Column="2">
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40" Name="PostPath"></Path>
+      </Canvas>
+    </Grid>
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+      <Grid Name="PisContainer" Margin="10" HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+      </Grid>
+    </ScrollViewer>
+    <Grid Grid.Row="1" Grid.Column="1" Margin="10" Name="SourceGrid" IsVisible="False">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="1*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <TextBlock FontWeight="Bold" FontSize="20">Source:</TextBlock>
+      <TextBox Grid.Row="1" AcceptsReturn="True" AcceptsTab="True" Name="SourceBox" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Roboto Mono" FontSize="12"></TextBox>
+      <Button Grid.Row="2" Margin="0,10,0,0" Padding="10,0,10,0" Click="ParseSourceClicked">Parse</Button>
+    </Grid>
+  </Grid>
+</Window>

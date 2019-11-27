@@ -1,0 +1,64 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="sMap_GUI.ViewPriorsWindow"
+        Title=""
+        FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="1*" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="PriorsTitle" IsVisible="False">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+      </Canvas>
+      <Canvas Width="218" Height="40" ZIndex="-1">
+        <Path Fill="#ff7f27" Data="M0,40 L243,40 L218,0 L-25,0 Z" Opacity="0.15"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state priors</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+      </Canvas>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="PosteriorsTitle" IsVisible="False">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+      </Canvas>
+      <Canvas Width="268" Height="40" ZIndex="-1">
+        <Path Fill="#ff7f27" Data="M0,40 L293,40 L268,0 L-25,0 Z" Opacity="0.15"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state posteriors</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+      </Canvas>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="LikelihoodsTitle" IsVisible="False">
+      <Canvas Width="64" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+      </Canvas>
+      <Canvas Width="273" Height="40" ZIndex="-1">
+        <Path Fill="#ff7f27" Data="M0,40 L298,40 L273,0 L-25,0 Z" Opacity="0.15"></Path>
+        <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state likelihoods</TextBlock>
+      </Canvas>
+      <Canvas Width="30" Height="40" ClipToBounds="True">
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+      </Canvas>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Grid.Row="1">
+      <TextBlock Margin="10" FontWeight="Bold" FontSize="20">Character set: </TextBlock>
+      <ComboBox VerticalAlignment="Center" Padding="5,2,5,2" Name="SelectedSetBox" SelectionChanged="SelectedSetChanged" MinHeight="25" MinWidth="100"></ComboBox>
+    </StackPanel>
+    <StackPanel Grid.Row="2">
+      <TextBlock Margin="10,0,0,5" FontWeight="Bold" FontSize="20">Legend:</TextBlock>
+      <StackPanel Orientation="Horizontal" Name="LegendContainer" HorizontalAlignment="Center"></StackPanel>
+    </StackPanel>
+    <Viewbox Name="TreeContainer" Grid.Row="3">
+
+    </Viewbox>
+  </Grid>
+</Window>

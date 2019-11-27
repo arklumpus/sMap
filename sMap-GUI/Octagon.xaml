@@ -1,0 +1,12 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="sMap_GUI.Octagon">
+  <Canvas Width="100" Height="100">
+    <Path Data="M28.289,0 L70.711,0 L100,29.289 L100,70.711 L70.711,100 L29.289,100 L0,70.711 L0,29.289 Z" Name="OuterPath" Opacity="0.3"></Path>
+    <Path Data="M39.645,25 L60.355,25 L75,39.645 L75,60.355 L60.355,75 L39.645,75 L25,60.355 L25,39.645 Z" Name="InnerPath"></Path>
+    <Path Data="M10,50 L45,78 L87.5,8.5" StrokeThickness="25" Name="TickPath" IsVisible="False"></Path>
+  </Canvas>
+</UserControl>
