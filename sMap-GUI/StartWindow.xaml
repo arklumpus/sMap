@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Width="800" Height="500"
         x:Class="sMap_GUI.StartWindow"
-        Title="StartWindow" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
+        Title="sMap-GUI" FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
   <!---->
   <Window.Styles>
     <Style Selector="Button.Rainbow">

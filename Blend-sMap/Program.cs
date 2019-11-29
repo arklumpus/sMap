@@ -10,7 +10,7 @@ namespace Blend_sMap
 {
     class Program
     {
-        const string version = "1.0.0";
+        const string version = "1.0.1";
         static int Main(string[] args)
         {
             List<(double, string)> filesToBlend = new List<(double, string)>();
@@ -186,8 +186,8 @@ namespace Blend_sMap
                 }
             }
 
-            bool includeDStats = !(from el in runs select el.revision == 2).Contains(false);
-            bool includePriorHistories = !(from el in runs select el.revision == 3).Contains(false);
+            bool includeDStats = !(from el in runs select el.revision == 2 && el.AllDStats != null).Contains(false);
+            bool includePriorHistories = !(from el in runs select el.revision == 3 && el.HasPriorHistories).Contains(false);
 
             List<TaggedHistory> blendedHistories = new List<TaggedHistory>(finalCount);
             List<DStats[][][]> allDStats = new List<DStats[][][]>(finalCount);

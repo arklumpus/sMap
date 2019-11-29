@@ -1467,9 +1467,9 @@ namespace sMap_GUI
                 List<ComboBoxItem> items = new List<ComboBoxItem>() { new ComboBoxItem() { Content = "Convergence stats" }, new ComboBoxItem() { Content = "Log-Likelihood" } };
                 items.AddRange(from el in paramNames[index] select new ComboBoxItem() { Content = el });
                 box.Items = items;
-                box.SelectedIndex = Math.Max(0, Math.Min(selIndex, paramNames[index].Count));
+                box.SelectedIndex = Math.Max(0, Math.Min(selIndex, paramNames[index].Count + 1));
 
-                selIndex = Math.Max(0, Math.Min(selIndex, paramNames[index].Count));
+                selIndex = Math.Max(0, Math.Min(selIndex, paramNames[index].Count + 1));
 
                 lock (plotObject)
                 {

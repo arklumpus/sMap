@@ -132,6 +132,15 @@ namespace Utils
         [JsonIgnore]
         public TreeNode SummaryTree { get; private set; }
 
+        [JsonIgnore]
+        public bool HasPriorHistories
+        {
+            get
+            {
+                return this.priorHistoriesStream != null;
+            }
+        }
+
         public string SummaryTreeString { get; set; }
 
         public string[] States { get; set; }
@@ -202,7 +211,7 @@ namespace Utils
 
         public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, Stream priorHistories, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, double[][][] parameters, string[][] parameterNames)
         {
-            revision = 3;
+            revision = 0;
             SummaryTree = summaryTree;
             SummaryTreeString = summaryTree.ToString();
             Histories = histories;
@@ -219,6 +228,7 @@ namespace Utils
 
             if (priorHistories != null)
             {
+                revision = 3;
                 priorHistoriesStream = priorHistories;
                 this.priorStartOffset = 0;
                 priorHistoriesStream.Seek(-4, SeekOrigin.End);
@@ -431,7 +441,7 @@ namespace Utils
                         progressAction?.Invoke(progress);
                     }
 
-                    
+
                 }
 
                 double P = (double)greaterThan / this.AllDStats.Length;

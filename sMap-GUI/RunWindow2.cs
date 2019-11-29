@@ -496,73 +496,84 @@ namespace sMap_GUI
                     stdDevs = (double[])steppingStoneStdDevss[index][stepIndex][selIndex - 1].Clone();
 
                     binCounts = (int[])steppingStoneBinCountss[index][stepIndex][selIndex - 1].Clone();
-                    binSamples = (from el in steppingStoneBinSampless[index][stepIndex][selIndex - 1] select (int[])el.Clone()).ToArray();
+                    binSamples = (from el in steppingStoneBinSampless[index][stepIndex][selIndex - 1] where el != null select (int[])el.Clone()).ToArray();
                     realBinWidths = (double[])steppingStoneRealBinWidthss[index][stepIndex][selIndex - 1].Clone();
                     maxBins = (double[])steppingStoneMaxBinss[index][stepIndex][selIndex - 1].Clone();
 
                     sampleCounts = (int[])steppingStoneSampleCounts[index][stepIndex].Clone();
                 }
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = meanCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                meanPanel.Children.Add(new TextBlock() { Text = "Mean CoV: " + meanCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
-                statsContainer.Children.Add(meanPanel);
-
-                StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
-                statsContainer.Children.Add(sdPanel);
-
-
-                for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
+                if (binSamples.Length > 0)
                 {
-                    StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
-                    sp.Children.Add(new Viewbox() { Child = new Octagon() { Fill = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)) }, Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
-                    sp.Children.Add(new TextBlock() { Text = "Run " + (runInd + 1).ToString(), FontWeight = FontWeight.Bold, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Foreground = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)), Margin = new Thickness(5, 0, 0, 0) });
-                    statsContainer.Children.Add(sp);
 
-                    statsContainer.Children.Add(new TextBlock() { Text = "Samples: " + sampleCounts[runInd].ToString(), Margin = new Thickness(17, 5, 0, 0) });
+                    StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = meanCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    meanPanel.Children.Add(new TextBlock() { Text = "Mean CoV: " + meanCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
+                    statsContainer.Children.Add(meanPanel);
 
-                    StackPanel essPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                    essPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = esss[runInd] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                    essPanel.Children.Add(new TextBlock() { Text = "ESS: " + esss[runInd].ToString(2), Margin = new Thickness(5, 0, 0, 0) });
-                    statsContainer.Children.Add(essPanel);
+                    StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
+                    statsContainer.Children.Add(sdPanel);
 
-                    statsContainer.Children.Add(new TextBlock() { Text = "Mean: " + means[runInd].ToString(3, false), Margin = new Thickness(17, 5, 0, 0) });
-                    statsContainer.Children.Add(new TextBlock() { Text = "SD: " + stdDevs[runInd].ToString(3, false), Margin = new Thickness(17, 5, 0, 0) });
-                }
 
-                for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
-                {
-                    if (binCounts[runInd] > 1)
+                    for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
                     {
-                        SolidColorBrush fillBrush = Program.GetTransparentBrush(Plotting.GetColor(runInd, 0.5, steppingStoneSamples[index][stepIndex].Length));
-                        SolidColorBrush strokeBrush = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length));
+                        StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
+                        sp.Children.Add(new Viewbox() { Child = new Octagon() { Fill = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)) }, Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+                        sp.Children.Add(new TextBlock() { Text = "Run " + (runInd + 1).ToString(), FontWeight = FontWeight.Bold, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Foreground = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)), Margin = new Thickness(5, 0, 0, 0) });
+                        statsContainer.Children.Add(sp);
 
-                        PathFigure fig = new PathFigure() { StartPoint = new Point(10 + 0.5 * realBinWidths[runInd], 290 - 270 * binSamples[runInd][0] / maxBins[runInd]) };
-                        PathFigure fig2 = new PathFigure() { StartPoint = new Point(10 + 0.5 * realBinWidths[runInd], 290) };
-                        fig2.Segments.Add(new LineSegment() { Point = new Point(10 + 0.5 * realBinWidths[runInd], 290 - 270 * binSamples[runInd][0] / maxBins[runInd]) });
+                        statsContainer.Children.Add(new TextBlock() { Text = "Samples: " + sampleCounts[runInd].ToString(), Margin = new Thickness(17, 5, 0, 0) });
 
-                        for (int i = 1; i < binCounts[runInd]; i++)
-                        {
-                            fig.Segments.Add(new LineSegment() { Point = new Point(10 + (i + 0.5) * realBinWidths[runInd], 290 - 270 * binSamples[runInd][i] / maxBins[runInd]) });
-                            fig2.Segments.Add(new LineSegment() { Point = new Point(10 + (i + 0.5) * realBinWidths[runInd], 290 - 270 * binSamples[runInd][i] / maxBins[runInd]) });
-                        }
+                        StackPanel essPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        essPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = esss[runInd] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        essPanel.Children.Add(new TextBlock() { Text = "ESS: " + esss[runInd].ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                        statsContainer.Children.Add(essPanel);
 
-                        fig2.Segments.Add(new LineSegment() { Point = new Point(10 + (binCounts[runInd] - 0.5) * realBinWidths[runInd], 290) });
-
-                        fig2.IsClosed = true;
-                        fig.IsClosed = false;
-
-                        PathGeometry geo2 = new PathGeometry();
-                        geo2.Figures.Add(fig2);
-                        plotCan.Children.Add(new Path() { Fill = fillBrush, Data = geo2 });
-
-                        PathGeometry geo = new PathGeometry();
-                        geo.Figures.Add(fig);
-
-                        plotCan.Children.Add(new Path() { Stroke = strokeBrush, StrokeThickness = 2, Data = geo });
+                        statsContainer.Children.Add(new TextBlock() { Text = "Mean: " + means[runInd].ToString(3, false), Margin = new Thickness(17, 5, 0, 0) });
+                        statsContainer.Children.Add(new TextBlock() { Text = "SD: " + stdDevs[runInd].ToString(3, false), Margin = new Thickness(17, 5, 0, 0) });
                     }
+
+                    for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
+                    {
+                        if (binCounts[runInd] > 1)
+                        {
+                            SolidColorBrush fillBrush = Program.GetTransparentBrush(Plotting.GetColor(runInd, 0.5, steppingStoneSamples[index][stepIndex].Length));
+                            SolidColorBrush strokeBrush = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length));
+
+                            PathFigure fig = new PathFigure() { StartPoint = new Point(10 + 0.5 * realBinWidths[runInd], 290 - 270 * binSamples[runInd][0] / maxBins[runInd]) };
+                            PathFigure fig2 = new PathFigure() { StartPoint = new Point(10 + 0.5 * realBinWidths[runInd], 290) };
+                            fig2.Segments.Add(new LineSegment() { Point = new Point(10 + 0.5 * realBinWidths[runInd], 290 - 270 * binSamples[runInd][0] / maxBins[runInd]) });
+
+                            for (int i = 1; i < binCounts[runInd]; i++)
+                            {
+                                fig.Segments.Add(new LineSegment() { Point = new Point(10 + (i + 0.5) * realBinWidths[runInd], 290 - 270 * binSamples[runInd][i] / maxBins[runInd]) });
+                                fig2.Segments.Add(new LineSegment() { Point = new Point(10 + (i + 0.5) * realBinWidths[runInd], 290 - 270 * binSamples[runInd][i] / maxBins[runInd]) });
+                            }
+
+                            fig2.Segments.Add(new LineSegment() { Point = new Point(10 + (binCounts[runInd] - 0.5) * realBinWidths[runInd], 290) });
+
+                            fig2.IsClosed = true;
+                            fig.IsClosed = false;
+
+                            PathGeometry geo2 = new PathGeometry();
+                            geo2.Figures.Add(fig2);
+                            plotCan.Children.Add(new Path() { Fill = fillBrush, Data = geo2 });
+
+                            PathGeometry geo = new PathGeometry();
+                            geo.Figures.Add(fig);
+
+                            plotCan.Children.Add(new Path() { Stroke = strokeBrush, StrokeThickness = 2, Data = geo });
+                        }
+                    }
+                }
+                else
+                {
+                    TextBlock blk = new TextBlock() { Text = "Constant value: " + means.Average().ToString(3, false), FontSize = 20, FontWeight = FontWeight.Bold, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+                    Grid grd = new Grid() { Width = 600, Height = 300 };
+                    grd.Children.Add(blk);
+                    plotCan.Children.Add(grd);
                 }
             }
             else
