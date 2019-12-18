@@ -4155,7 +4155,75 @@ namespace Utils
 
         public static string GetDependencySource(CharacterDependency[][] dependencies, bool pis, bool rates, bool condProbs)
         {
-            return (from el in dependencies select "Begin Dependency;\n" + (el.Length > 1 ? "\n" : "") + (from el2 in el select el2.ToString(el, pis, rates, condProbs)).Aggregate((a, b) => a + "\n" + b) + (el.Length > 1 ? "\n" : "") + "End;").Aggregate((a, b) => a + "\n\n" + b);
+            string tbr = "";
+
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                tbr += "Begin Dependency;\n";
+
+                if (dependencies[i].Length > 1)
+                {
+                    tbr += "\n";
+                }
+
+                List<CharacterDependency> sortedDependencies = new List<CharacterDependency>(dependencies[i]);
+
+                sortedDependencies.Sort((a, b) =>
+                {
+                    if (a.Type == CharacterDependency.Types.Independent && b.Type == CharacterDependency.Types.Independent)
+                    {
+                        return a.Index - b.Index;
+                    }
+                    else if (a.Type == CharacterDependency.Types.Independent)
+                    {
+                        return -1;
+                    }
+                    else if (b.Type == CharacterDependency.Types.Independent)
+                    {
+                        return 1;
+                    }
+                    else if (a.Type == CharacterDependency.Types.Dependent && b.Type == CharacterDependency.Types.Dependent)
+                    {
+                        return a.Dependencies.Min() - b.Dependencies.Min();
+                    }
+                    else if (a.Type == CharacterDependency.Types.Dependent)
+                    {
+                        return -1;
+                    }
+                    else if (b.Type == CharacterDependency.Types.Dependent)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                });
+
+                for (int j = 0; j < sortedDependencies.Count; j++)
+                {
+                    tbr += sortedDependencies[j].ToString(sortedDependencies.ToArray(), rates, pis, condProbs);
+                    if (j < sortedDependencies.Count - 1)
+                    {
+                        tbr += "\n";
+                    }
+                }
+
+                if (dependencies[i].Length > 1)
+                {
+                    tbr += "\n";
+                }
+
+                tbr += "End;";
+
+
+                if (i < dependencies.Length - 1)
+                {
+                    tbr += "\n\n";
+                }
+            }
+
+            return tbr;
         }
 
 

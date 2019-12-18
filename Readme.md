@@ -10,6 +10,7 @@ The [sMap manual](https://github.com/arklumpus/sMap/raw/master/sMap.pdf) holds a
 ## Installing sMap
 The easiest way to start using sMap is to install the program using the installer for your operating system.
 ### Windows
+First, please uninstall any previous versions of sMap.
 Download [`sMap-win-x64.msi`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-win-x64.msi) and double click it. The installer will guide you to the process, and will do three main things:
 1. Copy the program files (by default in `C:\Program Files`).
 2. Add the installation path to the `PATH` environment variable (so that you can recall sMap from the command line, wherever you are located).
@@ -20,6 +21,7 @@ Of course, 2 and 3 are optional, and you can decide to skip these steps during t
 You can now run the GUI version of sMap by using the shortcut and the command-line version by typing `sMap` in the command line (which you can open by pressing `Win+R` on your keyboard, typing `cmd` and pressing Enter).
 
 ### macOS
+🔴**Note**: the macOS installer package is currently not available for the latest version of sMap (it will be added soon). For now, please follow the instructions for the manual installation under macOS.🔴
 Download [`sMap-mac-x64.pkg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.pkg) and double click it. The installer will guide you to the process, and will do two main things:
 1. Copy the sMap app to the /Applications folder.
 2. Create symlinks to the sMap executables (`Blend-sMap`, `ChainMonitor`, `Merge-sMap`, `NodeInfo`, `Plot-sMap`, `Script-sMap`, `sMap`, `sMap-GUI`, `Stat-sMap`) in the `/usr/bin` folder.
