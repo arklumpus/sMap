@@ -21,7 +21,8 @@ Of course, 2 and 3 are optional, and you can decide to skip these steps during t
 You can now run the GUI version of sMap by using the shortcut and the command-line version by typing `sMap` in the command line (which you can open by pressing `Win+R` on your keyboard, typing `cmd` and pressing Enter).
 
 ### macOS
-🔴**Note**: the macOS installer package is currently not available for the latest version of sMap (it will be added soon). For now, please follow the instructions for the manual installation under macOS.🔴
+🔴 **Note**: the macOS installer package is currently not available for the latest version of sMap (it will be added soon). For now, please follow the instructions for the manual installation under macOS. 🔴
+
 Download [`sMap-mac-x64.pkg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.pkg) and double click it. The installer will guide you to the process, and will do two main things:
 1. Copy the sMap app to the /Applications folder.
 2. Create symlinks to the sMap executables (`Blend-sMap`, `ChainMonitor`, `Merge-sMap`, `NodeInfo`, `Plot-sMap`, `Script-sMap`, `sMap`, `sMap-GUI`, `Stat-sMap`) in the `/usr/bin` folder.
