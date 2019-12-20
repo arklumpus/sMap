@@ -94,7 +94,7 @@ If you wish, you can also add the folder where the sMap executables are located 
   - Click `OK` three times.
 
 ### macOS
-Download the [`sMap-mac-x64.dmg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.dmg) disk image file and double click to mount it. Open the `sMap` disk that should have appeared on your desktop and drag the `sMap` app to the `Applications` folder. You can now start the GUI version of sMap using the icon in your applications and the command-line version by opening a terminal and typing:
+Download the [`sMap-mac-x64.zip`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.zip) zip file and double click to extract it. Copy the `sMap` app that should have appeared in the same folder to the `Applications` folder. You can now start the GUI version of sMap using the icon in your applications and the command-line version by opening a terminal and typing:
 
 	/Applications/sMap.app/Contents/sMap/sMap
 
