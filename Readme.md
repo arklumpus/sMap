@@ -21,8 +21,6 @@ Of course, 2 and 3 are optional, and you can decide to skip these steps during t
 You can now run the GUI version of sMap by using the shortcut and the command-line version by typing `sMap` in the command line (which you can open by pressing `Win+R` on your keyboard, typing `cmd` and pressing Enter).
 
 ### macOS
-🔴 **Note**: the macOS installer package is currently not available for the latest version of sMap (it will be added soon). For now, please follow the instructions for the manual installation under macOS. 🔴
-
 Download [`sMap-mac-x64.pkg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.pkg) and double click it. The installer will guide you to the process, and will do two main things:
 1. Copy the sMap app to the /Applications folder.
 2. Create symlinks to the sMap executables (`Blend-sMap`, `ChainMonitor`, `Merge-sMap`, `NodeInfo`, `Plot-sMap`, `Script-sMap`, `sMap`, `sMap-GUI`, `Stat-sMap`) in the `/usr/bin` folder.
@@ -94,7 +92,7 @@ If you wish, you can also add the folder where the sMap executables are located 
   - Click `OK` three times.
 
 ### macOS
-Download the [`sMap-mac-x64.zip`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.zip) zip file and double click to extract it. Copy the `sMap` app that should have appeared in the same folder to the `Applications` folder. You can now start the GUI version of sMap using the icon in your applications and the command-line version by opening a terminal and typing:
+Download the [`sMap-mac-x64.dmg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.dmg) disk image file and double click to mount it. Open the `sMap` disk that should have appeared on your desktop and drag the `sMap` app to the `Applications` folder. You can now start the GUI version of sMap using the icon in your applications and the command-line version by opening a terminal and typing:
 
 	/Applications/sMap.app/Contents/sMap/sMap
 
