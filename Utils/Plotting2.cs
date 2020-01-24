@@ -712,7 +712,7 @@ namespace Utils
             Action<List<TreeNode>, int, Graphics, double, double, double, double> BranchProb =
             (nodes, i, context, x, y, pX, pY) =>
             {
-                int col = (int)((-(Math.Log10(branchProbs[branchProbs.Length - 1 - i]) - minY) / minY) * 1024);
+                int col = (int)Math.Min(1023, ((-(Math.Log10(branchProbs[branchProbs.Length - 1 - i]) - minY) / minY) * 1024));
                 context.StrokePath(new GraphicsPath().MoveTo(x, y).LineTo(pX, y).LineTo(pX, pY), Colour.FromRgb(ViridisColorScale[col][0], ViridisColorScale[col][1], ViridisColorScale[col][2]), options.LineWidth * 3);
             };
 
@@ -730,7 +730,7 @@ namespace Utils
             BranchProb =
             (nodes, i, context, x, y, pX, pY) =>
             {
-                int col = (int)((-(Math.Log10(minBranchProbs[minBranchProbs.Length - 1 - i]) - minY) / minY) * 1024);
+                int col = (int)Math.Min(1023, ((-(Math.Log10(minBranchProbs[minBranchProbs.Length - 1 - i]) - minY) / minY) * 1024));
                 context.StrokePath(new GraphicsPath().MoveTo(x, y).LineTo(pX, y).LineTo(pX, pY), Colour.FromRgb(ViridisColorScale[col][0], ViridisColorScale[col][1], ViridisColorScale[col][2]), options.LineWidth * 3);
             };
 
