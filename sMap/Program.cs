@@ -28,7 +28,7 @@ namespace sMap
 
         private static bool _runningGui = false;
 
-        public static string Version = "1.0.4";
+        public static string Version = "1.0.5";
 
         public static bool RunningGUI
         {
