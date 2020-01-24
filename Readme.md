@@ -126,7 +126,7 @@ To be able to compile sMap from source, you will need to install the [.NET Core 
 
 You can use [Microsoft Visual Studio](https://visualstudio.microsoft.com/it/vs/) to compile the program. The following instructions will cover compiling sMap from the command line, instead.
 
-First of all, you will need to download the sMap source code: [sMap-1.0.4.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.4.tar.gz) and extract it somewhere.
+First of all, you will need to download the sMap source code: [sMap-1.0.5.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.5.tar.gz) and extract it somewhere.
 
 ### Windows
 Open a command-line window in the folder where you have extracted the source code, and type:
