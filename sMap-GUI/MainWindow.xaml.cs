@@ -13,7 +13,7 @@ namespace sMap_GUI
 {
     public class MainWindow : Window
     {
-        public static string Version = "1.0.2";
+        public static string Version = "1.0.3";
 
         public MainWindow()
         {

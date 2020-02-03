@@ -197,6 +197,9 @@ namespace sMap_GUI
                 int samples = (int)this.FindControl<NumericUpDown>("FinalCountBox").Value;
                 int seed = (int)this.FindControl<NumericUpDown>("SeedBox").Value;
 
+
+                bool renameStates = this.FindControl<CheckBox>("RenameStatesBox").IsChecked == true;
+
                 EventWaitHandle startHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
                 PlotProgressWindow win = new PlotProgressWindow(startHandle);
@@ -207,7 +210,7 @@ namespace sMap_GUI
                 {
                     startHandle.WaitOne();
 
-                    await Merge(activeChars, samples, isPhytools ? null : result, isPhytools ? result : null, seed, async (s, v) =>
+                    await Merge(activeChars, samples, isPhytools ? null : result, isPhytools ? result : null, renameStates, seed, async (s, v) =>
                     {
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
@@ -239,7 +242,7 @@ namespace sMap_GUI
             }
         }
 
-        private async Task Merge(int[][] activeCharacters, int samples, string outputsMap, string outputPhytools, int seed, Action<string, double> progressAction, string priorTempFolder)
+        private async Task Merge(int[][] activeCharacters, int samples, string outputsMap, string outputPhytools, bool renameStates, int seed, Action<string, double> progressAction, string priorTempFolder)
         {
             SerializedRun[] runs = (from el in Runs select el.run).ToArray();
 
@@ -315,6 +318,27 @@ namespace sMap_GUI
 
             string[] allPossibleStates = (from el in Utils.Utils.GetCombinations(allStates.ToArray()) select Utils.Utils.StringifyArray(el)).ToArray();
 
+            Dictionary<string, string> renamedStates = null;
+
+            if (renameStates)
+            {
+                await Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    RenameStatesWindow rNwin = new RenameStatesWindow(allPossibleStates);
+                    await rNwin.ShowDialog(this);
+                    if (rNwin.Result)
+                    {
+                        renamedStates = rNwin.RenamedStates;
+                    }
+                    else
+                    {
+                        renameStates = false;
+                    }
+                });
+            }
+
+
+            
             progressAction("Computing priors and posteriors...", -1);
 
             double[][] meanPosterior;
@@ -370,6 +394,14 @@ namespace sMap_GUI
             }
 
             string[] States = allPossibleStates;
+
+            if (renameStates)
+            {
+                for (int i = 0; i < States.Length; i++)
+                {
+                    States[i] = renamedStates[States[i]];
+                }
+            }
 
             bool includePriorHistories = !(from el in runs select el.revision >= 2).Contains(false);
 
@@ -488,7 +520,7 @@ namespace sMap_GUI
                     }
                 }
 
-                TaggedHistory mergedHistory = Simulation.MergeHistories(currHistories, LikelihoodModels[treeSamples[i]]);
+                TaggedHistory mergedHistory = Simulation.MergeHistories(currHistories, LikelihoodModels[treeSamples[i]], renameStates ? renamedStates : null);
                 mergedHistory.Tag = histories.Count;
                 histories.Add(mergedHistory);
 
@@ -499,7 +531,7 @@ namespace sMap_GUI
 
                     for (int j = 0; j < priorMultiplicity; j++)
                     {
-                        TaggedHistory mergedPriorHistory = Simulation.MergeHistories((from el in currPriorHistories select el[j]).ToArray(), LikelihoodModels[treeSamples[i]]);
+                        TaggedHistory mergedPriorHistory = Simulation.MergeHistories((from el in currPriorHistories select el[j]).ToArray(), LikelihoodModels[treeSamples[i]], renameStates ? renamedStates : null);
                         mergedPriorHistory.Tag = histories.Count - 1;
                         lengths[j] = mergedPriorHistory.WriteToStream(priorHistories);
                     }

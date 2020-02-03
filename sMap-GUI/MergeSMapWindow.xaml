@@ -12,6 +12,7 @@
       <RowDefinition Height="1*" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
       <Canvas Width="64" Height="40" ClipToBounds="True">
@@ -92,6 +93,14 @@
         <NumericUpDown Padding="0" VerticalAlignment="Center" Width="120" Value="0" Minimum="0" FormatString="0" Name="SeedBox"></NumericUpDown>
       </StackPanel>
     </Grid>
-    <Button Grid.Row="3" Margin="10" HorizontalAlignment="Center" Padding="20,5,20,5" Click="SaveSMapClicked">Save merged sMap...</Button>
+    <Grid Grid.Row="3" Margin="10,10,10,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <CheckBox Grid.Column="1" Name="RenameStatesBox">Rename states</CheckBox>
+    </Grid>
+    <Button Grid.Row="4" Margin="10" HorizontalAlignment="Center" Padding="20,5,20,5" Click="SaveSMapClicked">Save merged sMap...</Button>
   </Grid>
 </Window>

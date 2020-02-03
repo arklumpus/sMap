@@ -10,7 +10,7 @@ namespace Merge_sMap
 {
     class Program
     {
-        const string version = "1.0.0";
+        const string version = "1.0.1";
         static int Main(string[] args)
         {
             List<string> files = new List<string>();
@@ -25,6 +25,9 @@ namespace Merge_sMap
 
             bool showHelp = false;
 
+            bool renameStates = false;
+            Dictionary<string, string> renamedStates = null;
+
             OptionSet argParser = new OptionSet()
             {
                 { "h|help", "Print this message and exit.", v => { showHelp = v != null; } },
@@ -36,6 +39,20 @@ namespace Merge_sMap
                 },
                 { "n|num-sim=", "Number of simulated histories in the merged output file.", v => { samples = int.Parse(v); } },
                 { "o|output-smap=", "Output file name for the sMap run file.", v => { outputsMap = v; } },
+                { "r|rename:", "Rename the character states, using entries in the provided file or numbers.", v =>
+                {
+                    renameStates = true;
+                    renamedStates = new Dictionary<string, string>();
+                    if (!string.IsNullOrEmpty(v))
+                    {
+                        string[] lines = File.ReadAllLines(v);
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            string[] splitted = (from el in lines[i].Replace("\t", " ").Trim().Split(' ') where !string.IsNullOrEmpty(el.Trim()) select el.Trim()).ToArray();
+                            renamedStates.Add(splitted[0], splitted[1]);
+                        }
+                    }
+                } },
                 { "p|output-phytools=", "Output file name for the phytools-compatible file.", v => { outputPhytools = v; } }
             };
 
@@ -90,10 +107,10 @@ namespace Merge_sMap
                 ConsoleWrapper.WriteLine("Usage:");
                 ConsoleWrapper.WriteLine();
                 ConsoleWrapper.WriteLine("  Merge-sMap {-h|--help}");
-                ConsoleWrapper.WriteLine("  Merge-sMap -o <output_sMap> -n <num_sim> -s <sMap_file>;<char1>[,<char2>[...]] \\\n                                          [-s <sMap_file>;<char1>[,<char2>[...]]]");
-                ConsoleWrapper.WriteLine("  Merge-sMap -p <output_phytools> -n <num_sim> -s <sMap_file>;<char1>[,<char2>[...]] \\\n                                              [-s <sMap_file>;<char1>[,<char2>[...]]]");
-                ConsoleWrapper.WriteLine("  Merge-sMap -o <output_sMap> -p <output_phytools> -n <num_sim> -s <sMap_file>;<char1>[,<char2>[...]] \\\n                                                               [-s <sMap_file>;<char1>[,<char2>[...]]]");
-            }
+                ConsoleWrapper.WriteLine("  Merge-sMap -o <output_sMap> -n <num_sim> [-r[=<name_file>]] -s <sMap_file>;<char1>[,<char2>[...]] \\\n                                                             [-s <sMap_file>;<char1>[,<char2>[...]]]");
+                ConsoleWrapper.WriteLine("  Merge-sMap -p <output_phytools> -n <num_sim> [-r[=<name_file>]] -s <sMap_file>;<char1>[,<char2>[...]] \\\n                                                                 [-s <sMap_file>;<char1>[,<char2>[...]]]");
+                ConsoleWrapper.WriteLine("  Merge-sMap -o <output_sMap> -p <output_phytools> -n <num_sim> [-r[=<name_file>]] \\\n                              -s <sMap_file>;<char1>[,<char2>[...]] [-s <sMap_file>;<char1>[,<char2>[...]]]");
+            }                                                           
 
             if (showHelp)
             {
@@ -181,6 +198,24 @@ namespace Merge_sMap
 
             string[] allPossibleStates = (from el in Utils.Utils.GetCombinations(allStates.ToArray()) select Utils.Utils.StringifyArray(el)).ToArray();
 
+            if (renameStates)
+            {
+                for (int i = 0; i < allPossibleStates.Length; i++)
+                {
+                    if (!renamedStates.ContainsKey(allPossibleStates[i]))
+                    {
+                        int stateInd = 0;
+
+                        while (renamedStates.ContainsValue(stateInd.ToString()))
+                        {
+                            stateInd++;
+                        }
+
+                        renamedStates.Add(allPossibleStates[i], stateInd.ToString());
+                    }
+                }
+            }
+
             ConsoleWrapper.WriteLine("Assuming that all runs use the same set of trees.");
             ConsoleWrapper.WriteLine();
             ConsoleWrapper.WriteLine("Computing priors and posteriors...");
@@ -236,6 +271,14 @@ namespace Merge_sMap
             }
 
             string[] States = allPossibleStates;
+
+            if (renameStates)
+            {
+                for (int i = 0; i < States.Length; i++)
+                {
+                    States[i] = renamedStates[States[i]];
+                }
+            }
 
             bool includePriorHistories = !(from el in runs select el.revision == 3).Contains(false);
 
@@ -353,7 +396,7 @@ namespace Merge_sMap
                     }
                 }
 
-                TaggedHistory mergedHistory = Simulation.MergeHistories(currHistories, LikelihoodModels[treeSamples[i]]);
+                TaggedHistory mergedHistory = Simulation.MergeHistories(currHistories, LikelihoodModels[treeSamples[i]], renameStates ? renamedStates : null);
                 mergedHistory.Tag = histories.Count;
                 histories.Add(mergedHistory);
 
@@ -364,7 +407,7 @@ namespace Merge_sMap
 
                     for (int j = 0; j < priorMultiplicity; j++)
                     {
-                        TaggedHistory mergedPriorHistory = Simulation.MergeHistories((from el in currPriorHistories select el[j]).ToArray(), LikelihoodModels[treeSamples[i]]);
+                        TaggedHistory mergedPriorHistory = Simulation.MergeHistories((from el in currPriorHistories select el[j]).ToArray(), LikelihoodModels[treeSamples[i]], renameStates ? renamedStates : null);
                         mergedPriorHistory.Tag = histories.Count - 1;
                         lengths[j] = mergedPriorHistory.WriteToStream(priorHistories);
                     }

@@ -985,7 +985,7 @@ namespace Utils
         }
 
 
-        public static TaggedHistory MergeHistories(TaggedHistory[] histories, LikelihoodModel likModel)
+        public static TaggedHistory MergeHistories(TaggedHistory[] histories, LikelihoodModel likModel, Dictionary<string, string> renamedStates = null)
         {
             BranchState[][] resultHistory = new BranchState[histories[0].History.Length][];
 
@@ -1022,7 +1022,13 @@ namespace Utils
                             state[k] = Utils.GetStateLeft(histories[k].History[i], samplingTimes[j]);
                         }
 
-                        states.Add(new BranchState(Utils.StringifyArray(state), j > 0 ? (samplingTimes[j] - samplingTimes[j - 1]) : samplingTimes[j]));
+                        string stateName = Utils.StringifyArray(state);
+                        if (renamedStates != null)
+                        {
+                            stateName = renamedStates[stateName];
+                        }
+
+                        states.Add(new BranchState(stateName, j > 0 ? (samplingTimes[j] - samplingTimes[j - 1]) : samplingTimes[j]));
                     }
 
                     resultHistory[i] = states.ToArray();

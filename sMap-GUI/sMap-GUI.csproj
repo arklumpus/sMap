@@ -41,6 +41,7 @@
     <AvaloniaResource Remove="PlotPreviewWindow.xaml" />
     <AvaloniaResource Remove="PlotProgressWindow.xaml" />
     <AvaloniaResource Remove="PlotSMapWindow.xaml" />
+    <AvaloniaResource Remove="RenameStatesWindow.xaml" />
     <AvaloniaResource Remove="RenderingProgressWindow.xaml" />
     <AvaloniaResource Remove="RunWindow.xaml" />
     <AvaloniaResource Remove="Spinner.xaml" />
@@ -81,6 +82,7 @@
     <None Remove="PlotPreviewWindow.xaml" />
     <None Remove="PlotProgressWindow.xaml" />
     <None Remove="PlotSMapWindow.xaml" />
+    <None Remove="RenameStatesWindow.xaml" />
     <None Remove="RenderingProgressWindow.xaml" />
     <None Remove="RunWindow.xaml" />
     <None Remove="Spinner.xaml" />
@@ -276,6 +278,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DDistributionWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="RenameStatesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
