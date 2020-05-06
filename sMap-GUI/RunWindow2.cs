@@ -394,12 +394,12 @@ namespace sMap_GUI
             if (binSamples.Length > 0)
             {
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = meanCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 meanPanel.Children.Add(new TextBlock() { Text = "Mean CoV: " + meanCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(sdPanel);
@@ -408,14 +408,14 @@ namespace sMap_GUI
                 for (int runInd = 0; runInd < samples[index].Length; runInd++)
                 {
 
-                    StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
+                    StackPanel sp = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
                     sp.Children.Add(new Viewbox() { Child = new Octagon() { Fill = Program.GetBrush(Plotting.GetColor(runInd, 1, samples[index].Length)) }, Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
                     sp.Children.Add(new TextBlock() { Text = "Run " + (runInd + 1).ToString(), FontWeight = FontWeight.Bold, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Foreground = Program.GetBrush(Plotting.GetColor(runInd, 1, samples[index].Length)), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(sp);
 
                     statsContainer.Children.Add(new TextBlock() { Text = "Samples: " + sampleCounts[runInd].ToString(), Margin = new Thickness(17, 5, 0, 0) });
 
-                    StackPanel essPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel essPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     essPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = esss[runInd] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     essPanel.Children.Add(new TextBlock() { Text = "ESS: " + esss[runInd].ToString(2), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(essPanel);
@@ -506,12 +506,12 @@ namespace sMap_GUI
                 if (binSamples.Length > 0)
                 {
 
-                    StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = meanCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     meanPanel.Children.Add(new TextBlock() { Text = "Mean CoV: " + meanCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(meanPanel);
 
-                    StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(sdPanel);
@@ -519,14 +519,14 @@ namespace sMap_GUI
 
                     for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
                     {
-                        StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
+                        StackPanel sp = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
                         sp.Children.Add(new Viewbox() { Child = new Octagon() { Fill = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)) }, Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
                         sp.Children.Add(new TextBlock() { Text = "Run " + (runInd + 1).ToString(), FontWeight = FontWeight.Bold, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Foreground = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)), Margin = new Thickness(5, 0, 0, 0) });
                         statsContainer.Children.Add(sp);
 
                         statsContainer.Children.Add(new TextBlock() { Text = "Samples: " + sampleCounts[runInd].ToString(), Margin = new Thickness(17, 5, 0, 0) });
 
-                        StackPanel essPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        StackPanel essPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                         essPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = esss[runInd] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                         essPanel.Children.Add(new TextBlock() { Text = "ESS: " + esss[runInd].ToString(2), Margin = new Thickness(5, 0, 0, 0) });
                         statsContainer.Children.Add(essPanel);
@@ -597,12 +597,12 @@ namespace sMap_GUI
                     sampleCounts = (int[])steppingStoneSampleCounts[index][stepIndex].Clone();
                 }
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = meanCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 meanPanel.Children.Add(new TextBlock() { Text = "Mean CoV: " + meanCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(sdPanel);
@@ -611,7 +611,7 @@ namespace sMap_GUI
                 for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
                 {
 
-                    StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
+                    StackPanel sp = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 20, 0, 0) };
                     sp.Children.Add(new Viewbox() { Child = new Octagon() { Fill = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)) }, Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
                     sp.Children.Add(new TextBlock() { Text = "Run " + (runInd + 1).ToString(), FontWeight = FontWeight.Bold, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Foreground = Program.GetBrush(Plotting.GetColor(runInd, 1, steppingStoneSamples[index][stepIndex].Length)), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(sp);
@@ -637,22 +637,22 @@ namespace sMap_GUI
             if (convergenceStats.Length > 0)
             {
 
-                StackPanel samplesPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel samplesPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 samplesPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = ((int)convergenceStats.Last()[0] / (MCMC.diagnosticFrequency / MCMC.sampleFrequency) - ((int)convergenceStats.Last()[0] / (MCMC.diagnosticFrequency / MCMC.sampleFrequency)) / 10) * MCMC.diagnosticFrequency >= MCMC.minSamples * MCMC.sampleFrequency ? Tick.Type.Tick : Tick.Type.Cross } });
                 samplesPanel.Children.Add(new TextBlock() { Text = "Samples: " + convergenceStats.Last()[0].ToString(0), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold });
                 statsContainer.Children.Add(samplesPanel);
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
                 statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
                 statsContainer.Children.Add(sdPanel);
 
-                StackPanel ESSPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
                 statsContainer.Children.Add(ESSPanel);
@@ -729,39 +729,39 @@ namespace sMap_GUI
             if (convergenceStats.Length > 0)
             {
 
-                StackPanel samplesPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel samplesPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 samplesPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = ((int)convergenceStats.Last()[0] / (MCMC.diagnosticFrequency / MCMC.sampleFrequency) - ((int)convergenceStats.Last()[0] / (MCMC.diagnosticFrequency / MCMC.sampleFrequency)) / 10) * MCMC.diagnosticFrequency >= MCMC.minSamples * MCMC.sampleFrequency ? Tick.Type.Tick : Tick.Type.Cross } });
                 samplesPanel.Children.Add(new TextBlock() { Text = "Samples: " + convergenceStats.Last()[0].ToString(0), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold });
                 statsContainer.Children.Add(samplesPanel);
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
                 statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
                 statsContainer.Children.Add(sdPanel);
 
-                StackPanel ESSPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                 ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
                 statsContainer.Children.Add(ESSPanel);
 
                 if (stepIndex > 0)
                 {
-                    StackPanel likMeanPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel likMeanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     likMeanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     likMeanPanel.Children.Add(new TextBlock() { Text = "Likelihood Mean CoV: " + likelihoodConvergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 153, 217, 234)) });
                     statsContainer.Children.Add(likMeanPanel);
 
-                    StackPanel likSdPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel likSdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     likSdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     likSdPanel.Children.Add(new TextBlock() { Text = "Likelihood SD CoV: " + likelihoodConvergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 168, 238, 189)) });
                     statsContainer.Children.Add(likSdPanel);
 
-                    StackPanel likESSPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    StackPanel likESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
                     likESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                     likESSPanel.Children.Add(new TextBlock() { Text = "Likelihood Min ESS: " + likelihoodConvergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 174, 201)) });
                     statsContainer.Children.Add(likESSPanel);

@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Utils;
 using VectSharp;
 using VectSharp.Canvas;
@@ -118,6 +119,15 @@ namespace sMap_GUI
             this.FindControl<Viewbox>("HistogramViewBox").Child = doc.Pages[0].PaintToCanvas();
             this.FindControl<Viewbox>("KDEViewBox").Child = doc.Pages[1].PaintToCanvas();
             this.FindControl<NumericUpDown>("BandwidthBox").Value = -Math.Log10(bandwidth);
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await Task.Delay(100);
+                this.Width = this.Width + 1;
+            };
+
+            resize();
         }
 
         private void InitializeComponent()

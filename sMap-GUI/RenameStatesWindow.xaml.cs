@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace sMap_GUI
 {
@@ -85,6 +86,16 @@ namespace sMap_GUI
                 Grid.SetColumn(box, 1);
                 statesContainer.Children.Add(box);
             }
+
+            //Workaround bug in Avalonia
+            async void resize ()
+            {
+                await Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
+            
         }
 
         private void InitializeComponent()

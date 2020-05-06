@@ -111,6 +111,9 @@
             Pis represent the prior probabilities for each state at the root node. You can fix them to specific values, make them equal to one another, or estimate them using Bayesian inference (by providing the parameter for a Dirichlet prior distribution). Use the "..." button in the window to do so.
           </TextBlock>
           <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+            If you are determinig the rates using Maximum-Likelihood, you can also use estimated priors. This option is only available if you are estimating at least one rate using Maximum-Likelihood and each Dependency block contains only one independent character or multiple characters which are all dependent on each other.
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
             Rates represent how often each state change happens. You can fix each rate to a specific value, make it equal to another rate, estimate it using Maximum-Likelihood, or provide a prior distribution to use for Bayesian inference. Click on the rate in the window to do so.
           </TextBlock>
           <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">

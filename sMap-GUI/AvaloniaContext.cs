@@ -4,7 +4,6 @@ using Avalonia.Media;
 using SlimTreeNode;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Utils;
 using VectSharp;
 
@@ -44,13 +43,13 @@ namespace sMap_GUI
                     geo.Figures.Add(highlightFigure);
                     geo.Figures.Add(circleFigure);
 
-                    Path pth = new Path() { Data = geo, Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)), StrokeThickness = 4, StrokeJoin = PenLineJoin.Round, ZIndex = -1 };
+                    Path pth = new Path() { Data = geo, Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)), StrokeThickness = 4, StrokeJoin = PenLineJoin.Round, ZIndex = -1, RenderTransform = new TranslateTransform(18, 10) };
 
                     pth.PointerEnter += (s, e) => { enterAction(pth); };
                     pth.PointerLeave += (s, e) => { exitAction(pth); };
                     pth.PointerPressed += (s, e) =>
                     {
-                        if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                        if (e.GetCurrentPoint(pth).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                         {
                             clickAction(i);
                         }
@@ -139,13 +138,13 @@ namespace sMap_GUI
                 geo.Figures.Add(highlightFigure);
                 geo.Figures.Add(circleFigure);
 
-                Path pth = new Path() { Data = geo, Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)), StrokeThickness = 4, StrokeJoin = PenLineJoin.Round, ZIndex = -1 };
+                Path pth = new Path() { Data = geo, Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255)), StrokeThickness = 4, StrokeJoin = PenLineJoin.Round, ZIndex = -1, RenderTransform = new TranslateTransform(18, 10) };
 
                 pth.PointerEnter += (s, e) => { enterAction(pth); };
                 pth.PointerLeave += (s, e) => { exitAction(pth); };
                 pth.PointerPressed += (s, e) =>
                 {
-                    if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                    if (e.GetCurrentPoint(pth).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                     {
                         clickAction(i);
                     }
@@ -166,7 +165,7 @@ namespace sMap_GUI
                         ph.PointerLeave += (s, e) => { exitAction(pth); };
                         ph.PointerPressed += (s, e) =>
                         {
-                            if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                            if (e.GetCurrentPoint(ph).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                             {
                                 clickAction(i);
                             }
@@ -208,7 +207,7 @@ namespace sMap_GUI
                                 ph.PointerLeave += (s, e) => { exitAction(pth); };
                                 ph.PointerPressed += (s, e) =>
                                 {
-                                    if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                                    if (e.GetCurrentPoint(ph).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                                     {
                                         clickAction(i);
                                     }
@@ -224,7 +223,7 @@ namespace sMap_GUI
                                 ph.PointerLeave += (s, e) => { exitAction(pth); };
                                 ph.PointerPressed += (s, e) =>
                                 {
-                                    if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                                    if (e.GetCurrentPoint(ph).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                                     {
                                         clickAction(i);
                                     }
@@ -295,7 +294,7 @@ namespace sMap_GUI
                     pth.PointerLeave += (s, e) => { exitAction(pth); };
                     pth.PointerPressed += (s, e) =>
                     {
-                        if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                        if (e.GetCurrentPoint(pth).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                         {
                             clickAction(i);
                         }

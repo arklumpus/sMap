@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Utils;
 using VectSharp;
 using VectSharp.Canvas;
@@ -354,7 +355,31 @@ namespace sMap_GUI
             {
                 this.FindControl<Grid>("MainGrid").RowDefinitions[4] = new RowDefinition(0, GridUnitType.Pixel);
                 this.FindControl<Grid>("MainGrid").ColumnDefinitions[1] = new ColumnDefinition(0, GridUnitType.Pixel);
+
+                foreach (Control ctrl in this.FindControl<Grid>("MainGrid").Children)
+                {
+                    if (Grid.GetColumn(ctrl) == 1 || Grid.GetRow(ctrl) == 4)
+                    {
+                        ctrl.IsVisible = false;
+                    }
+                }
             }
+
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await Task.Delay(50);
+                this.Width = this.Width + 1;
+                await Task.Delay(50);
+                this.Height = this.Height + 1;
+                await Task.Delay(50);
+                this.Width = this.Width - 1;
+                await Task.Delay(100);
+                this.Height = this.Height - 1;
+            };
+
+            resize();
         }
 
         private async void ShowDTestClicked(object sender, RoutedEventArgs e)

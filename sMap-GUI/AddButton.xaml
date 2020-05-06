@@ -12,51 +12,51 @@
     <Style Selector="Ellipse:pointerover">
       <Setter Property="Fill" Value="#DEDEDE" />
     </Style>
-    <Style Selector="local|AddButton[Type=Add] #RemovePath">
+    <Style Selector="local|AddButton[Type=Add] Path#RemovePath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Add] #UpPath">
+    <Style Selector="local|AddButton[Type=Add] Path#UpPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Add] #DownPath">
+    <Style Selector="local|AddButton[Type=Add] Path#DownPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
     
-    <Style Selector="local|AddButton[Type=Remove] #AddPath">
+    <Style Selector="local|AddButton[Type=Remove] Path#AddPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Remove] #UpPath">
+    <Style Selector="local|AddButton[Type=Remove] Path#UpPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Remove] #DownPath">
-      <Setter Property="IsVisible" Value="False" />
-    </Style>
-
-    <Style Selector="local|AddButton[Type=Up] #AddPath">
-      <Setter Property="IsVisible" Value="False" />
-    </Style>
-    <Style Selector="local|AddButton[Type=Up] #RemovePath">
-      <Setter Property="IsVisible" Value="False" />
-    </Style>
-    <Style Selector="local|AddButton[Type=Up] #DownPath">
+    <Style Selector="local|AddButton[Type=Remove] Path#DownPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
 
-    <Style Selector="local|AddButton[Type=Down] #AddPath">
+    <Style Selector="local|AddButton[Type=Up] Path#AddPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Down] #RemovePath">
+    <Style Selector="local|AddButton[Type=Up] Path#RemovePath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="local|AddButton[Type=Down] #UpPath">
+    <Style Selector="local|AddButton[Type=Up] Path#DownPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <Style Selector="local|AddButton[Type=Down] Path#AddPath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Down] Path#RemovePath">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="local|AddButton[Type=Down] Path#UpPath">
       <Setter Property="IsVisible" Value="False" />
     </Style>
   </UserControl.Styles>
   <Canvas>
     <Ellipse Stroke="#808080" StrokeThickness="1.5" Width="18" Height="18" Cursor="Hand"></Ellipse>
-    <Path Data="M5,9 L13,9 M9,5 L9,13" Stroke="#22b14c" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="AddPath"></Path>
-    <Path Data="M5,9 L13,9" Stroke="#ea1c24" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="RemovePath"></Path>
-    <Path Data="M5,10 L9,6 L13,10" Stroke="#006996" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="UpPath"></Path>
-    <Path Data="M5,8 L9,12 L13,8" Stroke="#006996" StrokeThickness="2.5" StrokeStartLineCap="Round" IsHitTestVisible="False" Name="DownPath"></Path>
+    <Path Data="M5,9 L13,9 M9,5 L9,13" Stroke="#22b14c" StrokeThickness="2.5" StrokeLineCap="Round" IsHitTestVisible="False" Name="AddPath"></Path>
+    <Path Data="M5,9 L13,9" Stroke="#ea1c24" StrokeThickness="2.5" StrokeLineCap="Round" IsHitTestVisible="False" Name="RemovePath"></Path>
+    <Path Data="M5,10 L9,6 L13,10" Stroke="#006996" StrokeThickness="2.5" StrokeLineCap="Round" IsHitTestVisible="False" Name="UpPath"></Path>
+    <Path Data="M5,8 L9,12 L13,8" Stroke="#006996" StrokeThickness="2.5" StrokeLineCap="Round" IsHitTestVisible="False" Name="DownPath"></Path>
   </Canvas>
 </UserControl>

@@ -294,7 +294,7 @@
         <ControlTemplate>
           <Border Name="border"
                   Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderBrush="{Binding $parent[NumericUpDown].BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Margin="{TemplateBinding Padding}"
                   HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
@@ -307,8 +307,8 @@
                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Padding="{TemplateBinding Padding}"/>
               <Grid Grid.Column="1" RowDefinitions="*,*" IsVisible="{TemplateBinding ShowButtonSpinner}">
-                <RepeatButton Grid.Row="0" Name="PART_IncreaseButton" />
-                <RepeatButton Grid.Row="1" Name="PART_DecreaseButton"/>
+                <RepeatButton Grid.Row="0" Name="PART_IncreaseButton" Foreground="{Binding $parent[2].BorderBrush}" />
+                <RepeatButton Grid.Row="1" Name="PART_DecreaseButton" Foreground="{Binding $parent[2].BorderBrush}"/>
               </Grid>
             </Grid>
           </Border>
@@ -323,20 +323,22 @@
     <Style Selector="ButtonSpinner /template/ RepeatButton#PART_IncreaseButton">
       <Setter Property="Content">
         <Template>
-          <Path Fill="{TemplateBinding BorderBrush}"
+
+          <Path Fill="{Binding $parent.Foreground}"
                 Width="8"
                 Height="4"
                 Stretch="Uniform"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Data="M0,5 L4.5,.5 9,5 6,5 4.5,3.5 3,5 z"/>
+          
         </Template>
       </Setter>
     </Style>
     <Style Selector="ButtonSpinner /template/ RepeatButton#PART_DecreaseButton">
       <Setter Property="Content">
         <Template>
-          <Path Fill="{TemplateBinding BorderBrush}"
+          <Path Fill="{Binding $parent.Foreground}"
                 Width="8"
                 Height="4"
                 Stretch="Uniform"
@@ -366,7 +368,7 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
       <Canvas Width="81" Height="60" ClipToBounds="True">
-        <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
+        <Path Stroke="#a349a4" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
       </Canvas>
       <Canvas Grid.Column="1" Height="60">
         <Canvas.Background>
@@ -388,7 +390,7 @@
         <TextBlock FontWeight="Bold" FontSize="36" Margin="5,3.5,0,0" Foreground="White">sMap Wizard</TextBlock>
       </StackPanel>
       <Canvas Width="47" Height="60" ClipToBounds="True" Grid.Column="2">
-        <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
+        <Path Stroke="#ed1c24" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
       </Canvas>
     </Grid>
     <ScrollViewer Grid.Row="1" Margin="20,10" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Name="MainScrollViewer">
@@ -491,6 +493,7 @@
           </Border>
           <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="EditPisButton" Click="EditPisClicked">Edit...</Button>
           <Button Classes="Cyan" Padding="10,2.5" VerticalAlignment="Center" Margin="10,0,0,0" Name="ChoosePisFileButton" Click="ChoosePiFileClicked">Load from file...</Button>
+          <CheckBox VerticalAlignment="Center" BorderBrush="#00a2e8" Margin="10,0,0,0" Name="EstimatedPisBox">Use estimated Pis</CheckBox>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Name="CondProbsModelPanel" IsVisible="False">
@@ -561,7 +564,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <TextBlock VerticalAlignment="Center">Number of simulations:</TextBlock>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Value="1000" Name="NumSimBox"></NumericUpDown>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Value="1000" Name="NumSimBox" BorderBrush="#22b14c"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
@@ -569,7 +572,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <TextBlock VerticalAlignment="Center">Seed:</TextBlock>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Name="SeedBox"></NumericUpDown>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" FormatString="0" Name="SeedBox" BorderBrush="#22b14c"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal">
@@ -577,7 +580,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="NormBox">Normalise trees</CheckBox>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Classes="VeryAdvanced" Name="NormValueBox"></NumericUpDown>
+            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Classes="VeryAdvanced" Name="NormValueBox" BorderBrush="#22b14c"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
@@ -585,7 +588,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="CoerceBox">Coerce minimum branch length on simulation trees</CheckBox>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0.000001" Name="CoerceValueBox" Value="0.001"></NumericUpDown>
+            <NumericUpDown BorderBrush="#22b14c" Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0.000001" Name="CoerceValueBox" Value="0.001"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal">
@@ -593,7 +596,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <TextBlock VerticalAlignment="Center">Number of threads: </TextBlock>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1" Name="ThreadsBox"></NumericUpDown>
+            <NumericUpDown BorderBrush="#22b14c" Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1" Name="ThreadsBox"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
@@ -605,6 +608,44 @@
             <Button Classes="Green" VerticalAlignment="Center" Margin="10" Click="EditMLStrategyClicked">Edit...</Button>
           </StackPanel>
 
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Number of parallel ML optimisations: </TextBlock>
+            <NumericUpDown BorderBrush="#22b14c" Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1" Name="ParallelMLEBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Number of ML rounds: </TextBlock>
+            <NumericUpDown BorderBrush="#22b14c" Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1" Name="MLERoundsBox"></NumericUpDown>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="SaveSampledLikelihoods">Save sampled likelihood values</CheckBox>
+          </StackPanel>
+          
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="PlotSampledLikelihoods">Plot sampled likelihood values</CheckBox>
+          </StackPanel>
+
+          <!--
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="ComputeHessianBox" IsChecked="True">Compute Hessian matrix</CheckBox>
+          </StackPanel>-->
+          
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
               <local:Octagon Fill="#22b14c"></local:Octagon>
@@ -617,7 +658,7 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <CheckBox VerticalAlignment="Center" IsChecked="False" BorderBrush="#22b14c" Name="PPBox">Sample</CheckBox>
-            <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Name="PPMultiplicityBox" Value="100"></NumericUpDown>
+            <NumericUpDown BorderBrush="#22b14c" Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Name="PPMultiplicityBox" Value="100"></NumericUpDown>
             <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">posterior-predictive replicates and</TextBlock>
             <StackPanel Margin="10,0,0,0">
               <RadioButton Margin="0,0,0,2.5" GroupName="DTestOrPP" IsChecked="True" Name="DTestRadio">Perform D-test</RadioButton>
@@ -647,11 +688,11 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Number of runs: </TextBlock>
-                <NumericUpDown Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2" Name="NumRunsBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2" Name="NumRunsBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Number of chains: </TextBlock>
-                <NumericUpDown Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="4" Name="NumChainsBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="50" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="4" Name="NumChainsBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Temperature coefficient: </TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Classes="VeryAdvanced" Name="TempBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Classes="VeryAdvanced" Name="TempBox"></NumericUpDown>
               </StackPanel>
 
               <StackPanel Orientation="Horizontal">
@@ -659,11 +700,11 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Sampling frequency: </TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="sfBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="sfBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Swap frequency: </TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="wfBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="wfBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Diagnostic frequency:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="1000" FormatString="0" Name="dfBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="1000" FormatString="0" Name="dfBox"></NumericUpDown>
               </StackPanel>
 
               <TextBlock FontWeight="Bold" Foreground="#22b14c" Margin="10,10,0,0" VerticalAlignment="Center">Convergence criteria:</TextBlock>
@@ -673,11 +714,11 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Minimum samples:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2000" Name="MinSamplesBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2000" Name="MinSamplesBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Maximum CoV: </TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Name="MaxCoVBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Name="MaxCoVBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Minimum ESS: </TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="200" Name="MinESSBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="200" Name="MinESSBox"></NumericUpDown>
 
               </StackPanel>
 
@@ -693,11 +734,11 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Tuning attempts:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="TuningAttemptsBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="10" Name="TuningAttemptsBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Tuning steps:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="100" Name="TuningStepsBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="100" Name="TuningStepsBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Target acceptance</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.37" Name="AcceptanceRateBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.37" Name="AcceptanceRateBox"></NumericUpDown>
               </StackPanel>
 
               <StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
@@ -727,11 +768,11 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Stepping-stone steps:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="8" Name="SSStepsBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="8" Name="SSStepsBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Shape parameter:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.3" Name="SSShapeBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.3" Name="SSShapeBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Samples per step:</TextBlock>
-                <NumericUpDown Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1000" Name="SSSamplesBox"></NumericUpDown>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="1000" Name="SSSamplesBox"></NumericUpDown>
               </StackPanel>
 
               <StackPanel Orientation="Horizontal" Classes="VeryAdvanced" Margin="20,0,0,0">
@@ -761,9 +802,9 @@
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
             <TextBlock VerticalAlignment="Center">Plot width:</TextBlock>
-            <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="500" Name="PlotWidthBox"></NumericUpDown>
+            <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="500" Name="PlotWidthBox"></NumericUpDown>
             <TextBlock VerticalAlignment="Center">Plot height:</TextBlock>
-            <NumericUpDown Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="0" Name="PlotHeightBox"></NumericUpDown>
+            <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="0" Name="PlotHeightBox"></NumericUpDown>
           </StackPanel>
 
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced" Margin="0,0,0,10">

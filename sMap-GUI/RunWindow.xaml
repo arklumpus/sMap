@@ -8,10 +8,10 @@
         Title="sMap-GUI - Analysis in progress"
         FontFamily="resm:sMap_GUI.Fonts.?assembly=sMap-GUI#Open Sans" FontSize="15">
   <Window.Styles>
-    <Style Selector=".AnimationInactive">
+    <Style Selector="Rectangle.AnimationInactive">
       <Setter Property="IsVisible" Value="false"/>
     </Style>
-    <Style Selector=".ShortAnimationActive">
+    <Style Selector="Rectangle.ShortAnimationActive">
       <Style.Animations>
         <Animation Duration="0:0:2" RepeatCount="Loop">
           <KeyFrame Cue="0%">
@@ -28,7 +28,7 @@
         </Animation>
       </Style.Animations>
     </Style>
-    <Style Selector=".LongAnimationActive">
+    <Style Selector="Rectangle.LongAnimationActive">
       <Style.Animations>
         <Animation Duration="0:0:3" RepeatCount="Loop">
           <KeyFrame Cue="0%">
@@ -109,14 +109,14 @@
       <StackPanel HorizontalAlignment="Center">
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
           <Canvas Width="64" Height="40" ClipToBounds="True">
-            <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+            <Path Stroke="#a349a4" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
           </Canvas>
           <Canvas Width="163" Height="40" ZIndex="-1">
             <Path Fill="#a349a4" Data="M0,40 L188,40 L163,0 L-25,0 Z" Opacity="0.15"></Path>
             <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#a349a4">Data parsing</TextBlock>
           </Canvas>
           <Canvas Width="30" Height="40" ClipToBounds="True">
-            <Path Stroke="#a349a4" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+            <Path Stroke="#a349a4" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
           </Canvas>
           <Viewbox Width="40" Height="40" Margin="10,0,0,0">
             <local:Spinner Fill="#a349a4" Name="DataParsingSpinner"></local:Spinner>
@@ -202,14 +202,14 @@
           </Grid.RowDefinitions>
           <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Canvas Width="64" Height="40" ClipToBounds="True">
-              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
             </Canvas>
             <Canvas Width="393" Height="40" ZIndex="-1">
               <Path Fill="#3f48cc" Data="M0,40 L418,40 L393,0 L-25,0 Z" Opacity="0.15"></Path>
               <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#3f48cc">Maximum-likelihood estimation</TextBlock>
             </Canvas>
             <Canvas Width="30" Height="40" ClipToBounds="True">
-              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+              <Path Stroke="#3f48cc" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
             </Canvas>
             <Viewbox Width="40" Height="40" Margin="10,0,0,0">
               <local:Spinner Fill="#3f48cc" Name="MLSamplingSpinner"></local:Spinner>
@@ -240,6 +240,7 @@
                 </StackPanel>
                 <Button HorizontalAlignment="Left" Width="160" Margin="5" IsVisible="False" Name="ViewMLRatesButton" Click="ViewMLRatesClicked" Padding="10,0,10,0">View rates...</Button>
                 <Button HorizontalAlignment="Left" Width="160" Margin="5" IsVisible="False" Name="ViewMLCondProbsButton" Click="ViewMLCondProbsClicked" Padding="10,0,10,0">View cond. probs...</Button>
+              <StackPanel Name="CurvatureContainer"></StackPanel>
               </StackPanel>
             </ScrollViewer>
           </Grid>
@@ -247,14 +248,14 @@
         <StackPanel Name="BayesianSamplingPanel" IsVisible="False">
           <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Canvas Width="64" Height="40" ClipToBounds="True">
-              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
             </Canvas>
             <Canvas Width="233" Height="40" ZIndex="-1">
               <Path Fill="#00a2e8" Data="M0,40 L258,40 L233,0 L-25,0 Z" Opacity="0.15"></Path>
               <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#00a2e8">Bayesian sampling</TextBlock>
             </Canvas>
             <Canvas Width="30" Height="40" ClipToBounds="True">
-              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+              <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
             </Canvas>
             <Viewbox Width="40" Height="40" Margin="10,0,0,0">
               <local:Spinner Fill="#00a2e8" Name="BayesianSamplingSpinner"></local:Spinner>
@@ -330,14 +331,14 @@
         <StackPanel Name="SteppingStoneSamplingPanel" IsVisible="False">
           <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Canvas Width="64" Height="40" ClipToBounds="True">
-              <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+              <Path Stroke="#22b14c" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
             </Canvas>
             <Canvas Width="303" Height="40" ZIndex="-1">
               <Path Fill="#22b14c" Data="M0,40 L328,40 L303,0 L-25,0 Z" Opacity="0.15"></Path>
               <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#22b14c">Stepping-stone sampling</TextBlock>
             </Canvas>
             <Canvas Width="30" Height="40" ClipToBounds="True">
-              <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+              <Path Stroke="#22b14c" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
             </Canvas>
             <Viewbox Width="40" Height="40" Margin="10,0,0,0">
               <local:Spinner Fill="#22b14c" Name="SteppingStoneSamplingSpinner"></local:Spinner>
@@ -439,14 +440,14 @@
           </Grid.RowDefinitions>
           <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Canvas Width="64" Height="40" ClipToBounds="True">
-              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
             </Canvas>
             <Canvas Width="298" Height="40" ZIndex="-1">
               <Path Fill="#ff7f27" Data="M0,40 L323,40 L298,0 L-25,0 Z" Opacity="0.15"></Path>
               <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state probabilities</TextBlock>
             </Canvas>
             <Canvas Width="30" Height="40" ClipToBounds="True">
-              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+              <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
             </Canvas>
             <Viewbox Width="40" Height="40" Margin="10,0,0,0">
               <local:Spinner Fill="#ff7f27" Name="NodeStatesSpinner"></local:Spinner>
@@ -482,14 +483,14 @@
           </Grid.RowDefinitions>
           <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Canvas Width="64" Height="40" ClipToBounds="True">
-              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
             </Canvas>
             <Canvas Width="148" Height="40" ZIndex="-1">
               <Path Fill="#ed1c24" Data="M0,40 L173,40 L148,0 L-25,0 Z" Opacity="0.15"></Path>
               <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ed1c24">Simulations</TextBlock>
             </Canvas>
             <Canvas Width="30" Height="40" ClipToBounds="True">
-              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+              <Path Stroke="#ed1c24" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
             </Canvas>
             <Viewbox Width="40" Height="40" Margin="10,0,0,0">
               <local:Spinner Fill="#ed1c24" Name="SimulationsSpinner"></local:Spinner>

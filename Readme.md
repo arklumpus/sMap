@@ -33,7 +33,7 @@ Open a terminal window. Download the installer using `wget` or `curl` (whichever
 
 	wget https://github.com/arklumpus/sMap/releases/latest/download/sMap-linux-x64.run
 
-(To use `curl`, replace `wget` with `curl -O`). Make the downloaded file executable and execute it as root:
+(To use `curl`, replace `wget` with `curl -LO`). Make the downloaded file executable and execute it as root:
 
 	chmod +x sMap-linux-x64.run
 	su -c "./sMap-linux-x64.run"
@@ -64,6 +64,9 @@ This will create a folder called `test-output` and run a quick Maximum-Likelihoo
 Download [`Cerataphidini.txt`](https://raw.githubusercontent.com/arklumpus/sMap/master/TestAnalysis/Cerataphidini.txt) and [`Cerataphidini.tre`](https://raw.githubusercontent.com/arklumpus/sMap/master/TestAnalysis/Cerataphidini.tre). Open sMap-GUI and start the sMap Wizard. Choose `Cerataphidini.txt` as data file and `Cerataphidini.tre` as tree file; leave all other settings to default and click `Confirm` twice, then `Run analysis`.
 
 Once the analysis finishes, close the dialog and the analysis window, then click on the `Plot set 0...` button and on `Plot preview...`. You should now see a plot of the analysis. If you do, congratulations: you have correctly installed sMap!
+
+## Alternative palettes and colour blindness
+The plots produced by sMap convey information primarily through colour. The default palette used by sMap is not colour-blind safe; however, it is possible to enable alternative colour palettes that are colour-blind safe either during the sMap installation process, or afterwards, following the instructions in [Resources/Palettes](Resources/Palettes).
 
 ## Troubleshooting and known issues
 - On macOS, if when you try to start the GUI version of sMap by clicking on the app you get a message complaining that the application may be damaged or incomplete, there might be some permission issues on the starter script. Open a terminal and enter:
@@ -112,7 +115,7 @@ Download the [`sMap-linux-x64.tar.gz`](https://github.com/arklumpus/sMap/release
 	tar -xzf sMap-linux-x64.tar.gz
 	rm sMap-linux-x64.tar.gz
 
-Depending on  your system, you may want to replace `wget` with `curl -O`. This will create a folder called `sMap-linux-x64`, which contains the sMap executables. You can now run sMap by typing `sMap-linux-x64/sMap` and the GUI version by typing `sMap-linux-x64/sMap-GUI`.
+Depending on  your system, you may want to replace `wget` with `curl -LO`. This will create a folder called `sMap-linux-x64`, which contains the sMap executables. You can now run sMap by typing `sMap-linux-x64/sMap` and the GUI version by typing `sMap-linux-x64/sMap-GUI`.
 
 You can also create symlinks to the sMap executables in a folder that is included in your `PATH` (such as `/usr/bin`): open a terminal and type:
 
@@ -126,7 +129,7 @@ To be able to compile sMap from source, you will need to install the [.NET Core 
 
 You can use [Microsoft Visual Studio](https://visualstudio.microsoft.com/it/vs/) to compile the program. The following instructions will cover compiling sMap from the command line, instead.
 
-First of all, you will need to download the sMap source code: [sMap-1.0.5-2.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.5-2.tar.gz) and extract it somewhere.
+First of all, you will need to download the sMap source code: [sMap-1.0.6.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.6.tar.gz) and extract it somewhere.
 
 ### Windows
 Open a command-line window in the folder where you have extracted the source code, and type:

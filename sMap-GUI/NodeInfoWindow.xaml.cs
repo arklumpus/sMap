@@ -14,6 +14,7 @@ using System.Threading;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Threading;
 using VectSharp.Canvas;
+using System.Threading.Tasks;
 
 namespace sMap_GUI
 {
@@ -60,9 +61,12 @@ namespace sMap_GUI
 
             Thread thr = new Thread(() =>
             {
-                Thread.Sleep(500);
-                Dispatcher.UIThread.InvokeAsync(() =>
+                Thread.Sleep(250);
+                Dispatcher.UIThread.InvokeAsync(async () =>
                 {
+                    //Workaround bug in Avalonia
+                    this.Width = this.Width + 1;
+                    await Task.Delay(250);
                     this.FindControl<ZoomBorder>("TreeContainer").Uniform();
                 });
             });
@@ -1412,11 +1416,22 @@ namespace sMap_GUI
 
         private void BranchPlotClicked(object sender, PointerPressedEventArgs e)
         {
-            nodePosition = Math.Min(Math.Max(0, (1.0 - e.Device.GetPosition(this.FindControl<Canvas>("BranchPlotContainer")).X / 100.0) * Nodes[nodeID].Length), Nodes[nodeID].Length);
+            nodePosition = Math.Min(Math.Max(0, (1.0 - e.GetPosition(this.FindControl<Canvas>("BranchPlotContainer")).X / 100.0) * Nodes[nodeID].Length), Nodes[nodeID].Length);
             fixedNodePosition = nodePosition;
             UpdateBranchInfo();
         }
 
+        private void LeftEndPressed(object sender, PointerPressedEventArgs e)
+        {
+            fixedNodePosition = nodePosition = Nodes[nodeID].Length;
+            UpdateBranchInfo();
+        }
+
+        private void RightEndPressed(object sender, PointerPressedEventArgs e)
+        {
+            fixedNodePosition = nodePosition = 0;
+            UpdateBranchInfo();
+        }
         private void LeftEndPressed(object sender, RoutedEventArgs e)
         {
             fixedNodePosition = nodePosition = Nodes[nodeID].Length;
@@ -1429,6 +1444,7 @@ namespace sMap_GUI
             UpdateBranchInfo();
         }
 
+
         bool initialized = false;
 
         private void InitializeComponent()
@@ -1440,7 +1456,7 @@ namespace sMap_GUI
 
         private void BranchPlotMouseMove(object sender, PointerEventArgs e)
         {
-            nodePosition = Math.Min(Math.Max(0, (1.0 - e.Device.GetPosition(this.FindControl<Canvas>("BranchPlotContainer")).X / 100.0) * Nodes[nodeID].Length), Nodes[nodeID].Length);
+            nodePosition = Math.Min(Math.Max(0, (1.0 - e.GetPosition(this.FindControl<Canvas>("BranchPlotContainer")).X / 100.0) * Nodes[nodeID].Length), Nodes[nodeID].Length);
             UpdateBranchInfo();
         }
 

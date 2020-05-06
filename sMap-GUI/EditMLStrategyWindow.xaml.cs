@@ -111,7 +111,7 @@ namespace sMap_GUI
 
                 grd.PointerPressed += (s, e) =>
                 {
-                    if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+                    if (e.GetCurrentPoint(grd).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                     {
                         selectedIndex = j;
                         BuildStrategyList();
@@ -123,7 +123,7 @@ namespace sMap_GUI
                     AddButton remButt = new AddButton() { Type = AddButton.ButtonTypes.Remove, Margin = new Thickness(0, 0, 5, 0) };
                     remButt.PointerPressed += async (s, e) =>
                     {
-                        if (e.MouseButton == MouseButton.Left)
+                        if (e.GetCurrentPoint(remButt).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                         {
                             await RemoveStrategy(j);
                             e.Handled = true;
@@ -139,7 +139,7 @@ namespace sMap_GUI
 
                     moveUp.PointerPressed += (s, e) =>
                     {
-                        if (e.MouseButton == MouseButton.Left)
+                        if (e.GetCurrentPoint(moveUp).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                         {
                             if (selectedIndex == j)
                             {
@@ -161,7 +161,7 @@ namespace sMap_GUI
 
                     moveDown.PointerPressed += (s, e) =>
                     {
-                        if (e.MouseButton == MouseButton.Left)
+                        if (e.GetCurrentPoint(moveDown).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
                         {
                             if (selectedIndex == j)
                             {
@@ -224,7 +224,7 @@ namespace sMap_GUI
 
         private void AddSampling(object sender, PointerPressedEventArgs e)
         {
-            if (e.MouseButton == MouseButton.Left)
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
                 strategies.Add(MaximisationStrategy.Parse("Sampling()"));
                 BuildStrategyList();
@@ -233,7 +233,7 @@ namespace sMap_GUI
 
         private void AddIterativeSampling(object sender, PointerPressedEventArgs e)
         {
-            if (e.MouseButton == MouseButton.Left)
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
                 strategies.Add(MaximisationStrategy.Parse("IterativeSampling()"));
                 BuildStrategyList();
@@ -242,7 +242,7 @@ namespace sMap_GUI
 
         private void AddRandomWalk(object sender, PointerPressedEventArgs e)
         {
-            if (e.MouseButton == MouseButton.Left)
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
                 strategies.Add(MaximisationStrategy.Parse("RandomWalk()"));
                 BuildStrategyList();
@@ -251,7 +251,7 @@ namespace sMap_GUI
 
         private void AddNesterovClimbing(object sender, PointerPressedEventArgs e)
         {
-            if (e.MouseButton == MouseButton.Left)
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
                 strategies.Add(MaximisationStrategy.Parse("NesterovClimbing()"));
                 BuildStrategyList();
@@ -414,7 +414,12 @@ namespace sMap_GUI
                 plotEnqueued = false;
             }
 
-            int w = (int)this.FindControl<Grid>("PlotsGrid").ColumnDefinitions[0].ActualWidth;
+            int w = -1;
+
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                w = (int)this.FindControl<Grid>("PlotsGrid").ColumnDefinitions[0].ActualWidth;
+            });
 
             Bitmap bmp = new Bitmap(w, 150);
 
@@ -625,13 +630,13 @@ namespace sMap_GUI
                             bestVars = Utils.Utils.AutoMaximiseFunctionRandomWalk(likelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], rnd, -2);
                             break;
                         case Strategies.Sampling:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionSampling(likelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionSampling(likelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], false, -2);
                             break;
                         case Strategies.NesterovClimbing:
                             bestVars = Utils.Utils.AutoMaximiseFunctionNesterov(likelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], rnd, -2);
                             break;
                         case Strategies.IterativeSampling:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionIterativeSampling((a, b) => likelihoodFunc(a), bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionIterativeSampling((a, b) => likelihoodFunc(a), bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], false, -2);
                             break;
                     }
                 }

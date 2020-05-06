@@ -55,6 +55,14 @@ namespace sMap_GUI
 
             BuildWindow();
 
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
         }
 
         void BuildWindow()

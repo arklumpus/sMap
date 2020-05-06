@@ -2,26 +2,70 @@
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using MatrixExponential;
+using Microsoft.VisualBasic.CompilerServices;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Utils
 {
     public class Likelihoods
     {
-        public static double ComputeAllLikelihoods(LikelihoodModel model, DataMatrix data, CharacterDependency[][] dependencies, Dictionary<string, Parameter>[] pi, Dictionary<string, Parameter>[] rates)
+        public static bool StoreComputedLikelihoods = false;
+
+        public static ConcurrentBag<string> StoredLikelihoods;
+
+        public static int ParallelMLE = 1;
+        public static int MLERounds = 1;
+
+        public static bool UseEstimatedPis = false;
+
+        public static double ComputeAllLikelihoods(LikelihoodModel model, DataMatrix data, CharacterDependency[][] dependencies, Dictionary<string, Parameter>[] pi, Dictionary<string, Parameter>[] rates, bool useEstimatedPis, bool returnEstimatedPis, out Dictionary<string, double>[] estimatedPis)
         {
+            if (useEstimatedPis && returnEstimatedPis)
+            {
+                estimatedPis = new Dictionary<string, double>[dependencies.Length];
+            }
+            else
+            {
+                estimatedPis = null;
+            }
+
             double tbr = 0;
             for (int i = 0; i < dependencies.Length; i++)
             {
                 if (dependencies[i].Length == 1 && dependencies[i][0].Type == CharacterDependency.Types.Independent)
                 {
-                    tbr += ComputeLikelihoods(model, (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], out double[][] ignore);
+                    if (useEstimatedPis)
+                    {
+                        if (!returnEstimatedPis)
+                        {
+                            tbr += ComputeLikelihoods(model, (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], true, out _);
+                        }
+                        else
+                        {
+                            tbr += ComputeLikelihoods(model, (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], true, out double[][] likelihoods);
+
+                            estimatedPis[i] = new Dictionary<string, double>();
+
+                            double denomin = Utils.LogSumExp(likelihoods[likelihoods.Length - 1]);
+
+                            for (int j = 0; j < data.States[dependencies[i][0].Index].Length; j++)
+                            {
+                                estimatedPis[i][data.States[dependencies[i][0].Index][j]] = Math.Exp(likelihoods[likelihoods.Length - 1][j] - denomin);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        tbr += ComputeLikelihoods(model, (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], false, out _);
+                    }
                 }
                 else
                 {
@@ -33,7 +77,7 @@ namespace Utils
             return tbr;
         }
 
-        public static double[] EstimateParameters(MaximisationStrategy[] strategies, DataMatrix data, CharacterDependency[] dependencies, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, LikelihoodModel likModel, Random randomSource, out bool mcmcRequired, out bool mlPerformed)
+        public static double[] EstimateParameters(MaximisationStrategy[] strategies, DataMatrix data, CharacterDependency[] dependencies, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, LikelihoodModel likModel, Random randomSource, /*bool computeHessian,*/ out bool mcmcRequired, out bool mlPerformed/*, out double[][,] hessianMatrix*/)
         {
             (int mlParameterCount, int bayesParameterCount, List<List<Parameter>> ratesToEstimate, List<(double remainingPi, List<Parameter> pis, int[] equalCounts)> pisToEstimate) parametersToEstimate = Utils.GetParametersToEstimate(dependencies, rates, pi);
 
@@ -165,6 +209,7 @@ namespace Utils
                 }
 
                 mlPerformed = false;
+                //hessianMatrix = null;
                 return startValues;
             }
 
@@ -174,6 +219,11 @@ namespace Utils
 
             Func<double[], double> threadUnsafeLikelihoodFunc = (vars) =>
             {
+                if (vars.Min() < 0)
+                {
+                    return double.NaN;
+                }
+
                 int valInd = 0;
 
                 for (int i = 0; i < ratesToEstimate.Count; i++)
@@ -200,14 +250,25 @@ namespace Utils
                     }
                 }
 
-                return ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependencies }, pi, rates);
+                if (!StoreComputedLikelihoods)
+                {
+                    return ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependencies }, pi, rates, UseEstimatedPis, false, out _);
+                }
+                else
+                {
+                    double likelihood = ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependencies }, pi, rates, UseEstimatedPis, false, out _);
+
+                    StoredLikelihoods.Add(vars.Aggregate(likelihood.ToString(System.Globalization.CultureInfo.InvariantCulture), (a, b) => a + "\t" + b.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+
+                    return likelihood;
+                }
             };
 
-            Dictionary<string, Parameter>[][] pisByThread = new Dictionary<string, Parameter>[Utils.MaxThreads][];
-            Dictionary<string, Parameter>[][] ratesByThread = new Dictionary<string, Parameter>[Utils.MaxThreads][];
-            CharacterDependency[][] dependenciesByThread = new CharacterDependency[Utils.MaxThreads][];
+            Dictionary<string, Parameter>[][] pisByThread = new Dictionary<string, Parameter>[Math.Max(Utils.MaxThreads, ParallelMLE)][];
+            Dictionary<string, Parameter>[][] ratesByThread = new Dictionary<string, Parameter>[Math.Max(Utils.MaxThreads, ParallelMLE)][];
+            CharacterDependency[][] dependenciesByThread = new CharacterDependency[Math.Max(Utils.MaxThreads, ParallelMLE)][];
 
-            for (int j = 0; j < Utils.MaxThreads; j++)
+            for (int j = 0; j < Math.Max(Utils.MaxThreads, ParallelMLE); j++)
             {
                 dependenciesByThread[j] = new CharacterDependency[dependencies.Length];
 
@@ -240,10 +301,10 @@ namespace Utils
                 }
             }
 
-            List<List<Parameter>>[] ratesToEstimateByThread = new List<List<Parameter>>[Utils.MaxThreads];
-            List<(double remainingPi, List<Parameter> pis, int[] equalCounts)>[] pisToEstimateByThread = new List<(double remainingPi, List<Parameter> pis, int[] equalCounts)>[Utils.MaxThreads];
+            List<List<Parameter>>[] ratesToEstimateByThread = new List<List<Parameter>>[Math.Max(Utils.MaxThreads, ParallelMLE)];
+            List<(double remainingPi, List<Parameter> pis, int[] equalCounts)>[] pisToEstimateByThread = new List<(double remainingPi, List<Parameter> pis, int[] equalCounts)>[Math.Max(Utils.MaxThreads, ParallelMLE)];
 
-            for (int i = 0; i < Utils.MaxThreads; i++)
+            for (int i = 0; i < Math.Max(Utils.MaxThreads, ParallelMLE); i++)
             {
                 (int mlParameterCount, int bayesParameterCount, List<List<Parameter>> ratesToEstimate, List<(double remainingPi, List<Parameter> pis, int[] equalCounts)> pisToEstimate) parametersToEstimateByThread = Utils.GetParametersToEstimate(dependenciesByThread[i], ratesByThread[i], pisByThread[i]);
                 ratesToEstimateByThread[i] = parametersToEstimateByThread.ratesToEstimate;
@@ -252,6 +313,11 @@ namespace Utils
 
             Func<double[], int, double> threadSafeLikelihoodFunc = (vars, threadInd) =>
             {
+                if (vars.Min() < 0)
+                {
+                    return double.NaN;
+                }
+
                 int valInd = 0;
 
                 for (int i = 0; i < ratesToEstimateByThread[threadInd].Count; i++)
@@ -278,7 +344,18 @@ namespace Utils
                     }
                 }
 
-                return ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependenciesByThread[threadInd] }, pisByThread[threadInd], ratesByThread[threadInd]);
+                if (!StoreComputedLikelihoods)
+                {
+                    return ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependenciesByThread[threadInd] }, pisByThread[threadInd], ratesByThread[threadInd], UseEstimatedPis, false, out _);
+                }
+                else
+                {
+                    double likelihood = ComputeAllLikelihoods(likModel, data, new CharacterDependency[][] { dependenciesByThread[threadInd] }, pisByThread[threadInd], ratesByThread[threadInd], UseEstimatedPis, false, out _);
+
+                    StoredLikelihoods.Add(vars.Aggregate(likelihood.ToString(System.Globalization.CultureInfo.InvariantCulture), (a, b) => a + "\t" + b.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+
+                    return likelihood;
+                }
             };
 
 
@@ -322,23 +399,42 @@ namespace Utils
 
             sw.Restart();
 
-            for (int i = 0; i < strategies.Length; i++)
+            for (int j = 0; j < MLERounds; j++)
             {
-                switch (strategies[i].Strategy)
+                for (int i = 0; i < strategies.Length; i++)
                 {
-                    case Strategies.RandomWalk:
-                        bestVars = Utils.AutoMaximiseFunctionRandomWalk(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
-                        break;
-                    case Strategies.Sampling:
-                        bestVars = Utils.AutoMaximiseFunctionSampling(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], Utils.RunningGui ? -2 : plotTop);
-                        break;
-                    case Strategies.NesterovClimbing:
-                        bestVars = Utils.AutoMaximiseFunctionNesterov(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
-                        break;
-                    case Strategies.IterativeSampling:
-                        bestVars = Utils.AutoMaximiseFunctionIterativeSampling(threadSafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], Utils.RunningGui ? -2 : plotTop);
-                        threadUnsafeLikelihoodFunc(bestVars);
-                        break;
+                    switch (strategies[i].Strategy)
+                    {
+                        case Strategies.RandomWalk:
+                            if (ParallelMLE <= 1)
+                            {
+                                bestVars = Utils.AutoMaximiseFunctionRandomWalk(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
+                            }
+                            else
+                            {
+                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionRandomWalk((vars) => threadSafeLikelihoodFunc(vars, index), parameters, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
+                                threadUnsafeLikelihoodFunc(bestVars);
+                            }
+                            break;
+                        case Strategies.Sampling:
+                            bestVars = Utils.AutoMaximiseFunctionSampling(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], j > 0 || i > 0, Utils.RunningGui ? -2 : plotTop);
+                            break;
+                        case Strategies.NesterovClimbing:
+                            if (ParallelMLE <= 1)
+                            {
+                                bestVars = Utils.AutoMaximiseFunctionNesterov(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
+                            }
+                            else
+                            {
+                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionNesterov((vars) => threadSafeLikelihoodFunc(vars, index), bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
+                                threadUnsafeLikelihoodFunc(bestVars);
+                            }
+                            break;
+                        case Strategies.IterativeSampling:
+                            bestVars = Utils.AutoMaximiseFunctionIterativeSampling(threadSafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], j > 0 || i > 0, Utils.RunningGui ? -2 : plotTop);
+                            threadUnsafeLikelihoodFunc(bestVars);
+                            break;
+                    }
                 }
             }
 
@@ -373,7 +469,80 @@ namespace Utils
             ConsoleWrapper.WriteLine();
             ConsoleWrapper.WriteLine();
 
+            /*if (computeHessian)
+            {
+                hessianMatrix = new double[2][,];
+                hessianMatrix[0] = Utils.HessianMatrix(x => threadUnsafeLikelihoodFunc((from el in x select Math.Abs(el)).ToArray()), bestVars);
+
+                List<int> non0Indices = new List<int>();
+
+                for (int i = 0; i < bestVars.Length; i++)
+                {
+                    if (bestVars[i] >= 0.001)
+                    {
+                        non0Indices.Add(i);
+                    }
+                }
+
+                Func<double[], double> non0LikFunc = (vals) =>
+                {
+                    double[] realVals = (double[])bestVars.Clone();
+                    for (int i = 0; i < vals.Length; i++)
+                    {
+                        realVals[non0Indices[i]] = vals[i];
+                    }
+                    return threadUnsafeLikelihoodFunc(realVals);
+                };
+
+
+
+                hessianMatrix[1] = Utils.HessianMatrix(x => non0LikFunc((from el in x select Math.Abs(el)).ToArray()), (from el in non0Indices select bestVars[el]).ToArray());
+            }
+            else
+            {
+                hessianMatrix = null;
+            }*/
+
+            double mle = threadUnsafeLikelihoodFunc(bestVars);
+
             return bestVars;
+        }
+
+
+        private static double[] RunParallelMaximisation(Func<double[], int, double[]> threadSafeMaximizerFunction, Func<double[], int, double> threadSafeLikelihoodFunc, double[] bestVars)
+        {
+            double[][] bestVarsByThread = new double[ParallelMLE][];
+            double[] bestValsByThread = new double[ParallelMLE];
+            Thread[] threads = new Thread[ParallelMLE];
+            for (int j = 0; j < ParallelMLE; j++)
+            {
+                int index = j;
+                bestVarsByThread[j] = (double[])bestVars.Clone();
+                threads[j] = new Thread(() =>
+                {
+                    bestVarsByThread[index] = threadSafeMaximizerFunction(bestVarsByThread[index], index);
+                    bestValsByThread[index] = threadSafeLikelihoodFunc(bestVarsByThread[index], index);
+                });
+            }
+
+            Utils.PlotTriggerMarshal = Utils.NewParallelTriggerMarshal(double.MinValue);
+            Utils.StepFinishedTriggerMarshal = Utils.NewParallelStepFinishedTriggerMarshal();
+
+            for (int j = 0; j < ParallelMLE; j++)
+            {
+                threads[j].Start();
+            }
+
+            for (int j = 0; j < ParallelMLE; j++)
+            {
+                threads[j].Join();
+            }
+
+            Utils.PlotTriggerMarshal = Utils.DefaultPlotTriggerMarshal;
+            Utils.StepFinishedTriggerMarshal = Utils.DefaultStepFinishedTriggerMarshal;
+
+            int maxInd = bestValsByThread.MaxInd();
+            return bestVarsByThread[maxInd];
         }
 
         public static double ComputeJointLikelihoods(LikelihoodModel model, DataMatrix data, CharacterDependency[] dependencies, Dictionary<string, Parameter>[] pi, Dictionary<string, Parameter>[] rates, double[] parameters, double[][] likelihoods, bool initializeOutput)
@@ -660,7 +829,7 @@ namespace Utils
 
         }
 
-        public static double ComputeLikelihoods(LikelihoodModel model, (string[] States, IDictionary<string, double[]> Data) data, Dictionary<string, Parameter> pi, Dictionary<string, Parameter> rates, out double[][] likelihoods)
+        public static double ComputeLikelihoods(LikelihoodModel model, (string[] States, IDictionary<string, double[]> Data) data, Dictionary<string, Parameter> pi, Dictionary<string, Parameter> rates, bool useEstimatedPis, out double[][] likelihoods)
         {
             likelihoods = new double[model.Children.Length][];
 
@@ -746,9 +915,29 @@ namespace Utils
             }
 
             double tbr = 0;
-            for (int i = 0; i < numStates; i++)
+
+            if (!useEstimatedPis)
             {
-                tbr += pi[data.States[i]] * Math.Exp(likelihoods[likelihoods.Length - 1][i]);
+                for (int i = 0; i < numStates; i++)
+                {
+                    tbr += pi[data.States[i]] * Math.Exp(likelihoods[likelihoods.Length - 1][i]);
+                }
+            }
+            else
+            {
+                double[] estimatedPis = new double[numStates];
+
+                double denomin = Utils.LogSumExp(likelihoods[likelihoods.Length - 1]);
+
+                for (int i = 0; i < numStates; i++)
+                {
+                    estimatedPis[i] = Math.Exp(likelihoods[likelihoods.Length - 1][i] - denomin);
+                }
+
+                for (int i = 0; i < numStates; i++)
+                {
+                    tbr += estimatedPis[i] * Math.Exp(likelihoods[likelihoods.Length - 1][i]);
+                }
             }
 
             tbr = Math.Log(tbr);

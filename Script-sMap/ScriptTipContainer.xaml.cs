@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -88,7 +89,7 @@ namespace Script_sMap
             this.SetTip((Tips)(currTip + 1));
         }
 
-        private void ScriptConsoleLinkClicked(object sender, RoutedEventArgs e)
+        private void ScriptConsoleLinkClicked(object sender, PointerPressedEventArgs e)
         {
             if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
             {

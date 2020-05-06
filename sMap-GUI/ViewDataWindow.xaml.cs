@@ -83,7 +83,7 @@ namespace sMap_GUI
 
                 for (int j = 0; j < dat.States[i].Length; j++)
                 {
-                    StackPanel pnl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, Margin = new Thickness(5) };
+                    StackPanel pnl = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, Margin = new Thickness(5) };
                     pnl.Children.Add(new TextBlock() { Text = dat.States[i][j], FontWeight = FontWeight.Bold, Margin = new Thickness(5) });
                     (int, int, int, double) col = Utils.Plotting.GetColor(stateInd, 1, totalStates);
 
@@ -190,6 +190,15 @@ namespace sMap_GUI
 
                 ind++;
             }
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
         }
 
         private void InitializeComponent()

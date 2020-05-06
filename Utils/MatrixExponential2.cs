@@ -41,40 +41,47 @@ namespace MatrixExponential
 
             if (cachedResult == null)
             {
-
-                Matrix<Complex> m = mat.ToComplex();
-                Evd<Complex> evd = m.Evd();
-
-                HashSet<Complex> eigenValues = new HashSet<Complex>();
-
-                for (int i = 0; i < evd.EigenValues.Count; i++)
+                try
                 {
-                    if (Math.Abs(evd.EigenValues[i].Real) < 1e-5)
+                    Matrix<Complex> m = mat.ToComplex();
+                    Evd<Complex> evd = m.Evd();
+
+                    HashSet<Complex> eigenValues = new HashSet<Complex>();
+
+                    for (int i = 0; i < evd.EigenValues.Count; i++)
                     {
-                        evd.EigenValues[i] = new Complex(0, evd.EigenValues[i].Imaginary);
+                        if (Math.Abs(evd.EigenValues[i].Real) < 1e-5)
+                        {
+                            evd.EigenValues[i] = new Complex(0, evd.EigenValues[i].Imaginary);
+                        }
+
+                        if (Math.Abs(evd.EigenValues[i].Imaginary) < 1e-5)
+                        {
+                            evd.EigenValues[i] = new Complex(evd.EigenValues[i].Real, 0);
+                        }
+
+                        eigenValues.Add(evd.EigenValues[i]);
                     }
 
-                    if (Math.Abs(evd.EigenValues[i].Imaginary) < 1e-5)
+                    if (eigenValues.Count == m.ColumnCount)
                     {
-                        evd.EigenValues[i] = new Complex(evd.EigenValues[i].Real, 0);
+                        //Diagonalizable
+
+                        Matrix<Complex> inv = evd.EigenVectors.Inverse();
+                        Matrix<Complex> eig = evd.EigenVectors;
+                        Matrix<Complex> diag = Matrix<Complex>.Build.DenseOfDiagonalVector(evd.EigenValues);
+
+                        return new MatrixExponential((eig * (diag * t).DiagonalExp() * inv).Real().PointwiseAbs(), eig, inv, diag);
                     }
-
-                    eigenValues.Add(evd.EigenValues[i]);
+                    else
+                    {
+                        //Might not diagonalizable: fallback to Padé approximation [note: this happens "almost never"]
+                        return new MatrixExponential((mat * t).PadeExponential().PointwiseAbs(), null, null, null);
+                    }
                 }
-
-                if (eigenValues.Count == m.ColumnCount)
+                catch
                 {
-                    //Diagonalizable
-
-                    Matrix<Complex> inv = evd.EigenVectors.Inverse();
-                    Matrix<Complex> eig = evd.EigenVectors;
-                    Matrix<Complex> diag = Matrix<Complex>.Build.DenseOfDiagonalVector(evd.EigenValues);
-
-                    return new MatrixExponential((eig * (diag * t).DiagonalExp() * inv).Real().PointwiseAbs(), eig, inv, diag);
-                }
-                else
-                {
-                    //Might not diagonalizable: fallback to Padé approximation [note: this happens "almost never"]
+                    //Error during diagonalization: fallback to Padé approximation
                     return new MatrixExponential((mat * t).PadeExponential().PointwiseAbs(), null, null, null);
                 }
             }

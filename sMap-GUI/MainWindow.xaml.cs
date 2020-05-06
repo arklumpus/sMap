@@ -13,7 +13,7 @@ namespace sMap_GUI
 {
     public class MainWindow : Window
     {
-        public static string Version = "1.0.3";
+        public static string Version = "1.0.6";
 
         public MainWindow()
         {
@@ -409,6 +409,11 @@ namespace sMap_GUI
                 args.Add("\"" + this.FindControl<TextBox>("PiFileBox").Text.Replace("\\", "/") + "\"");
             }
 
+            if (this.FindControl<CheckBox>("EstimatedPisBox").IsChecked == true)
+            {
+                args.Add("--ep");
+            }
+
             if (!string.IsNullOrEmpty(this.FindControl<TextBox>("ModelFileBox").Text))
             {
                 args.Add("-i");
@@ -423,11 +428,13 @@ namespace sMap_GUI
 
             if (this.FindControl<CheckBox>("NormBox").IsChecked == true)
             {
-                args.Add("-N");
-
                 if (this.FindControl<NumericUpDown>("NormValueBox").Value > 0)
                 {
-                    args.Add(this.FindControl<NumericUpDown>("NormValueBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    args.Add("-N=" + this.FindControl<NumericUpDown>("NormValueBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    args.Add("-N");
                 }
             }
 
@@ -448,6 +455,33 @@ namespace sMap_GUI
                 args.Add("-m");
                 args.Add("\"" + this.FindControl<TextBox>("MLStrategy").Text + "\"");
             }
+
+            if (this.FindControl<NumericUpDown>("ParallelMLEBox").Value > 1)
+            {
+                args.Add("--pm");
+                args.Add(((int)this.FindControl<NumericUpDown>("ParallelMLEBox").Value).ToString());
+            }
+
+            if (this.FindControl<NumericUpDown>("MLERoundsBox").Value > 1)
+            {
+                args.Add("--mr");
+                args.Add(((int)this.FindControl<NumericUpDown>("MLERoundsBox").Value).ToString());
+            }
+
+            if (this.FindControl<CheckBox>("SaveSampledLikelihoods").IsChecked == true)
+            {
+                args.Add("--sl");
+            }
+
+            if (this.FindControl<CheckBox>("PlotSampledLikelihoods").IsChecked == true)
+            {
+                args.Add("--pl");
+            }
+
+            /*if (this.FindControl<CheckBox>("ComputeHessianBox").IsChecked == true)
+            {
+                args.Add("--H");
+            }*/
 
             if (this.FindControl<CheckBox>("DTestBox").IsChecked == true)
             {

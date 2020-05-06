@@ -408,7 +408,7 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
       <Canvas Width="81" Height="60" ClipToBounds="True">
-        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60 M39,0 L59,60 M56,0 L76,60"></Path>
       </Canvas>
       <Canvas Grid.Column="1" Height="60" Background="#00a2e8">
         <Path Fill="#00a2e8" Data="M0,60 L0,0 L-25,0 Z"></Path>
@@ -420,7 +420,7 @@
         <TextBlock FontWeight="Bold" FontSize="36" Margin="5,3.5,0,0" Foreground="White">Welcome to sMap-GUI</TextBlock>
       </StackPanel>
       <Canvas Width="47" Height="60" ClipToBounds="True" Grid.Column="2">
-        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,60 M22,0 L42,60"></Path>
       </Canvas>
     </Grid>
     <TextBlock Grid.Row="1" FontWeight="Bold" FontSize="30" Margin="20, 0, 0, 0" Grid.ColumnSpan="2">Choose action to perform:</TextBlock>

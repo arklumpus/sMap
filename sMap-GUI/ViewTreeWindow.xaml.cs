@@ -42,6 +42,17 @@ namespace sMap_GUI
 #endif
 
             InitializeTrees(trees);
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+                await System.Threading.Tasks.Task.Delay(10);
+                this.FindControl<ZoomBorder>("TreeContainer").Uniform();
+            };
+
+            resize();
         }
 
         public ViewTreeWindow(TreeNode tree)
@@ -52,6 +63,17 @@ namespace sMap_GUI
 #endif
 
             InitializeTrees(new List<TreeNode>() { tree });
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+                await System.Threading.Tasks.Task.Delay(10);
+                this.FindControl<ZoomBorder>("TreeContainer").Uniform();
+            };
+
+            resize();
         }
 
         private void InitializeTrees(List<TreeNode> trees)

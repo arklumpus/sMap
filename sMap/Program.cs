@@ -15,6 +15,12 @@ using Mono.Options;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.IO.Compression;
+using MathNet.Numerics.Integration;
+using MathNet.Numerics.LinearAlgebra.Factorization;
+using MathNet.Numerics;
+using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.Tracing;
 
 namespace sMap
 {
@@ -28,7 +34,7 @@ namespace sMap
 
         private static bool _runningGui = false;
 
-        public static string Version = "1.0.5";
+        public static string Version = "1.0.6";
 
         public static bool RunningGUI
         {
@@ -113,6 +119,12 @@ namespace sMap
 
             string archiveFileName = null;
 
+            bool storeLikelihoodEstimates = false;
+            bool plotLikelihoodEstimates = false;
+
+            bool useEstimatedPis = false;
+
+            //bool computeHessian = false;
 
             OptionSet preParser = new OptionSet()
             {
@@ -173,13 +185,19 @@ namespace sMap
                 { "a|archive=", "Analysis archive. A ZIP file containing all the data and command-line parameters necessary to perform the analysis.", v => { } },
                 { "D|dependency=", "Optional. A NEXUS format file containing one or more \"Dependency\" blocks that specify dependency relationships between characters. Characters whose relationships have not been specified are assumed to be independent.", v => { dependencyFile = v; } },
                 { "r|rates=", "Optional. A NEXUS format file containing one or more \"Rates\" blocks that specify transition rates between character states. Rates that are not specified will be estimated using Maximum-Likelihood.", v => { rateFile = v; } },
-                { "p|pi=", "Optional. A NEXUS format file containing one or more \"Pi\" blocks that specify the equilibrium frequencies of character states. Equilibrium frequencies that are not specified will be assumed to be equal to 1/(number of states).", v => { piFile = v; } },
+                { "p|pi=", "Optional. A NEXUS format file containing one or more \"Pi\" blocks that specify the root node priors of character states. Root node priors that are not specified will be assumed to be equal to 1/(number of states).", v => { piFile = v; } },
+                { "ep|estimated-pi", "Optional. If enabled, during maximum-likelihood optimisation the root node priors will be estimated for \"independent\" and \"dependent\" characters. Note that this setting overrides any \"fixed\" pis, but it does not affect MCMC sampling or \"Dependency\" blocks including more than one character (except in the case where all characters are \"dependent\" on each other). Default: off.", v => { useEstimatedPis = v != null; Likelihoods.UseEstimatedPis = v != null; } },
                 { "i|input=", "Optional. A NEXUS format file containing one or more \"Dependency\", \"Rates\" and/or \"Pi\" blocks. This is equivalent to providing the same file to the -D, -r and -p options.", v => { dependencyFile = v; rateFile = v; piFile = v; } },
                 { "s|seed=", "Optional. Random number seed. Should only be used for debug purposes, as it will likely cause degradation of random number quality. Default: none.", v => { seed = int.Parse(v); } },
                 { "N|norm:", "Optional. If enabled, the branch lengths of the trees are normalised. If an optional {VALUE} is supplied, the branch lengths are all divided by that VALUE, otherwise they are divided by the mean tree height. Default: disabled.", v => { normaliseLength = true; if (!string.IsNullOrEmpty(v)) { normalisationFactor = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } } },
                 { "c|coerce=", "Optional. If enabled, any branch lengths that are smaller than the specified {VALUE} are coerced to VALUE. Default: disabled.", v=> { coerceLengths = true; coercionThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "m=", "Optional. Maximum likelihood optimisation strategy. Default: IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot).", v => { MLStrategies = (from el in v.Split('|') select MaximisationStrategy.Parse(el)).ToArray(); } },
-                { "nt|num-threads=", "Optional. Number of threads for the prior and posterior computation step, and maximum number of threads for the simulation step. Default: 1.", v => { numThreads = int.Parse(v); Utils.Utils.MaxThreads = numThreads; } },
+                { "pm|parallel-ml=", "Optional. Number of parallel maximum-likelihood optimisations for the \"RandomWalk\" and \"NesterovClimbing\" strategies. Note that this is independent of the --nt option. \"IterativeSampling\" strategies are still parallelised using the setting from --nt. Default: 1.", v => { Likelihoods.ParallelMLE = int.Parse(v); } },
+                { "mr|ml-rounds=", "Optional. Number of consecutive rounds of maximum-likelihood optimisation. Default: 1.", v => { Likelihoods.MLERounds = int.Parse(v); } },
+                { "sl|store-likelihoods", "Optional. If enabled, store the likelihood estimates computed during maximum-likelihood estimation. Default: off.", v => { storeLikelihoodEstimates = v != null; Likelihoods.StoreComputedLikelihoods = storeLikelihoodEstimates || plotLikelihoodEstimates; } },
+                { "pl|plot-likelihoods", "Optional. If enabled, plot the likelihood estimates computed during maximum-likelihood estimation. Default: off.", v => { plotLikelihoodEstimates = v != null; Likelihoods.StoreComputedLikelihoods = storeLikelihoodEstimates || plotLikelihoodEstimates; } },
+                //{ "H|hessian", "Optional. If enabled, the Hessian matrix at the maximum-likelihood estimate will be computed. Default: off.", v => { computeHessian = v != null; } },
+                { "nt|num-threads=", "Optional. Number of threads for parallelised steps, and maximum number of threads for the simulation step. Default: 1.", v => { numThreads = int.Parse(v); Utils.Utils.MaxThreads = numThreads; } },
                 { "dt|d-test=", "Optional. Perform a D-test for correlation between different characters, sampling {VALUE} histories from the posterior predictive distribution of each parameter sample. Note that will cause {VALUE} * num-sim unconstrained histories to be sampled, which may take some time. Default: 0 (disabled).", v => { ppMultiplicity = int.Parse(v); computeDTest = true; } },
                 { "pp|posterior-predictive=", "Optional. Sample {VALUE} histories from the posterior predictive distribution of each parameter sample. These may be later used with Stat-sMap to perform D-tests. Note that will cause {VALUE} * num-sim unconstrained histories to be sampled and saved, which may take some time and will increase the output file size. Default: 0 (disabled).", v => { ppMultiplicity = int.Parse(v); computeDTest = false; } },
                 { "poll", "Optional. If enabled, during MCMC analysis we will look for a file called \"<output>.interrupt\". If such a file exists, the MCMC chain will stop as if CTRL+C had been detected (and the file will be deleted).", v => { pollInterrupt = v != null; } },
@@ -205,7 +223,7 @@ namespace sMap
                 { "ss-samples=", "Optional. Number of MCMC samples for each stepping-stone step. Default: num-sim.", v => { steppingStoneSamples = int.Parse(v); } },
                 { "ss-estimate-steps", "Optional. If enabled, optimal MCMC proposal step sizes will be estimated for each stepping-stone step. If disabled, the step size determined for the first (posterior) MCMC run will be used instead. Default: off.", v => { steppingStoneEstimateStepSize = v != null; } },
                 { "parameters=", "Optional. A list of comma-separated files containing samples for every parameter in the model, one file for each set of character. Each file is allowed to have header rows, and must contain exactly num-sim data rows, each with a sample value for every parameter in the model.", v => { parameterFiles = v; } },
-                { "pw|plot-width=", "Optional. Page width in points for the PDF plots. Default: 500.", v => { plotWidth = float.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "pw|plot-width=", "Optional. Page width in points for the PDF plots. If not specified, it will be determined automatically depending on the plot. Default: auto.", v => { plotWidth = float.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "ph|plot-height=", "Optional. Page height in points for the PDF plots. If not specified, it will be determined automatically depending on the plot. Default: auto.", v => { if (float.TryParse(v, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float parsed)) { plotHeight = parsed; } else { plotHeight= null; } } },
                 { "br|bin-rule=", @"Optional. Rule to determine the number of bins in histogram plots. Default: FreedmanDiaconis. Possible values:
  Sqrt: square-root of the number of samples (n)
@@ -1041,7 +1059,273 @@ namespace sMap
                         ConsoleWrapper.WriteLine("Estimating parameters for character " + dependencies[i][0].InputDependencyName);
                     }
 
-                    MLEstimates[i] = Utils.Likelihoods.EstimateParameters(MLStrategies, data, dependencies[i], rates, pi, meanLikModel, mainRandom, out bool mcmcRequired, out bool thisMlPerformed);
+                    if (storeLikelihoodEstimates || plotLikelihoodEstimates)
+                    {
+                        Likelihoods.StoredLikelihoods = new ConcurrentBag<string>();
+                    }
+
+                    MLEstimates[i] = Utils.Likelihoods.EstimateParameters(MLStrategies, data, dependencies[i], rates, pi, meanLikModel, mainRandom, /*computeHessian,*/ out bool mcmcRequired, out bool thisMlPerformed/*, out double[][,] hessianMatrix*/);
+
+                    /*if (computeHessian && hessianMatrix != null)
+                    {
+                        Matrix<double> hessian = Matrix<double>.Build.DenseOfArray(hessianMatrix[0]);
+
+                        Evd<double> evd = null;
+                        double[] realEigenValues = null;
+
+                        try
+                        {
+                            evd = hessian.Evd();
+
+
+                            bool hasComplex = evd.EigenValues.Any(x => Math.Abs(x.Imaginary) >= 1e-5);
+
+                            if (hasComplex)
+                            {
+                                ConsoleWrapper.WriteLine("The Hessian matrix has complex eigenvalues!");
+                            }
+
+                            realEigenValues = (from el in evd.EigenValues where Math.Abs(el.Imaginary) < 1e-5 orderby Math.Abs(el.Real) ascending select el.Real).ToArray();
+
+                        }
+                        catch
+                        {
+                            ConsoleWrapper.WriteLine("An error occurred while computing the eigenvalues of the Hessian matrix!");
+                        }
+
+                        Matrix<double> hessianNonZero = Matrix<double>.Build.DenseOfArray(hessianMatrix[1]);
+
+                        Evd<double> evdNonZero = null;
+                        double[] realEigenValuesNonZero = null;
+
+                        try
+                        {
+                            evdNonZero = hessianNonZero.Evd();
+
+                            bool hasComplexNonZero = evdNonZero.EigenValues.Any(x => Math.Abs(x.Imaginary) >= 1e-5);
+
+                            if (hasComplexNonZero)
+                            {
+                                ConsoleWrapper.WriteLine("The Hessian matrix (only non-zero parameters) has complex eigenvalues!");
+                            }
+
+                            realEigenValuesNonZero = (from el in evdNonZero.EigenValues where Math.Abs(el.Imaginary) < 1e-5 orderby Math.Abs(el.Real) ascending select el.Real).ToArray();
+
+                        }
+                        catch
+                        {
+                            ConsoleWrapper.WriteLine("An error occurred while computing the eigenvalues of the Hessian matrix (only non-zero parameters)!");
+                        }
+
+
+                        if (realEigenValues != null && realEigenValues.Max() > 0)
+                        {
+                            if (realEigenValuesNonZero != null && realEigenValuesNonZero.Max() <= 0)
+                            {
+                                ConsoleWrapper.WriteLine("The log-likelihood has positive curvature in at least one direction!");
+                                ConsoleWrapper.WriteLine("You can most likely ignore this message, this is probably due to some rates being very close to 0.");
+                            }
+                            else
+                            {
+                                ConsoleWrapper.WriteLine("The log-likelihood has positive curvature in at least one direction! This may not be a maximum!");
+                            }
+                        }
+
+                        if (realEigenValues != null && realEigenValuesNonZero != null && realEigenValues.Length > 0 && realEigenValuesNonZero.Length > 0)
+                        {
+                            ConsoleWrapper.WriteLine("Minimum curvature of the log-likelihood: {0}", realEigenValues[0]);
+                            ConsoleWrapper.WriteLine("Minimum curvature of the log-likelihood (only non-zero parameters): {0}", realEigenValuesNonZero[0]);
+                            if (RunningGUI)
+                            {
+                                Utils.Utils.Trigger("LikelihoodCurvature", new object[] { i, realEigenValues[0], realEigenValuesNonZero[0] });
+                            }
+                        }
+                        else if (realEigenValues != null && realEigenValues.Length > 0)
+                        {
+                            ConsoleWrapper.WriteLine("Minimum curvature of the log-likelihood: {0}", realEigenValues[0]);
+                            if (RunningGUI)
+                            {
+                                Utils.Utils.Trigger("LikelihoodCurvature", new object[] { i, realEigenValues[0], double.NaN });
+                            }
+                        }
+                        else if (realEigenValuesNonZero != null && realEigenValuesNonZero.Length > 0)
+                        {
+                            ConsoleWrapper.WriteLine("Minimum curvature of the log-likelihood (only non-zero parameters): {0}", realEigenValuesNonZero[0]);
+                            if (RunningGUI)
+                            {
+                                Utils.Utils.Trigger("LikelihoodCurvature", new object[] { i, double.NaN, realEigenValuesNonZero[0] });
+                            }
+                        }
+                        else
+                        {
+                            ConsoleWrapper.WriteLine("The Hessian matrix has no real eigenvalues!");
+                            if (RunningGUI)
+                            {
+                                Utils.Utils.Trigger("LikelihoodCurvature", new object[] { i, double.NaN, double.NaN });
+                            }
+                        }
+
+
+                        ConsoleWrapper.WriteLine();
+
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".hessian.txt"))
+                        {
+                            sw.WriteLine("Hessian matrix:");
+
+                            for (int x = 0; x < MLEstimates[i].Length; x++)
+                            {
+                                for (int y = 0; y < MLEstimates[i].Length; y++)
+                                {
+                                    sw.Write(hessianMatrix[0][x, y]);
+                                    if (y < MLEstimates[i].Length - 1)
+                                    {
+                                        sw.Write("\t");
+                                    }
+                                    else
+                                    {
+                                        sw.Write("\n");
+                                    }
+                                }
+                            }
+
+                            if (evd != null)
+                            {
+                                sw.WriteLine();
+                                sw.WriteLine("Eigenvalues (real, imaginary):");
+
+                                for (int x = 0; x < MLEstimates[i].Length; x++)
+                                {
+                                    sw.Write(evd.EigenValues[x]);
+                                    if (x < MLEstimates[i].Length - 1)
+                                    {
+                                        sw.Write("\t");
+                                    }
+                                    else
+                                    {
+                                        sw.Write("\n");
+                                    }
+                                }
+
+                                sw.WriteLine();
+                                sw.WriteLine("Eigenvectors:");
+
+                                for (int x = 0; x < MLEstimates[i].Length; x++)
+                                {
+                                    for (int y = 0; y < MLEstimates[i].Length; y++)
+                                    {
+                                        sw.Write(evd.EigenVectors[x, y]);
+                                        if (y < MLEstimates[i].Length - 1)
+                                        {
+                                            sw.Write("\t");
+                                        }
+                                        else
+                                        {
+                                            sw.Write("\n");
+                                        }
+                                    }
+                                }
+                            }
+
+                            sw.WriteLine();
+                            sw.WriteLine();
+                            sw.WriteLine("Hessian matrix (non-zero parameters):");
+
+
+                            for (int x = 0; x < hessianMatrix[1].GetLength(0); x++)
+                            {
+                                for (int y = 0; y < hessianMatrix[1].GetLength(1); y++)
+                                {
+                                    sw.Write(hessianMatrix[1][x, y]);
+                                    if (y < hessianMatrix[1].GetLength(1) - 1)
+                                    {
+                                        sw.Write("\t");
+                                    }
+                                    else
+                                    {
+                                        sw.Write("\n");
+                                    }
+                                }
+                            }
+
+                            if (evdNonZero != null)
+                            {
+                                sw.WriteLine();
+                                sw.WriteLine("Eigenvalues (non-zero parameters):");
+
+                                for (int x = 0; x < hessianMatrix[1].GetLength(0); x++)
+                                {
+                                    sw.Write(evdNonZero.EigenValues[x]);
+                                    if (x < hessianMatrix[1].GetLength(0) - 1)
+                                    {
+                                        sw.Write("\t");
+                                    }
+                                    else
+                                    {
+                                        sw.Write("\n");
+                                    }
+                                }
+
+                                sw.WriteLine();
+                                sw.WriteLine("Eigenvectors (non-zero parameters):");
+
+                                for (int x = 0; x < hessianMatrix[1].GetLength(0); x++)
+                                {
+                                    for (int y = 0; y < hessianMatrix[1].GetLength(1); y++)
+                                    {
+                                        sw.Write(evdNonZero.EigenVectors[x, y]);
+                                        if (y < hessianMatrix[1].GetLength(1) - 1)
+                                        {
+                                            sw.Write("\t");
+                                        }
+                                        else
+                                        {
+                                            sw.Write("\n");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (RunningGUI)
+                        {
+                            Utils.Utils.Trigger("LikelihoodCurvature", new object[] { i, double.NaN, double.NaN });
+                        }
+                    }*/
+
+                    if (plotLikelihoodEstimates)
+                    {
+                        double[][] sampledParameters = new double[Likelihoods.StoredLikelihoods.Count][];
+                        double[] sampledValues = new double[Likelihoods.StoredLikelihoods.Count];
+
+                        int count = 0;
+
+                        foreach (string sr in Likelihoods.StoredLikelihoods)
+                        {
+                            sampledParameters[count] = (from el in sr.Split('\t') select double.Parse(el, System.Globalization.CultureInfo.InvariantCulture)).Skip(1).ToArray();
+                            sampledValues[count] = (from el in sr.Split('\t') select double.Parse(el, System.Globalization.CultureInfo.InvariantCulture)).First();
+                            count++;
+                        }
+
+                        Plotting.PlotLikelihoodSamples(outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".computed.likelihoods.pdf", sampledParameters, sampledValues, mainRandom);
+                    }
+
+                    if (storeLikelihoodEstimates)
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".computed.likelihoods.txt"))
+                        {
+                            sw.WriteLine(paramNames[i].Skip(1).Aggregate("logL", (a, b) => a + "\t" + b));
+                            foreach (string sr in Likelihoods.StoredLikelihoods)
+                            {
+                                sw.WriteLine(sr);
+                            }
+                        }
+                    }
+
+                    Likelihoods.StoredLikelihoods = null;
+
+
                     needMCMC |= mcmcRequired;
                     mlPerformed |= thisMlPerformed;
                 }
@@ -1058,7 +1342,7 @@ namespace sMap
 
                 if (totalMlParamCount == 0 && totalBayesParamCount == 0)
                 {
-                    double currLogL = Utils.Likelihoods.ComputeAllLikelihoods(meanLikModel, data, dependencies, pi, rates);
+                    double currLogL = Utils.Likelihoods.ComputeAllLikelihoods(meanLikModel, data, dependencies, pi, rates, false, false, out _);
                     ConsoleWrapper.WriteLine("Current ln-likelihood: {0}", currLogL.ToString(System.Globalization.CultureInfo.InvariantCulture));
                     ConsoleWrapper.WriteLine();
                     using (StreamWriter sw = new StreamWriter(outputPrefix + ".modelstat.txt"))
@@ -1068,7 +1352,23 @@ namespace sMap
                 }
                 else if (totalMlParamCount > 0)
                 {
-                    double ml = Utils.Likelihoods.ComputeAllLikelihoods(meanLikModel, data, dependencies, pi, rates);
+                    double ml = Utils.Likelihoods.ComputeAllLikelihoods(meanLikModel, data, dependencies, pi, rates, useEstimatedPis, true, out Dictionary<string, double>[] estimatedPis);
+
+                    if (useEstimatedPis)
+                    {
+                        for (int i = 0; i < dependencies.Length; i++)
+                        {
+                            if (dependencies[i].Length == 1 && dependencies[i][0].Type == CharacterDependency.Types.Independent && estimatedPis[i] != null)
+                            {
+                                foreach (KeyValuePair<string, double> kvp in estimatedPis[i])
+                                {
+                                    pi[dependencies[i][0].Index][kvp.Key].Value = kvp.Value;
+                                }
+                            }
+                        }
+                    }
+
+
                     double aic = 2 * (totalMlParamCount + totalBayesParamCount) - 2 * ml;
                     double aicc = aic + (double)(2 * (totalMlParamCount + totalBayesParamCount) * (totalMlParamCount + totalBayesParamCount) + 2 * (totalMlParamCount + totalBayesParamCount)) / (meanLikModel.NamedBranches.Count * inputData.States.Length - (totalMlParamCount + totalBayesParamCount) - 1);
                     double bic = Math.Log(meanLikModel.NamedBranches.Count * inputData.States.Length) * (totalMlParamCount + totalBayesParamCount) - 2 * ml;
@@ -1229,7 +1529,7 @@ namespace sMap
                                 varInd++;
                             }
 
-                            return Likelihoods.ComputeAllLikelihoods(tree, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId]);
+                            return Likelihoods.ComputeAllLikelihoods(tree, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _);
                         }, mainRandom, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".paramNames.txt", outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : ""), numRuns, numChains, numSim, runUnderPrior, inputStepSizeMultipliers);
 
                         (int, double[])[] mcmcSamples = mcmc.Item1;
@@ -1381,7 +1681,7 @@ namespace sMap
                                             varInd++;
                                         }
 
-                                        return Likelihoods.ComputeAllLikelihoods(likModel, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId]) * beta[step - 1];
+                                        return Likelihoods.ComputeAllLikelihoods(likModel, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _) * beta[step - 1];
                                     }, mainRandom, null, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ss" + step.ToString(), numRuns, numChains, steppingStoneSamples, beta[step - 1] == 0, stepSizeMultipliers[i]);
 
                                     double[] likelihoodSamples = new double[steppingStoneSamples];
@@ -1408,7 +1708,7 @@ namespace sMap
                                             varInd++;
                                         }
 
-                                        likelihoodSamples[l] = Likelihoods.ComputeAllLikelihoods(likModels[mcmcSamples.Item4[l].Item1], data, mcmcSamples.Item5[0], mcmcSamples.Item6[0], mcmcSamples.Item7[0]);
+                                        likelihoodSamples[l] = Likelihoods.ComputeAllLikelihoods(likModels[mcmcSamples.Item4[l].Item1], data, mcmcSamples.Item5[0], mcmcSamples.Item6[0], mcmcSamples.Item7[0], false, false, out _);
                                     }
 
                                     File.WriteAllLines(outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ss" + step.ToString() + ".samples.log", from el in likelihoodSamples select el.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -2189,7 +2489,7 @@ namespace sMap
                                         }
                                         sw.WriteLine();
 
-                                        Likelihoods.ComputeLikelihoods(likModels[treeSamples[j]], (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], out likelihoods[i][j]);
+                                        Likelihoods.ComputeLikelihoods(likModels[treeSamples[j]], (data.States[dependencies[i][0].Index], data.Data.Fold(dependencies[i][0].Index)), pi[dependencies[i][0].Index], rates[dependencies[i][0].Index], false, out likelihoods[i][j]);
 
                                         posteriors[i][j] = Likelihoods.ComputeAndSamplePosteriors(likModels[treeSamples[j]], data.States[dependencies[i][0].Index], pi, rates, parameters[j][i], dependencies[i], likelihoods[i][j], out branchProbs[j], mainRandom);
 
@@ -2478,7 +2778,8 @@ namespace sMap
 
                 if (ppMultiplicity > 0 && (!computeDTest || (dependencies[i].Length > 1 || (dependencies[i].Length == 1 && dependencies[i][0].Type != CharacterDependency.Types.Independent))))
                 {
-                    ConsoleWrapper.Write("Simulating {0} posterior-predictive histories " + (computeDTest ? "and computing D-stats " : "")+ "for characters ", numSim * ppMultiplicity);
+                    ConsoleWrapper.WriteLine();
+                    ConsoleWrapper.Write("Generating {0} posterior-predictive datasets and sampling {1} histories for each dataset for character" + (dependencies[i].Length > 1 || dependencies[i][0].InputDependencyName.IndexOf(",") > 0 ? "s" : "") + " ", numSim, ppMultiplicity);
                     for (int j = 0; j < dependencies[i].Length; j++)
                     {
                         switch (dependencies[i][j].Type)
@@ -2546,10 +2847,205 @@ namespace sMap
                         //Structure of each stream: |history[0]|length[0]|history[1]|length[1]|...
                     }
 
+                    string[][] allPossibleStatesStrings = Utils.Utils.GetAllPossibleStatesStrings(dependencies[i], data.States);
+
+                    double[][][][] posteriorPredictiveInternalStates = new double[ppMultiplicity][][][]; //[replicate][simulation][node][state]
 
                     for (int j = 0; j < ppMultiplicity; j++)
                     {
-                        TaggedHistory[] ppHistories = Utils.Simulation.SimulateJointHistories(likModels, treeSamples, dependencies[i], i, data.States, priors[i], parameters, rates, pi, mainRandom, numSim, numThreads, 1.0 / ppMultiplicity, (double)j / ppMultiplicity);
+                        posteriorPredictiveInternalStates[j] = new double[numSim][][];
+                        for (int k = 0; k < numSim; k++)
+                        {
+                            posteriorPredictiveInternalStates[j][k] = new double[likModels[treeSamples[k]].Parents.Length][];
+                            for (int l = 0; l < posteriorPredictiveInternalStates[j][k].Length; l++)
+                            {
+                                posteriorPredictiveInternalStates[j][k][l] = new double[allPossibleStatesStrings.Length];
+                            }
+                        }
+                    }
+
+                    int cursorPos = ConsoleWrapper.CursorLeft;
+
+                    {
+                        Dictionary<string, Parameter>[][] pisByThread = new Dictionary<string, Parameter>[numThreads + 1][];
+                        Dictionary<string, Parameter>[][] ratesByThread = new Dictionary<string, Parameter>[numThreads + 1][];
+                        CharacterDependency[][] dependenciesIByThread = new CharacterDependency[numThreads + 1][];
+
+                        for (int j = 0; j < numThreads + 1; j++)
+                        {
+                            dependenciesIByThread[j] = new CharacterDependency[dependencies[i].Length];
+
+                            for (int k = 0; k < dependencies[i].Length; k++)
+                            {
+                                switch (dependencies[i][k].Type)
+                                {
+                                    case CharacterDependency.Types.Independent:
+                                        dependenciesIByThread[j][k] = new CharacterDependency(dependencies[i][k].Index);
+                                        break;
+                                    case CharacterDependency.Types.Dependent:
+                                    case CharacterDependency.Types.Conditioned:
+                                        dependenciesIByThread[j][k] = new CharacterDependency(dependencies[i][k].Index, dependencies[i][k].Type, (int[])dependencies[i][k].Dependencies.Clone(), Parameter.CloneParameterDictionary(dependencies[i][k].ConditionedProbabilities));
+                                        break;
+                                }
+                            }
+
+                            pisByThread[j] = new Dictionary<string, Parameter>[pi.Length];
+
+                            for (int k = 0; k < pi.Length; k++)
+                            {
+                                pisByThread[j][k] = Parameter.CloneParameterDictionary(pi[k]);
+                            }
+
+                            ratesByThread[j] = new Dictionary<string, Parameter>[rates.Length];
+
+                            for (int k = 0; k < rates.Length; k++)
+                            {
+                                ratesByThread[j][k] = Parameter.CloneParameterDictionary(rates[k]);
+                            }
+                        }
+
+                        int[] indicesByThreadCount = Utils.Utils.RoundInts((from el in Utils.Utils.Range(0, numThreads) select (double)numSim / numThreads).ToArray());
+                        int[][] indicesByThread = new int[numThreads][];
+
+                        int simInd = 0;
+
+                        for (int j = 0; j < numThreads; j++)
+                        {
+                            indicesByThread[j] = new int[indicesByThreadCount[j]];
+
+                            for (int k = 0; k < indicesByThreadCount[j]; k++)
+                            {
+                                indicesByThread[j][k] = simInd;
+                                simInd++;
+                            }
+                        }
+
+                        EventWaitHandle notifyProgressThread = new EventWaitHandle(false, EventResetMode.ManualReset);
+                        EventWaitHandle abortProgressThread = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+                        object progressLock = new object();
+
+                        int progress = 0;
+
+                        Thread progressThread = new Thread(() =>
+                        {
+                            while (!abortProgressThread.WaitOne(0))
+                            {
+                                int ind = EventWaitHandle.WaitAny(new WaitHandle[] { notifyProgressThread, abortProgressThread });
+                                if (ind == 0)
+                                {
+                                    lock (progressLock)
+                                    {
+                                        notifyProgressThread.Reset();
+                                        progress++;
+                                    }
+
+                                    if (progress % Math.Max(1, (numSim / 100)) == 0)
+                                    {
+                                        ConsoleWrapper.CursorLeft = cursorPos;
+                                        ConsoleWrapper.Write("{0}   ", ((double)progress / numSim).ToString("0%", System.Globalization.CultureInfo.InvariantCulture));
+                                        ConsoleWrapper.CursorLeft = ConsoleWrapper.CursorLeft - 3;
+
+                                        if (RunningGUI)
+                                        {
+                                            Utils.Utils.Trigger("SimulationsProgress", new object[] { (double)progress / numSim });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        progressThread.Start();
+
+                        Thread[] threads = new Thread[numThreads];
+
+                        for (int threadInd = 0; threadInd < numThreads; threadInd++)
+                        {
+                            threads[threadInd] = new Thread((threadIndexObj) =>
+                            {
+                                int threadIndex = (int)threadIndexObj;
+
+                                for (int simIndex = 0; simIndex < indicesByThread[threadIndex].Length; simIndex++)
+                                {
+                                    int k = indicesByThread[threadIndex][simIndex];
+
+                                    DataMatrix dataIK = new DataMatrix(data);
+
+                                    for (int l = 0; l < data.States.Length; l++)
+                                    {
+                                        dataIK.Add(data, l);
+                                    }
+
+                                    foreach (KeyValuePair<string, int> tip in likModels[treeSamples[k]].NamedBranches)
+                                    {
+                                        string[] tipStates = allPossibleStatesStrings[priors[i][k][tip.Value].MaxInd()];
+
+                                        for (int l = 0; l < dependencies[i].Length; l++)
+                                        {
+                                            double[] newState = new double[data.States[dependencies[i][l].Index].Length];
+
+                                            newState[data.States[dependencies[i][l].Index].IndexOf(tipStates[l])] = 1;
+
+                                            dataIK.Data[tip.Key][dependencies[i][l].Index] = newState;
+                                        }
+                                    }
+
+                                    double[][] currentLikelihoodIK = new double[likModels[treeSamples[k]].Parents.Length][];
+                                    for (int l = 0; l < currentLikelihoodIK.Length; l++)
+                                    {
+                                        currentLikelihoodIK[l] = new double[allPossibleStatesStrings.Length];
+                                    }
+
+
+                                    Likelihoods.ComputeJointLikelihoods(likModels[treeSamples[k]], dataIK, dependenciesIByThread[threadIndex], pisByThread[threadIndex], ratesByThread[threadIndex], parameters[k][i], currentLikelihoodIK, false);
+
+                                    for (int j = 0; j < ppMultiplicity; j++)
+                                    {
+                                        Likelihoods.ComputeAndSampleJointPosteriors(likModels[treeSamples[k]], data.States, pisByThread[threadIndex], ratesByThread[threadIndex], parameters[k][i], dependenciesIByThread[threadIndex], currentLikelihoodIK, posteriorPredictiveInternalStates[j][k], false, out _, mainRandom);
+                                    }
+
+                                    lock (progressLock)
+                                    {
+                                        notifyProgressThread.Set();
+                                    }
+                                }
+                            });
+
+                            threads[threadInd].Start(threadInd);
+
+                        }
+
+                        for (int j = 0; j < threads.Length; j++)
+                        {
+                            threads[j].Join();
+                        }
+
+                        abortProgressThread.Set();
+                        progressThread.Join();
+                    }
+
+                    ConsoleWrapper.CursorLeft = cursorPos;
+                    ConsoleWrapper.WriteLine("Done.");
+                    ConsoleWrapper.Write("Simulating {0} posterior-predictive histories " + (computeDTest ? "and computing D-stats " : "") + "for character" + (dependencies[i].Length > 1 || dependencies[i][0].InputDependencyName.IndexOf(",") > 0 ? "s" : "") + " ", numSim * ppMultiplicity);
+                    for (int j = 0; j < dependencies[i].Length; j++)
+                    {
+                        switch (dependencies[i][j].Type)
+                        {
+                            case CharacterDependency.Types.Independent:
+                            case CharacterDependency.Types.Conditioned:
+                                ConsoleWrapper.Write(dependencies[i][j].InputDependencyName);
+                                if (j < dependencies[i].Length - 1)
+                                {
+                                    ConsoleWrapper.Write(", ");
+                                }
+                                break;
+                        }
+                    }
+                    ConsoleWrapper.Write(": ");
+
+                    for (int j = 0; j < ppMultiplicity; j++)
+                    {
+                        TaggedHistory[] ppHistories = Utils.Simulation.SimulateJointHistories(likModels, treeSamples, dependencies[i], i, data.States, posteriorPredictiveInternalStates[j], parameters, rates, pi, mainRandom, numSim, numThreads, 1.0 / ppMultiplicity, (double)j / ppMultiplicity);
 
                         if (computeDTest)
                         {

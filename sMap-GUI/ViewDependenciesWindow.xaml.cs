@@ -51,6 +51,14 @@ namespace sMap_GUI
 
             BuildWindow();
 
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
         }
 
         public CharacterDependency[][] Dependencies;
@@ -82,7 +90,7 @@ namespace sMap_GUI
             legendGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
 
             {
-                StackPanel pnl = new StackPanel() { Orientation = Orientation.Horizontal };
+                StackPanel pnl = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
 
                 pnl.Children.Add(new TextBlock() { Text = "Independent: ", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
 
@@ -96,7 +104,7 @@ namespace sMap_GUI
             }
 
             {
-                StackPanel pnl = new StackPanel() { Orientation = Orientation.Horizontal };
+                StackPanel pnl = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
 
                 pnl.Children.Add(new TextBlock() { Text = "Dependent: ", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
 
@@ -191,7 +199,7 @@ namespace sMap_GUI
 
 
             {
-                StackPanel pnl = new StackPanel() { Orientation = Orientation.Horizontal };
+                StackPanel pnl = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
 
                 pnl.Children.Add(new TextBlock() { Text = "Conditioned: ", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
 

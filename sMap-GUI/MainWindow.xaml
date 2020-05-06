@@ -159,6 +159,14 @@
                 <Button Margin="10,0,0,0" Grid.Column="2" Click="BrowseModelFileClicked">Browse...</Button>
               </Grid>
             </Grid>
+            <Grid Margin="5,0,5,10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+              </Grid.ColumnDefinitions>
+              <CheckBox VerticalAlignment="Center" Grid.Column="1" Margin="0,0,10,0" Name="EstimatedPisBox">Use estimated pis</CheckBox>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
 
@@ -198,11 +206,40 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
           </Grid.ColumnDefinitions>
           <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum-likelihood strategy:</TextBlock>
           <TextBox Grid.Column="1" Name="MLStrategy"></TextBox>
           <Button Margin="10,0,0,0" Grid.Column="2" Click="EditMLClicked">Edit...</Button>
+          <CheckBox Grid.Column="3" Margin="10,0,0,0" Name="SaveSampledLikelihoods">Save sampled values</CheckBox>
         </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid Margin="0,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Parallel MLE optimisations:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="1" Increment="1" Minimum="1" Name="ParallelMLEBox"></NumericUpDown>
+          </Grid>
+          <Grid Grid.Column="1" Margin="5,0,5,10">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Number of MLE rounds:</TextBlock>
+            <NumericUpDown Grid.Column="1" Value="1" Increment="1" Minimum="1" Name="MLERoundsBox"></NumericUpDown>
+          </Grid>
+          <CheckBox Grid.Column="2" Margin="5,0,0,10" Name="PlotSampledLikelihoods">Plot sampled values</CheckBox>
+        </Grid>
+        <!--<Grid>
+          <CheckBox Grid.Column="2" Margin="0,0,0,10" Name="ComputeHessianBox">Compute Hessian matrix</CheckBox>
+        </Grid>-->
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -223,7 +260,7 @@
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1.75*" />
           </Grid.ColumnDefinitions>
-          <Grid Margin="10,0,5,10" Grid.Column="0">
+          <Grid Margin="5,0,5,10" Grid.Column="0">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto"></ColumnDefinition>
               <ColumnDefinition Width="1*"></ColumnDefinition>

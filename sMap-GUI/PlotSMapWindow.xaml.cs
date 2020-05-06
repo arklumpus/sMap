@@ -114,6 +114,15 @@ namespace sMap_GUI
             updateStateColours();
 
             this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value = run.AgeScale;
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
         }
 
         private void updateActiveStateNames()
@@ -147,7 +156,7 @@ namespace sMap_GUI
 
             for (int i = 0; i < activeStateNames.Length; i++)
             {
-                StackPanel pnl = new StackPanel() { Orientation = Orientation.Horizontal };
+                StackPanel pnl = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
 
                 Border brd = new Border() { Width = 20, Height = 20, BorderBrush = new SolidColorBrush(Colors.Black), BorderThickness = new Thickness(1.5), Background = Program.GetBrush((stateColours[i][0], stateColours[i][1], stateColours[i][2], 1)), CornerRadius = new CornerRadius(10, 10, 10, 10) };
 
@@ -261,9 +270,11 @@ namespace sMap_GUI
                 });
             };
 
-            Thread thr = new Thread(() =>
+            int index = this.FindControl<ComboBox>("PlotTargetBox").SelectedIndex;
+
+            Thread thr = new Thread(async () =>
            {
-               Plot(tempFileName);
+               await Plot(tempFileName, index);
            });
 
             thr.Start();
@@ -275,122 +286,140 @@ namespace sMap_GUI
             await prev.ShowDialog(this);
         }
 
-        void Plot(string outputFileName)
+        async Task Plot(string outputFileName, int index)
         {
-            switch (this.FindControl<ComboBox>("PlotTargetBox").SelectedIndex)
+            switch (index)
             {
                 case 0:
-                    PlotTree(outputFileName);
+                    await PlotTree(outputFileName);
                     break;
                 case 1:
-                    PlotPosteriors(outputFileName);
+                    await PlotPosteriors(outputFileName);
                     break;
                 case 2:
-                    PlotPriors(outputFileName);
+                    await PlotPriors(outputFileName);
                     break;
                 case 3:
-                    PlotConditionedProbs(outputFileName);
+                    await PlotConditionedProbs(outputFileName);
                     break;
                 case 4:
-                    PlotSMap(outputFileName);
+                    await PlotSMap(outputFileName);
                     break;
                 case 5:
-                    PlotSampleSizes(outputFileName);
+                    await PlotSampleSizes(outputFileName);
                     break;
             }
         }
 
-        void PlotTree(string outputFileName)
+        async Task PlotTree(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = 0,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = 0,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value
+                };
+            });
 
-            Run.SummaryTree.PlotSimpleTree((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, true);
+            Run.SummaryTree.PlotSimpleTree(plotWidth, plotHeight, margins, outputFileName, opt, true);
         }
 
-        void PlotPriors(string outputFileName)
+        async Task PlotPriors(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
-                StateColours = stateColours
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
+                    StateColours = stateColours
+                };
+            });
 
-            Run.SummaryTree.PlotTreeWithPies((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, GetMarginalProbabilities(Run.MeanPrior), activeStateNames, true);
+            Run.SummaryTree.PlotTreeWithPies(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(Run.MeanPrior), activeStateNames, true);
         }
 
         double[][] GetMarginalProbabilities(double[][] meanProb)
@@ -466,198 +495,234 @@ namespace sMap_GUI
         }
 
 
-        void PlotPosteriors(string outputFileName)
+        async Task PlotPosteriors(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
-                StateColours = stateColours
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
+                    StateColours = stateColours
+                };
+            });
 
-            Run.SummaryTree.PlotTreeWithPies((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, GetMarginalProbabilities(Run.MeanPosterior), activeStateNames, true);
+            Run.SummaryTree.PlotTreeWithPies(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(Run.MeanPosterior), activeStateNames, true);
         }
 
-        void PlotConditionedProbs(string outputFileName)
+        async Task PlotConditionedProbs(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
-                StateColours = stateColours
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
+                    StateColours = stateColours
+                };
+            });
 
-
-            Run.SummaryTree.PlotTreeWithPies((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), activeStateNames, true);
+            Run.SummaryTree.PlotTreeWithPies(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), activeStateNames, true);
         }
 
 
-        void PlotSMap(string outputFileName)
+        async Task PlotSMap(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
+            double timeResolution = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+                timeResolution = this.FindControl<NumericUpDown>("TimeResolutionBox").Value;
+
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
-                StateColours = stateColours,
-                BranchSize = this.FindControl<NumericUpDown>("BranchWidthBox").Value
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
+                    StateColours = stateColours,
+                    BranchSize = this.FindControl<NumericUpDown>("BranchWidthBox").Value
+                };
+            });
 
-            Run.SummaryTree.PlotTreeWithPiesAndBranchStates((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), GetMarginalHistories(), Run.TreeSamples, Run.LikelihoodModels, new LikelihoodModel(Run.SummaryTree), Run.SummaryNodeCorresp, this.FindControl<NumericUpDown>("TimeResolutionBox").Value, new List<string>(activeStateNames), true);
+            Run.SummaryTree.PlotTreeWithPiesAndBranchStates(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), GetMarginalHistories(), Run.TreeSamples, Run.LikelihoodModels, new LikelihoodModel(Run.SummaryTree), Run.SummaryNodeCorresp, timeResolution, new List<string>(activeStateNames), true);
 
         }
 
-        void PlotSampleSizes(string outputFileName)
+        async Task PlotSampleSizes(string outputFileName)
         {
-            string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
-
             string realFontFamily = "";
+            Plotting.Options opt = null;
+            float plotWidth = 0, plotHeight = 0, margins = 0;
+            double timeResolution = 0;
 
-            if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                realFontFamily = fontFamily;
-            }
-            else
-            {
-                if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
-                {
-                    realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
-                }
-                else if (File.Exists(fontFamily))
+                plotWidth = (float)this.FindControl<NumericUpDown>("PlotWidthBox").Value;
+                plotHeight = (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value;
+                margins = (float)this.FindControl<NumericUpDown>("MarginsBox").Value;
+                timeResolution = this.FindControl<NumericUpDown>("TimeResolutionBox").Value;
+                string fontFamily = fontNames[this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex];
+
+                if (this.FindControl<ComboBox>("FontFamilyBox").SelectedIndex < 12)
                 {
                     realFontFamily = fontFamily;
                 }
                 else
                 {
-                    realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    if (File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily)))
+                    {
+                        realFontFamily = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), fontFamily);
+                    }
+                    else if (File.Exists(fontFamily))
+                    {
+                        realFontFamily = fontFamily;
+                    }
+                    else
+                    {
+                        realFontFamily = System.IO.Path.Combine(Directory.GetCurrentDirectory(), fontFamily);
+                    }
                 }
-            }
 
-            Plotting.Options opt = new Plotting.Options()
-            {
-                FontFamily = realFontFamily,
-                FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
-                NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
-                LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
-                PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
-                ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
-                ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
-                ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
-                GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
-                GridColour = gridColour,
-                GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
-                TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
-                SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
-                StateColours = stateColours,
-                BranchSize = this.FindControl<NumericUpDown>("BranchWidthBox").Value
-            };
+                opt = new Plotting.Options()
+                {
+                    FontFamily = realFontFamily,
+                    FontSize = (float)this.FindControl<NumericUpDown>("FontSizeBox").Value,
+                    NodeNumbers = this.FindControl<CheckBox>("NodeIdsBox").IsChecked == true,
+                    LineWidth = (float)this.FindControl<NumericUpDown>("LineWidthBox").Value,
+                    PieSize = (float)this.FindControl<NumericUpDown>("PieSizeBox").Value,
+                    ScaleAxis = this.FindControl<CheckBox>("ScaleAxisBox").IsChecked == true,
+                    ScaleSpacing = (float)this.FindControl<NumericUpDown>("ScaleSpacingBox").Value,
+                    ScaleGrid = this.FindControl<CheckBox>("ScaleGridBox").IsChecked == true,
+                    GridSpacing = (float)this.FindControl<NumericUpDown>("GridSpacingBox").Value,
+                    GridColour = gridColour,
+                    GridWidth = (float)this.FindControl<NumericUpDown>("GridWidthBox").Value,
+                    TreeScale = (float)this.FindControl<NumericUpDown>("TreeAgeScaleBox").Value,
+                    SignificantDigits = (int)this.FindControl<NumericUpDown>("ScaleDigitsBox").Value,
+                    StateColours = stateColours,
+                    BranchSize = this.FindControl<NumericUpDown>("BranchWidthBox").Value
+                };
+            });
 
-
-            Run.SummaryTree.PlotTreeWithBranchSampleSizes((float)this.FindControl<NumericUpDown>("PlotWidthBox").Value, (float)this.FindControl<NumericUpDown>("PlotHeightBox").Value, (float)this.FindControl<NumericUpDown>("MarginsBox").Value, outputFileName, opt, Run.Histories, Run.TreeSamples, Run.LikelihoodModels, new LikelihoodModel(Run.SummaryTree), Run.SummaryNodeCorresp, this.FindControl<NumericUpDown>("TimeResolutionBox").Value, new List<string>(activeStateNames), true);
+            Run.SummaryTree.PlotTreeWithBranchSampleSizes(plotWidth, plotHeight, margins, outputFileName, opt, Run.Histories, Run.TreeSamples, Run.LikelihoodModels, new LikelihoodModel(Run.SummaryTree), Run.SummaryNodeCorresp, timeResolution, new List<string>(activeStateNames), true);
 
         }
 

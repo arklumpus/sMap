@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Styling;
 using Avalonia.Threading;
 using SlimTreeNode;
 using System;
@@ -33,6 +32,7 @@ namespace sMap_GUI
 
             this.FindControl<NumericUpDown>("MaxCoVBox").Value = -1.0 / 16.0 * Math.Log⁡(1.0 - 1.0 / 3.0 * (7.0 / 3.0 - 2.0 / (2.0 * ((int)this.FindControl<NumericUpDown>("NumRunsBox").Value) - 1.0)));
             this.FindControl<NumericUpDown>("ThreadsBox").Value = System.Environment.ProcessorCount;
+            this.FindControl<NumericUpDown>("ParallelMLEBox").Value = Math.Min(5, System.Environment.ProcessorCount);
             this.FindControl<TipContainer>("Tips").SetTip(TipContainer.Tips.InputDataFile);
         }
 
@@ -273,11 +273,15 @@ namespace sMap_GUI
 
                     RenderingProgressWindow consensusWin = new RenderingProgressWindow(consensusReadyHandle) { ProgressText = "Computing consensus..." };
 
+                    bool useMedian = this.FindControl<ComboBox>("ConsensusBranchLengths").SelectedIndex == 0;
+
+                    double threshold = this.FindControl<NumericUpDown>("ConsensusThreshold").Value;
+
                     Thread conThread = new Thread(() =>
                     {
                         consensusReadyHandle.WaitOne();
 
-                        summaryTree = trees.GetRootedTreeConsensus(treesClockLike, this.FindControl<ComboBox>("ConsensusBranchLengths").SelectedIndex == 0, this.FindControl<NumericUpDown>("ConsensusThreshold").Value);
+                        summaryTree = trees.GetRootedTreeConsensus(treesClockLike, useMedian, threshold);
 
                         Dispatcher.UIThread.InvokeAsync(() =>
                         {
@@ -382,11 +386,15 @@ namespace sMap_GUI
 
                 RenderingProgressWindow consensusWin = new RenderingProgressWindow(consensusReadyHandle) { ProgressText = "Computing consensus..." };
 
+                bool useMedian = this.FindControl<ComboBox>("ConsensusBranchLengths").SelectedIndex == 0;
+
+                double consensusThreshold = this.FindControl<NumericUpDown>("ConsensusThreshold").Value;
+
                 Thread conThread = new Thread(() =>
                 {
                     consensusReadyHandle.WaitOne();
 
-                    summaryTree = trees.GetRootedTreeConsensus(treesClockLike, this.FindControl<ComboBox>("ConsensusBranchLengths").SelectedIndex == 0, this.FindControl<NumericUpDown>("ConsensusThreshold").Value);
+                    summaryTree = trees.GetRootedTreeConsensus(treesClockLike, useMedian, consensusThreshold);
 
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
@@ -586,6 +594,17 @@ namespace sMap_GUI
                 this.FindControl<TextBlock>("CondProbsNameBlock").Text = condName;
             }
 
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
+
+
             new Thread(() =>
             {
                 Thread.Sleep(10);
@@ -594,6 +613,30 @@ namespace sMap_GUI
                     this.FindControl<ScrollViewer>("MainScrollViewer").ScrollToBottom();
                 });
             }).Start();
+        }
+
+        private bool AreEstimatedPisAvailable()
+        {
+            for (int i = 0; i < realDependencies.Length; i++)
+            {
+                if (realDependencies[i].Length != 1 || realDependencies[i][0].Type != CharacterDependency.Types.Independent)
+                {
+                    return false;
+                }
+            }
+
+            for (int i = 0; i < rates.Length; i++)
+            {
+                foreach (KeyValuePair<string, Parameter> rate in rates[i])
+                {
+                    if (rate.Value.Action == Parameter.ParameterAction.ML)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private async void LoadParametersClicked(object sender, RoutedEventArgs e)
@@ -608,6 +651,16 @@ namespace sMap_GUI
             this.FindControl<TextBlock>("PisNameBlock").Text = piName;
             string condName = Utils.Utils.GetCondProbsName(realDependencies);
             this.FindControl<TextBlock>("CondProbsNameBlock").Text = condName;
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
         private async void EditDependencyClicked(object sender, RoutedEventArgs e)
@@ -668,6 +721,16 @@ namespace sMap_GUI
             pis = win.Pi;
             string piName = Utils.Utils.GetPisName(realDependencies, pis);
             this.FindControl<TextBlock>("PisNameBlock").Text = piName;
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
         private async void EditCondProbsClicked(object sender, RoutedEventArgs e)
@@ -682,6 +745,16 @@ namespace sMap_GUI
 
             string condName = Utils.Utils.GetCondProbsName(realDependencies);
             this.FindControl<TextBlock>("CondProbsNameBlock").Text = condName;
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
         private async void ChoosePiFileClicked(object sender, RoutedEventArgs e)
@@ -719,6 +792,16 @@ namespace sMap_GUI
                 string piName = Utils.Utils.GetPisName(realDependencies, pis);
                 this.FindControl<TextBlock>("PisNameBlock").Text = piName;
             }
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
 
@@ -730,6 +813,16 @@ namespace sMap_GUI
             rates = win.Rates;
             string ratesName = Utils.Utils.GetRatesName(realDependencies, rates);
             this.FindControl<TextBlock>("RatesNameBlock").Text = ratesName;
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
         private async void ChooseRatesFileClicked(object sender, RoutedEventArgs e)
@@ -766,6 +859,16 @@ namespace sMap_GUI
                 string ratesName = Utils.Utils.GetRatesName(realDependencies, rates);
                 this.FindControl<TextBlock>("RatesNameBlock").Text = ratesName;
             }
+
+            if (AreEstimatedPisAvailable())
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = true;
+            }
+            else
+            {
+                this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
+                this.FindControl<CheckBox>("EstimatedPisBox").IsChecked = false;
+            }
         }
 
         private void ConfirmParametersClicked(object sender, RoutedEventArgs e)
@@ -773,6 +876,7 @@ namespace sMap_GUI
             parametersConfirmed = true;
             this.FindControl<Button>("EditPisButton").Content = "View...";
             this.FindControl<Button>("ChoosePisFileButton").IsVisible = false;
+            this.FindControl<CheckBox>("EstimatedPisBox").IsEnabled = false;
 
             this.FindControl<Button>("EditCondProbsButton").Content = "View...";
 
@@ -1163,6 +1267,11 @@ namespace sMap_GUI
             args.Add("-i");
             args.Add("\"" + Path.Combine(dataPath, "Model.nex").Replace("\\", "/") + "\"");
 
+            if (this.FindControl<CheckBox>("EstimatedPisBox").IsChecked == true)
+            {
+                args.Add("--ep");
+            }
+
             if (this.FindControl<NumericUpDown>("SeedBox").Value > 0)
             {
                 args.Add("-s");
@@ -1171,11 +1280,13 @@ namespace sMap_GUI
 
             if (this.FindControl<CheckBox>("NormBox").IsChecked == true)
             {
-                args.Add("-N");
-
                 if (this.FindControl<NumericUpDown>("NormValueBox").Value > 0)
                 {
-                    args.Add(this.FindControl<NumericUpDown>("NormValueBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    args.Add("-N=" + this.FindControl<NumericUpDown>("NormValueBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    args.Add("-N");
                 }
             }
 
@@ -1196,6 +1307,33 @@ namespace sMap_GUI
                 args.Add("-m");
                 args.Add("\"" + this.FindControl<TextBox>("MLStrategy").Text + "\"");
             }
+
+            if (this.FindControl<NumericUpDown>("ParallelMLEBox").Value > 1)
+            {
+                args.Add("--pm");
+                args.Add(((int)this.FindControl<NumericUpDown>("ParallelMLEBox").Value).ToString());
+            }
+
+            if (this.FindControl<NumericUpDown>("MLERoundsBox").Value > 1)
+            {
+                args.Add("--mr");
+                args.Add(((int)this.FindControl<NumericUpDown>("MLERoundsBox").Value).ToString());
+            }
+
+            if (this.FindControl<CheckBox>("SaveSampledLikelihoods").IsChecked == true)
+            {
+                args.Add("--sl");
+            }
+
+            if (this.FindControl<CheckBox>("PlotSampledLikelihoods").IsChecked == true)
+            {
+                args.Add("--pl");
+            }
+
+            /*if (this.FindControl<CheckBox>("ComputeHessianBox").IsChecked == true)
+            {
+                args.Add("--H");
+            }*/
 
             if (this.FindControl<CheckBox>("PPBox").IsChecked == true)
             {

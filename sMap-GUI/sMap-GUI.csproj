@@ -109,14 +109,14 @@
     <EmbeddedResource Include="Fonts\OpenSans-Italic.ttf" />
     <EmbeddedResource Include="Fonts\OpenSans-Regular.ttf" />
     <EmbeddedResource Include="Fonts\RobotoMono-Regular.ttf" />
-    <PackageReference Include="Avalonia" Version="0.8.3" />
-    <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="2.2.1" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.8.3" />
-    <PackageReference Include="MathNet.Numerics" Version="4.9.0" />
-    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="4.6.0" />
-    <PackageReference Include="PanAndZoom" Version="2.2.1" />
-    <PackageReference Include="VectSharp" Version="1.0.2" />
-    <PackageReference Include="VectSharp.Canvas" Version="1.0.1" />
+    <PackageReference Include="Avalonia" Version="0.9.9" />
+    <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="2.3.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.9" />
+    <PackageReference Include="MathNet.Numerics" Version="4.9.1" />
+    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="4.7.0" />
+    <PackageReference Include="PanAndZoom" Version="2.3.3" />
+    <PackageReference Include="VectSharp" Version="1.1.4" />
+    <PackageReference Include="VectSharp.Canvas" Version="1.1.4" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

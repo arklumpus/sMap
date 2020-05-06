@@ -83,7 +83,14 @@ namespace sMap_GUI
 
             BuildWindow();
 
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
 
+            resize();
         }
 
 
@@ -694,6 +701,8 @@ namespace sMap_GUI
 
         void EditPi(Button btn, Parameter pi, Dictionary<string, Parameter> charPis)
         {
+            ContextMenu menu = null;
+
             int currPiWeight = 1;
 
             foreach (KeyValuePair<string, Parameter> kvp in charPis)
@@ -706,7 +715,9 @@ namespace sMap_GUI
 
 
             MenuItem fixItem = new MenuItem() { Header = "Fix", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Fix } };
-            NumericUpDown fixValue = new NumericUpDown() { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = pi.Value, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+
+            //Leaving this here in the hope that https://github.com/AvaloniaUI/Avalonia/issues/3830 will be fixed
+            /*NumericUpDown fixValue = new NumericUpDown() { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = pi.Value, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             fixValue.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
@@ -724,10 +735,15 @@ namespace sMap_GUI
             fixValueItem.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
-            };
+            };*/
 
-            MenuItem fixOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
-            fixOkItem.Click += (s, e) =>
+            NumericMenuItem fixValueItem = new NumericMenuItem(this) { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = pi.Value, Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Fix } };
+            NumericMenuItem fixValue = fixValueItem;
+
+            //MenuItem fixOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
+
+            //fixOkItem.Click += (s, e) =>
+            fixValueItem.ValueChanged += (s, e) =>
             {
                 pi.Action = Parameter.ParameterAction.Fix;
                 pi.Value = fixValue.Value;
@@ -814,11 +830,13 @@ namespace sMap_GUI
                 BuildWindow();
             };
 
-            fixItem.Items = new List<MenuItem>() { fixValueItem, fixOkItem };
+            fixItem.Items = new List<MenuItem>() { fixValueItem.Item/*, fixOkItem*/ };
+
+
 
             MenuItem dirichletItem = new MenuItem() { Header = "Dirichlet", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Dirichlet } };
 
-            NumericUpDown dirichletValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = pi.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            /*NumericUpDown dirichletValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = pi.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             dirichletValue.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
@@ -838,10 +856,14 @@ namespace sMap_GUI
             dirichletValueItem.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
-            };
+            };*/
 
-            MenuItem dirichletOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
-            dirichletOkItem.Click += (s, e) =>
+            NumericMenuItem dirichletValueItem = new NumericMenuItem(this) { Minimum = 0, Increment = 0.1, Value = pi.DistributionParameter, Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Dirichlet } };
+            NumericMenuItem dirichletValue = dirichletValueItem;
+
+            //MenuItem dirichletOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
+            //dirichletOkItem.Click += (s, e) =>
+            dirichletValueItem.ValueChanged += (s, e) =>
             {
                 pi.Action = Parameter.ParameterAction.Dirichlet;
                 pi.DistributionParameter = dirichletValue.Value;
@@ -849,7 +871,7 @@ namespace sMap_GUI
                 BuildWindow();
             };
 
-            dirichletItem.Items = new List<MenuItem>() { dirichletValueItem, dirichletOkItem };
+            dirichletItem.Items = new List<MenuItem>() { dirichletValueItem.Item/*, dirichletOkItem*/ };
 
             MenuItem equalItem = new MenuItem() { Header = "Equal", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Equal } };
 
@@ -864,6 +886,7 @@ namespace sMap_GUI
                     {
                         pi.Action = Parameter.ParameterAction.Equal;
                         pi.EqualParameter = kvp.Value;
+                        menu.Close();
                         BuildWindow();
                     };
 
@@ -877,18 +900,21 @@ namespace sMap_GUI
 
             if (equalItems.Count > 0)
             {
-                ContextMenu menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem, equalItem } };
+                menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem, equalItem } };
                 menu.Open(btn);
             }
             else
             {
-                ContextMenu menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem } };
+                menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem } };
                 menu.Open(btn);
             }
         }
 
+
         void EditCondProbs(Button btn, Parameter prob, Dictionary<string, Parameter> charProbs)
         {
+            ContextMenu menu = null;
+
             string currCondState = charProbs.GetKey(prob).Substring(0, charProbs.GetKey(prob).IndexOf(">"));
 
             Dictionary<string, Parameter> relevantProbs = new Dictionary<string, Parameter>();
@@ -913,7 +939,7 @@ namespace sMap_GUI
             }
 
             MenuItem fixItem = new MenuItem() { Header = "Fix", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Fix } };
-            NumericUpDown fixValue = new NumericUpDown() { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = prob.Value, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            /*NumericUpDown fixValue = new NumericUpDown() { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = prob.Value, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             fixValue.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
@@ -931,10 +957,14 @@ namespace sMap_GUI
             fixValueItem.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
-            };
+            };*/
 
-            MenuItem fixOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
-            fixOkItem.Click += (s, e) =>
+            NumericMenuItem fixValueItem = new NumericMenuItem(this) { Minimum = 0, Maximum = 1.0 / currPiWeight, Increment = 0.1, Value = prob.Value, Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Fix } };
+            NumericMenuItem fixValue = fixValueItem;
+
+            //MenuItem fixOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
+            //fixOkItem.Click += (s, e) =>
+            fixValueItem.ValueChanged += (s, e) =>
             {
                 prob.Action = Parameter.ParameterAction.Fix;
                 prob.Value = fixValue.Value;
@@ -1021,11 +1051,11 @@ namespace sMap_GUI
                 BuildWindow();
             };
 
-            fixItem.Items = new List<MenuItem>() { fixValueItem, fixOkItem };
+            fixItem.Items = new List<MenuItem>() { fixValueItem.Item/*, fixOkItem*/ };
 
             MenuItem dirichletItem = new MenuItem() { Header = "Dirichlet", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Dirichlet } };
 
-            NumericUpDown dirichletValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            /*NumericUpDown dirichletValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             dirichletValue.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
@@ -1045,10 +1075,14 @@ namespace sMap_GUI
             dirichletValueItem.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
-            };
+            };*/
 
-            MenuItem dirichletOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
-            dirichletOkItem.Click += (s, e) =>
+            NumericMenuItem dirichletValueItem = new NumericMenuItem(this) { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Dirichlet } };
+            NumericMenuItem dirichletValue = dirichletValueItem;
+
+            //MenuItem dirichletOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
+            //dirichletOkItem.Click += (s, e) =>
+            dirichletValueItem.ValueChanged += (s, e) =>
             {
                 prob.Action = Parameter.ParameterAction.Dirichlet;
                 prob.DistributionParameter = dirichletValue.Value;
@@ -1056,7 +1090,7 @@ namespace sMap_GUI
                 BuildWindow();
             };
 
-            dirichletItem.Items = new List<MenuItem>() { dirichletValueItem, dirichletOkItem };
+            dirichletItem.Items = new List<MenuItem>() { dirichletValueItem.Item/*, dirichletOkItem*/ };
 
             MenuItem equalItem = new MenuItem() { Header = "Equal", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Equal } };
 
@@ -1071,6 +1105,7 @@ namespace sMap_GUI
                     {
                         prob.Action = Parameter.ParameterAction.Equal;
                         prob.EqualParameter = kvp.Value;
+                        menu.Close();
                         BuildWindow();
                     };
 
@@ -1087,6 +1122,7 @@ namespace sMap_GUI
             MLItem.Click += (s, e) =>
             {
                 prob.Action = Parameter.ParameterAction.ML;
+                menu.Close();
                 BuildWindow();
             };
 
@@ -1094,7 +1130,7 @@ namespace sMap_GUI
 
             MenuItem multinomialItem = new MenuItem() { Header = "Multinomial", Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Multinomial } };
 
-            NumericUpDown multinomialValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            /*NumericUpDown multinomialValue = new NumericUpDown() { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Padding = new Thickness(5, 0, 5, 0), Width = 100, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             multinomialValue.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
@@ -1114,27 +1150,31 @@ namespace sMap_GUI
             multinomialValueItem.PointerReleased += (s, e) =>
             {
                 e.Handled = true;
-            };
+            };*/
 
-            MenuItem multinomialOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
-            multinomialOkItem.Click += (s, e) =>
+            NumericMenuItem multinomialValueItem = new NumericMenuItem(this) { Minimum = 0, Increment = 0.1, Value = prob.DistributionParameter, Icon = new PiMenuIcon() { IconType = PiMenuIcon.IconTypes.Multinomial } };
+            NumericMenuItem multinomialValue = multinomialValueItem;
+
+            //MenuItem multinomialOkItem = new MenuItem() { Header = "OK", Icon = new Viewbox() { Child = new Octagon() { Fill = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), IsTick = true } } };
+            //multinomialOkItem.Click += (s, e) =>
+            multinomialValueItem.ValueChanged += (s, e) =>
             {
                 prob.Action = Parameter.ParameterAction.Multinomial;
                 prob.DistributionParameter = multinomialValue.Value;
-
+                menu.Close();
                 BuildWindow();
             };
 
-            multinomialItem.Items = new List<MenuItem>() { multinomialValueItem, multinomialOkItem };
+            multinomialItem.Items = new List<MenuItem>() { multinomialValueItem.Item/*, multinomialOkItem */};
 
             if (equalItems.Count > 0)
             {
-                ContextMenu menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem, multinomialItem, MLItem, equalItem } };
+                menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, dirichletItem, multinomialItem, MLItem, equalItem } };
                 menu.Open(btn);
             }
             else
             {
-                ContextMenu menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, multinomialItem, MLItem, dirichletItem } };
+                menu = new ContextMenu() { Items = new List<MenuItem>() { fixItem, multinomialItem, MLItem, dirichletItem } };
                 menu.Open(btn);
             }
         }

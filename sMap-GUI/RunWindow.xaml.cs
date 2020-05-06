@@ -136,6 +136,8 @@ namespace sMap_GUI
 
         List<double[]> steppingStoneContributions;
 
+        List<double[]> minCurvatures = new List<double[]>();
+
         public SerializedRun[] FinishedRuns;
 
         private async Task ProgressTrigger(string state, object[] data)
@@ -504,6 +506,27 @@ namespace sMap_GUI
                     currentValues = new List<double>();
                 }
                 plotFinishedTrigger.Set();
+            }
+            else if (state == "LikelihoodCurvature")
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    minCurvatures.Add(new double[] { (double)data[1], (double)data[2] });
+
+                    this.FindControl<StackPanel>("CurvatureContainer").Children.Clear();
+
+                    if (minCurvatures.Any(x => !double.IsNaN(x[0]) || !double.IsNaN(x[1])))
+                    {
+                        this.FindControl<StackPanel>("CurvatureContainer").Children.Add(new TextBlock() { Text = "Minimum curvature: ", Margin = new Thickness(5, 30, 5, 5), FontWeight = FontWeight.Bold });
+                        for (int i = 0; i < minCurvatures.Count; i++)
+                        {
+                            if (!double.IsNaN(minCurvatures[i][0]) || !double.IsNaN(minCurvatures[i][1]))
+                            {
+                                this.FindControl<StackPanel>("CurvatureContainer").Children.Add(new TextBlock() { Text = "Set " + i.ToString() + ": " + minCurvatures[i][0].ToString("0.000") + " (" + minCurvatures[i][1].ToString("0.000") + ")", Foreground = Program.GetDarkBrush(Plotting.GetColor(i, 0.75, dependencies.Length)), Margin = new Thickness(15, 5, 5, 5), FontWeight = FontWeight.Bold });
+                            }                            
+                        }
+                    }
+                });
             }
             else if (state == "AllMLFinished")
             {
@@ -1541,7 +1564,7 @@ namespace sMap_GUI
             updatingSteppingStonePanel = false;
         }
 
-        private void SteppingStoneChoiceChanged(object sender, RoutedEventArgs e)
+        private void SteppingStoneChoiceChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!updatingSteppingStonePanel)
             {
@@ -1661,7 +1684,7 @@ namespace sMap_GUI
             await win.ShowDialog(this);
         }
 
-        private void BayesianSetChoiceChanged(object sender, RoutedEventArgs e)
+        private void BayesianSetChoiceChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!updatingBayesianPanel)
             {

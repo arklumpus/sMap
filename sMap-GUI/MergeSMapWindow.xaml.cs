@@ -80,7 +80,7 @@ namespace sMap_GUI
                     Runs.Add((run, fileNames[i]));
 
                     ScrollViewer sv = new ScrollViewer() { HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled, Padding = new Thickness(0, 5, 0, 5) };
-                    StackPanel sp = new StackPanel() { Orientation = Orientation.Horizontal };
+                    StackPanel sp = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
 
                     for (int j = 0; j < run.AllPossibleStates[0].Split(',').Length; j++)
                     {

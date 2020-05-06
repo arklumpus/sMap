@@ -16,14 +16,14 @@
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
+        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40" Name="PrePath"></Path>
       </Canvas>
       <Canvas Width="158" Height="40" ZIndex="-1">
         <Path Fill="#0eceaf" Data="M0,40 L183,40 L158,0 L-25,0 Z" Opacity="0.15" Name="BGPath"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#0eceaf" Name="Label">Plot preview</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
+        <Path Stroke="#0eceaf" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
       </Canvas>
     </StackPanel>
     <Grid Grid.Row="1">
@@ -41,7 +41,7 @@
           <Canvas Width="15" Height="25" Margin="10,0,0,0">
             <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
             <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L15,11 M7.5,0 L7.5,11" ></Path>
-            <Path Stroke="#ff9900" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+            <Path Stroke="#ff9900" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeLineCap="Round"></Path>
           </Canvas>
           <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Zoom</TextBlock>
         </StackPanel>
@@ -50,7 +50,7 @@
             <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M0,7.5 A7.5,7.5,180,0,1,15,7.5 L15,17.5 A7.5,7.5,180,0,1,0,17.5 Z" Fill="#e8f0ff"></Path>
             <Path Fill="#ff9900" Stroke="#6f8ec6" StrokeThickness="1" Data="M0,11 L7.5,11 L7.5,0 A7.5,7.5,90,0,0,0,7.5 Z" ></Path>
             <Path Stroke="#6f8ec6" StrokeThickness="1" Data="M7.5,11 L15,11 M7.5,0 L7.5,11" ></Path>
-            <Path Stroke="#6f8ec6" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+            <Path Stroke="#6f8ec6" StrokeThickness="3" Data="M7.5,4 L7.5,8" StrokeLineCap="Round"></Path>
           </Canvas>
           <TextBlock Margin="10,0,15,0" VerticalAlignment="Center">Pan</TextBlock>
         </StackPanel>

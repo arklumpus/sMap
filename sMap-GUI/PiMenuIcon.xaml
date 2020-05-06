@@ -20,10 +20,10 @@
         <Path Stroke="#ea1c24" StrokeThickness="3" Data="M0,15 L20,15 L20,85 L100,85 "></Path>
       </Canvas>
       <Canvas Name="EqualCanvas" Width="100" Height="100" IsVisible="False">
-        <Path Stroke="Black" StrokeThickness="10" Data="M25,35 L75,35 M25,65 L75,65" StrokeStartLineCap="Round" StrokeEndLineCap="Round"></Path>
+        <Path Stroke="Black" StrokeThickness="10" Data="M25,35 L75,35 M25,65 L75,65" StrokeLineCap="Round"></Path>
       </Canvas>
       <Canvas Name="MLCanvas" Width="100" Height="100" IsVisible="False">
-        <Path Stroke="Black" StrokeThickness="6" Data="M20,65 L20,35 L32.5,50 L45,35 L45,65 M62.5,35 L62.5,65 L80,65" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeJoin="Round"></Path>
+        <Path Stroke="Black" StrokeThickness="6" Data="M20,65 L20,35 L32.5,50 L45,35 L45,65 M62.5,35 L62.5,65 L80,65" StrokeLineCap="Round" StrokeJoin="Round"></Path>
       </Canvas>
     </Canvas>
   </Viewbox>

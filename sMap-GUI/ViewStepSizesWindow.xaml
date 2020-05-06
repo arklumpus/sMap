@@ -12,26 +12,26 @@
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" IsVisible="False" Name="BlueHeader">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
       </Canvas>
       <Canvas Width="123" Height="40" ZIndex="-1">
         <Path Fill="#00a2e8" Data="M0,40 L148,40 L123,0 L-25,0 Z" Opacity="0.15"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#00a2e8">Step sizes</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+        <Path Stroke="#00a2e8" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
       </Canvas>
     </StackPanel>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" IsVisible="False" Name="GreenHeader">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+        <Path Stroke="#22b14c" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
       </Canvas>
       <Canvas Width="123" Height="40" ZIndex="-1">
         <Path Fill="#22b14c" Data="M0,40 L148,40 L123,0 L-25,0 Z" Opacity="0.15"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#22b14c">Step sizes</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#22b14c" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+        <Path Stroke="#22b14c" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
       </Canvas>
     </StackPanel>
     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">

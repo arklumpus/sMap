@@ -13,6 +13,7 @@ using MathNet.Numerics;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using MathNet.Numerics.Differentiation;
 
 namespace Utils
 {
@@ -1246,6 +1247,37 @@ namespace Utils
 
     public static class Extensions
     {
+        public static double Modulus(this double[] v1)
+        {
+            double tbr = 0;
+
+            for (int i = 0; i < v1.Length; i++)
+            {
+                tbr += v1[i] * v1[i];
+            }
+
+            return Math.Sqrt(tbr);
+        }
+
+        public static double Distance(this double[] v1, double[] v2)
+        {
+            double tbr = 0;
+
+            for (int i = 0; i < v1.Length; i++)
+            {
+                tbr += (v1[i] - v2[i]) * (v1[i] - v2[i]);
+            }
+
+            return Math.Sqrt(tbr);
+        }
+
+        public static double[] Normalize(this double[] v1, double? length = null)
+        {
+            double modulus = length ?? v1.Modulus();
+
+            return v1.Multiply(1 / modulus);
+        }
+
         public static void WriteLong(this Stream sr, long value)
         {
             sr.WriteByte((byte)((value >> 56) & 255));
@@ -1771,20 +1803,22 @@ namespace Utils
             }
         }
 
-        public static (double Mean, double Variance) MeanAndVariance(this double[] values)
+        public static (double Mean, double Variance) MeanAndVariance(this IEnumerable<double> values)
         {
             double mean = 0;
             double variance = 0;
             double meanSq = 0;
+            int count = 0;
 
-            for (int i = 0; i < values.Length; i++)
+            foreach (double v in values)
             {
-                mean += values[i];
-                meanSq += values[i] * values[i];
+                mean += v;
+                meanSq += v * v;
+                count++;
             }
 
-            mean /= values.Length;
-            meanSq /= values.Length;
+            mean /= count;
+            meanSq /= count;
 
             variance = meanSq - mean * mean;
 
@@ -2400,6 +2434,148 @@ namespace Utils
 
         public enum VariableStepType { NormalSlide, Dirichlet, Multinomial }
 
+        public static Action<List<double>, List<double>> DefaultPlotTriggerMarshal = (List<double> x, List<double> y) =>
+        {
+            Trigger("Plot", new object[] { x, y, 100 });
+        };
+
+        public static Action<List<double>, List<double>> NewParallelTriggerMarshal(double currentMaxValue)
+        {
+            List<double> allXs = null;
+            List<double> allYs = null;
+
+            object lockObject = new object();
+
+            return (List<double> x, List<double> y) =>
+            {
+                lock (lockObject)
+                {
+                    if (allXs == null)
+                    {
+                        allXs = new List<double>(x);
+                        allYs = new List<double>(y);
+                    }
+                    else
+                    {
+                        double maxX = allXs.Max();
+                        double maxY = Math.Max(allYs.Max(), currentMaxValue);
+
+                        for (int i = 0; i < x.Count; i++)
+                        {
+                            if (i < allXs.Count && allXs[i] == x[i])
+                            {
+                                allYs[i] = Math.Max(allYs[i], y[i]);
+                            }
+                            else if (x[i] > maxX)
+                            {
+                                allXs.Add(x[i]);
+                                allYs.Add(Math.Max(y[i], maxY));
+                            }
+                        }
+                    }
+
+                    Trigger("Plot", new object[] { allXs, allYs, 100 });
+                }
+            };
+        }
+
+        public static Action<List<double>, List<double>> PlotTriggerMarshal { get; set; } = DefaultPlotTriggerMarshal;
+
+        public static Func<List<double>, List<double>, EventWaitHandle> DefaultStepFinishedTriggerMarshal = (List<double> x, List<double> y) =>
+        {
+            if (x != null && y != null)
+            {
+                Trigger("StepFinished", new object[] { x, y, 100 });
+            }
+
+            return null;
+        };
+
+        public static Func<List<double>, List<double>, EventWaitHandle> NewParallelStepFinishedTriggerMarshal()
+        {
+            List<double> allXs = null;
+            List<double> allYs = null;
+
+            double maxX = double.MinValue;
+            double maxY = double.MinValue;
+
+            int countCalls = 0;
+            int expectedCalls = 0;
+
+            EventWaitHandle handle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            object lockObject = new object();
+
+            return (List<double> x, List<double> y) =>
+            {
+                lock (lockObject)
+                {
+                    if (x == null && y != null)
+                    {
+                        expectedCalls++;
+                        return null;
+                    }
+                    else if (x != null && y == null)
+                    {
+                        expectedCalls--;
+                        return null;
+                    }
+                    else
+                    {
+                        countCalls++;
+                        if (allXs == null)
+                        {
+                            allXs = new List<double>(x);
+                            allYs = new List<double>(y);
+                            maxX = allXs.Max();
+                            maxY = Math.Max(maxY, allYs.Max());
+                        }
+                        else
+                        {
+                            maxX = allXs.Max();
+                            maxY = Math.Max(maxY, allYs.Max());
+
+                            for (int i = 0; i < x.Count; i++)
+                            {
+                                if (i < allXs.Count && allXs[i] == x[i])
+                                {
+                                    allYs[i] = Math.Max(allYs[i], y[i]);
+                                }
+                                else if (x[i] > maxX)
+                                {
+                                    allXs.Add(x[i]);
+                                    allYs.Add(Math.Max(y[i], maxY));
+                                }
+                            }
+                        }
+
+                        if (countCalls == expectedCalls)
+                        {
+                            Trigger("StepFinished", new object[] { allXs, allYs, 100 });
+                            PlotTriggerMarshal = NewParallelTriggerMarshal(maxY);
+                            allXs = null;
+                            allYs = null;
+                            countCalls = 0;
+                            handle.Set();
+                        }
+
+                        if (countCalls > 0)
+                        {
+                            return handle;
+                        }
+                        else
+                        {
+                            EventWaitHandle prevHandle = handle;
+                            handle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                            return prevHandle;
+                        }
+                    }
+                }
+            };
+        }
+
+        public static Func<List<double>, List<double>, EventWaitHandle> StepFinishedTriggerMarshal { get; set; } = DefaultStepFinishedTriggerMarshal;
+
         public static double[] MaximiseFunction(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, long numSteps, Random rnd, int plotTop = -1)
         {
             double[] bestX = new double[startVal.Length];
@@ -2511,7 +2687,7 @@ namespace Utils
                     x.Add(i);
                     y.Add(bestVal);
 
-                    Trigger("Plot", new object[] { x, y, 100 });
+                    PlotTriggerMarshal(x, y);
                 }
             }
 
@@ -2526,16 +2702,25 @@ namespace Utils
                 x.Add(100);
                 y.Add(bestVal);
 
-                Trigger("StepFinished", new object[] { x, y, 100 });
+                StepFinishedTriggerMarshal(x, y)?.WaitOne();
             }
             return bestX;
         }
 
-        public static double[] Gradient(Func<double[], double> func, double[] val, double[] stepSize)
+        public static double[] Gradient(Func<double[], double> func, double[] val, double[] stepSize, out double[] bestVal)
         {
+            bestVal = new double[val.Length + 1];
+
             double[] tbr = new double[val.Length];
 
             double funcVal = func(val);
+
+            bestVal[0] = funcVal;
+
+            for (int i = 0; i < val.Length; i++)
+            {
+                bestVal[i + 1] = val[i];
+            }
 
             for (int i = 0; i < val.Length; i++)
             {
@@ -2553,10 +2738,27 @@ namespace Utils
                 }
 
                 double testFuncVal = func(testVal);
+                if (testFuncVal > bestVal[0])
+                {
+                    bestVal[0] = testFuncVal;
+                    for (int j = 0; j < val.Length; j++)
+                    {
+                        bestVal[j + 1] = testVal[j];
+                    }
+                }
+
                 tbr[i] = (testFuncVal - funcVal) / stepSize[i];
             }
 
             return tbr;
+        }
+
+
+        public static double[,] HessianMatrix(Func<double[], double> func, double[] val)
+        {
+            NumericalHessian hess = new NumericalHessian();
+
+            return hess.Evaluate(func, val);
         }
 
         public static double[] MaximiseFunctionNesterov(Func<double[], double> func, double[] startVal, long numSteps, double maxRate, double maxMomentum, Random rnd, int plotTop = -1)
@@ -2594,7 +2796,13 @@ namespace Utils
                 }
 
 
-                double[] gradient = Gradient(func, currVal[tIndex].Add((currVal[tIndex].Subtract(currVal[(tIndex + 2) % 3])).Multiply(momentum)), gradientStepSize);
+                double[] gradient = Gradient(func, currVal[tIndex].Add((currVal[tIndex].Subtract(currVal[(tIndex + 2) % 3])).Multiply(momentum)), gradientStepSize, out double[] gradientBestVal);
+
+                if (gradientBestVal[0] > bestVal)
+                {
+                    bestVal = gradientBestVal[0];
+                    bestVars = gradientBestVal.Skip(1).ToArray();
+                }
 
                 currVal[(tIndex + 1) % 3] = currVal[tIndex].Add((currVal[tIndex].Subtract(currVal[(tIndex + 2) % 3])).Multiply(momentum)).Add(gradient.Multiply(rate));
                 tIndex = (tIndex + 1) % 3;
@@ -2635,7 +2843,7 @@ namespace Utils
                     x.Add(t);
                     y.Add(bestVal);
 
-                    Trigger("Plot", new object[] { x, y, 100 });
+                    PlotTriggerMarshal(x, y);
                 }
             }
 
@@ -2650,7 +2858,7 @@ namespace Utils
                 x.Add(100);
                 y.Add(bestVal);
 
-                Trigger("StepFinished", new object[] { x, y, 100 });
+                StepFinishedTriggerMarshal(x, y)?.WaitOne();
             }
 
             return bestVars;
@@ -2965,6 +3173,9 @@ namespace Utils
                 double newVal = currVal + 1;
                 double[] newVars = startVal;
 
+                //Register thread
+                StepFinishedTriggerMarshal(null, new List<double>());
+
                 while (Math.Abs(newVal - currVal) > strategy.ConvergenceThreshold)
                 {
                     currVal = newVal;
@@ -2974,12 +3185,18 @@ namespace Utils
                     startVal = newVars;
                 }
 
+                //Unregister thread
+                StepFinishedTriggerMarshal(new List<double>(), null);
+
                 return newVars;
             }
             else if (strategy.ConvergenceCriterion == ConvergenceCriteria.Variables)
             {
                 double newVal = 1;
                 double[] newVars = startVal;
+
+                //Register thread
+                StepFinishedTriggerMarshal(null, new List<double>());
 
                 while (newVal > strategy.ConvergenceThreshold)
                 {
@@ -2994,6 +3211,9 @@ namespace Utils
 
                     startVal = newVars;
                 }
+
+                //Unregister thread
+                StepFinishedTriggerMarshal(new List<double>(), null);
 
                 double lastVal = func(newVars);
 
@@ -3053,6 +3273,9 @@ namespace Utils
                 double newVal = currVal + 1;
                 double[] newVars = startValp;
 
+                //Register thread
+                StepFinishedTriggerMarshal(null, new List<double>());
+
                 while (Math.Abs(newVal - currVal) > strategy.ConvergenceThreshold)
                 {
                     currVal = newVal;
@@ -3061,6 +3284,9 @@ namespace Utils
                     newVal = funcp(newVars);
                     startValp = newVars;
                 }
+
+                //Unregister thread
+                StepFinishedTriggerMarshal(new List<double>(), null);
 
                 double lastVal = funcp(newVars);
 
@@ -3093,6 +3319,9 @@ namespace Utils
                 double newVal = 1;
                 double[] newVars = startValp;
 
+                //Register thread
+                StepFinishedTriggerMarshal(null, new List<double>());
+
                 while (newVal > strategy.ConvergenceThreshold)
                 {
                     newVars = MaximiseFunctionNesterov(funcp, startValp, strategy.StepsPerRun, 0.2, 0.2, rnd, strategy.Plot ? plotTop : -1);
@@ -3106,6 +3335,9 @@ namespace Utils
 
                     startValp = newVars;
                 }
+
+                //Unregister thread
+                StepFinishedTriggerMarshal(new List<double>(), null);
 
                 double lastVal = funcp(newVars);
 
@@ -3136,7 +3368,7 @@ namespace Utils
             return null;
         }
 
-        public static double[] AutoMaximiseFunctionSampling(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, Sampling strategy, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionSampling(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, Sampling strategy, bool autoRecenter, int plotTop = -1)
         {
             if (!strategy.Plot)
             {
@@ -3168,10 +3400,28 @@ namespace Utils
                 }
             }
 
+            Sampling[] strategies = new Sampling[continuousVariables.Count];
+
+            if (!autoRecenter)
+            {
+                for (int i = 0; i < continuousVariables.Count; i++)
+                {
+                    strategies[i] = strategy;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < continuousVariables.Count; i++)
+                {
+                    strategies[i] = new Sampling(strategy.Plot, Math.Max(0.0001, startVal[i] - strategy.Resolution * (continuousSteps / 2)), Math.Max(startVal[i] + strategy.Resolution * (continuousSteps / 2), 0.0001 + strategy.Resolution * continuousSteps), strategy.Resolution);
+                }
+            }
+
             int[] steps = new int[continuousVariables.Count + multinomialVariables.Count];
 
-            double[] bestVals = new double[startVal.Length];
-            double maxVal = double.MinValue;
+            double[] bestVals = (double[])startVal.Clone();
+
+            double maxVal = func(bestVals);
 
             double stepsDone = 0;
 
@@ -3179,6 +3429,9 @@ namespace Utils
 
             List<double> y = new List<double>();
             List<double> x = new List<double>();
+
+            //Register thread
+            StepFinishedTriggerMarshal(null, new List<double>());
 
             do
             {
@@ -3193,7 +3446,7 @@ namespace Utils
 
                 for (int i = 0; i < continuousVariables.Count; i++)
                 {
-                    currVal[continuousVariables[i]] = Math.Min(strategy.Min + strategy.Resolution * steps[varInd], strategy.Max);
+                    currVal[continuousVariables[i]] = Math.Min(strategies[i].Min + strategies[i].Resolution * steps[varInd], strategies[i].Max);
                     varInd++;
                 }
 
@@ -3234,7 +3487,8 @@ namespace Utils
                     lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                     y.Add(maxVal);
                     x.Add(lastPerc);
-                    Trigger("Plot", new object[] { x, y, 100 });
+                    
+                    PlotTriggerMarshal(x, y);
                 }
 
                 varInd = 0;
@@ -3288,8 +3542,12 @@ namespace Utils
             {
                 y.Add(maxVal);
                 x.Add(100);
-                Trigger("StepFinished", new object[] { x, y, 100 });
+                
+                StepFinishedTriggerMarshal(x, y)?.WaitOne();
             }
+
+            //Unregister thread
+            StepFinishedTriggerMarshal(new List<double>(), null);
 
             return bestVals;
         }
@@ -3297,7 +3555,7 @@ namespace Utils
         public static Action<string, object[]> Trigger;
         public static bool RunningGui = false;
 
-        public static double[] AutoMaximiseFunctionIterativeSampling(Func<double[], int, double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, IterativeSampling strategy, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionIterativeSampling(Func<double[], int, double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, IterativeSampling strategy, bool autoRecenter, int plotTop = -1)
         {
             if (!strategy.Plot)
             {
@@ -3336,14 +3594,27 @@ namespace Utils
                 }
             }
 
-            for (int i = 0; i < continuousVariables.Count; i++)
+            IterativeSampling[] strategies = new IterativeSampling[continuousVariables.Count];
+
+            if (!autoRecenter)
             {
-                startVal[continuousVariables[i]] = strategy.Min + strategy.Resolution * (continuousSteps / 2);
+                for (int i = 0; i < continuousVariables.Count; i++)
+                {
+                    startVal[continuousVariables[i]] = strategy.Min + strategy.Resolution * (continuousSteps / 2);
+                    strategies[i] = strategy;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < continuousVariables.Count; i++)
+                {
+                    strategies[i] = new IterativeSampling(strategy.Plot, Math.Max(0.0001, startVal[i] - strategy.Resolution * (continuousSteps / 2)), Math.Max(startVal[i] + strategy.Resolution * (continuousSteps / 2), 0.0001 + strategy.Resolution * continuousSteps), strategy.Resolution, strategy.ConvergenceCriterion, strategy.ConvergenceThreshold);
+                }
             }
 
             double[] bestVals = (double[])startVal.Clone();
 
-            double maxVal = double.MinValue;
+            double maxVal = func(bestVals, 0);
 
             double lastMaxVal = maxVal;
             double[] lastBestVals = (double[])bestVals.Clone();
@@ -3354,6 +3625,11 @@ namespace Utils
             {
                 shouldContinue = false;
             }
+
+
+
+            //Register thread
+            StepFinishedTriggerMarshal(null, new List<double>());
 
             while (shouldContinue)
             {
@@ -3467,7 +3743,8 @@ namespace Utils
                                             lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                                             y.Add(maxVal);
                                             x.Add(lastPerc);
-                                            Trigger("Plot", new object[] { x, y, 100 });
+                                            
+                                            PlotTriggerMarshal(x, y);
                                         }
 
                                         shouldStart = remainingSteps.Count > 0;
@@ -3525,7 +3802,7 @@ namespace Utils
 
                                     if (cVarInd < continuousVariables.Count)
                                     {
-                                        currVal[continuousVariables[cVarInd]] = Math.Min(strategy.Min + strategy.Resolution * step, strategy.Max);
+                                        currVal[continuousVariables[cVarInd]] = Math.Min(strategies[cVarInd].Min + strategies[cVarInd].Resolution * step, strategies[cVarInd].Max);
                                     }
                                     else
                                     {
@@ -3565,7 +3842,8 @@ namespace Utils
                                             lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                                             y.Add(maxVal);
                                             x.Add(lastPerc);
-                                            Trigger("Plot", new object[] { x, y, 100 });
+                                            
+                                            PlotTriggerMarshal(x, y);
                                         }
                                         shouldStart = remainingSteps.Count > 0;
                                         if (shouldStart)
@@ -3597,7 +3875,8 @@ namespace Utils
                 {
                     x.Add(100);
                     y.Add(maxVal);
-                    Trigger("StepFinished", new object[] { x, y, 100 });
+                    
+                    StepFinishedTriggerMarshal(x, y)?.WaitOne();
                 }
 
                 if (strategy.ConvergenceCriterion == ConvergenceCriteria.Value)
@@ -3616,6 +3895,9 @@ namespace Utils
                     shouldContinue = newVal > strategy.ConvergenceThreshold;
                 }
             }
+
+            //Unregister thread
+            StepFinishedTriggerMarshal(null, new List<double>());
 
             return bestVals;
         }

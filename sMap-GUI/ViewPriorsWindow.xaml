@@ -15,38 +15,38 @@
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="PriorsTitle" IsVisible="False">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
       </Canvas>
       <Canvas Width="218" Height="40" ZIndex="-1">
         <Path Fill="#ff7f27" Data="M0,40 L243,40 L218,0 L-25,0 Z" Opacity="0.15"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state priors</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
       </Canvas>
     </StackPanel>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="PosteriorsTitle" IsVisible="False">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
       </Canvas>
       <Canvas Width="268" Height="40" ZIndex="-1">
         <Path Fill="#ff7f27" Data="M0,40 L293,40 L268,0 L-25,0 Z" Opacity="0.15"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state posteriors</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
       </Canvas>
     </StackPanel>
     <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Name="LikelihoodsTitle" IsVisible="False">
       <Canvas Width="64" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40 M22,0 L42,40 M39,0 L59,40"></Path>
       </Canvas>
       <Canvas Width="273" Height="40" ZIndex="-1">
         <Path Fill="#ff7f27" Data="M0,40 L298,40 L273,0 L-25,0 Z" Opacity="0.15"></Path>
         <TextBlock FontWeight="Bold" FontSize="24" Margin="5,3.5,0,0" Foreground="#ff7f27">Node state likelihoods</TextBlock>
       </Canvas>
       <Canvas Width="30" Height="40" ClipToBounds="True">
-        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeStartLineCap="Square" Data="M5,0 L25,40"></Path>
+        <Path Stroke="#ff7f27" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"></Path>
       </Canvas>
     </StackPanel>
     <StackPanel Orientation="Horizontal" Grid.Row="1">

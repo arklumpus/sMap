@@ -15,6 +15,8 @@ namespace Utils
 {
     public static partial class Plotting
     {
+        static bool CustomPalette = false;
+
         static readonly Colour BlackColour = Colour.FromRgb(0, 0, 0);
 
         static readonly int[][] colors = { new int[] { 237, 28, 36 }, new int[] { 34, 177, 76 }, new int[] { 255, 127, 39 }, new int[] { 0, 162, 232 }, new int[] { 255, 242, 0 }, new int[] { 63, 72, 204 }, new int[] { 255, 201, 14 }, new int[] { 163, 73, 164 }, new int[] { 181, 230, 29 } };
@@ -30,9 +32,58 @@ namespace Utils
             {
                 int orderedIndex = index % 2 == 0 ? index / 2 : (int)(Math.Ceiling(totalColors * 0.5) + (index / 2));
 
-                return new HSLColor(240.0 * orderedIndex / totalColors, 240, 120, alpha);
+                if (!CustomPalette)
+                {
+                    return new HSLColor(240.0 * orderedIndex / totalColors, 240, 120, alpha);
+                }
+                else
+                {
+                    if (totalColors > 1)
+                    {
+                        int totalIndex = orderedIndex * 1023 / (totalColors - 1);
+                        return (ViridisColorScale[totalIndex][0], ViridisColorScale[totalIndex][1], ViridisColorScale[totalIndex][2], alpha);
+                    }
+                    else
+                    {
+                        return (ViridisColorScale[0][0], ViridisColorScale[0][1], ViridisColorScale[0][2], alpha);
+                    }
+                }
             }
         }
+
+        static Plotting()
+        {
+            string[] paletteFiles = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "*.palette");
+
+            if (paletteFiles.Length > 0)
+            {
+                string paletteFile = paletteFiles[0];
+
+                ConsoleWrapper.WriteLine();
+
+                if (paletteFiles.Length > 1)
+                {
+                    ConsoleWrapper.WriteLine("Multiple palette files detected!");
+                }
+
+                ConsoleWrapper.WriteLine("Loading custom colour palette from " + Path.GetFileName(paletteFile));
+
+                ConsoleWrapper.WriteLine();
+
+                CustomPalette = true;
+                System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("#.*");
+
+                try
+                {
+                    colors = (from el in File.ReadLines(paletteFile) let line = reg.Replace(el, "") where !string.IsNullOrWhiteSpace(line) select (from el2 in line.Split(",") select int.Parse(el2.Trim())).ToArray()).ToArray();
+                }
+                catch (Exception ex)
+                {
+                    ConsoleWrapper.WriteLine("Error while loading custom color palette: " + ex.Message);
+                }
+            }
+        }
+
 
         public static Action<List<TreeNode>, int, Graphics, double, double> NodeNoAction = (a, b, c, d, e) => { };
 
@@ -73,6 +124,8 @@ namespace Utils
 
                 double prevRadius = 1;
 
+                context.StrokePath(new GraphicsPath().Arc(x, y, options.PieSize, 0, 2 * Math.PI), BlackColour, options.LineWidth * 2);
+
                 for (int j = 0; j < normalisedLiks.Length; j++)
                 {
                     if (normalisedLiks[j] > 0.001)
@@ -81,8 +134,6 @@ namespace Utils
                     }
                     prevRadius -= normalisedLiks[j];
                 }
-
-                context.StrokePath(new GraphicsPath().Arc(x, y, options.PieSize, 0, 2 * Math.PI), BlackColour, options.LineWidth);
             };
         }
 

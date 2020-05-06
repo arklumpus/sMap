@@ -74,6 +74,15 @@ namespace sMap_GUI
             DrawTree(0);
 
             initialised = true;
+
+            //Workaround Avalonia bug
+            async void resize()
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                this.Height = this.Height + 1;
+            };
+
+            resize();
         }
 
         private void DrawTree(int setInd)
