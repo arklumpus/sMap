@@ -1,5 +1,7 @@
 # sMap: Evolution of Independent, Dependent and Conditioned Discrete Characters in a Bayesian Framework
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4293924.svg)](https://doi.org/10.5281/zenodo.4293924)
+
 ## Introduction
 **sMap** is a program to perform stochastic mapping (Nielsen, 2002; Huelsenbeck, Nielsen and Bollback, 2003) analyses on discrete characters. This kind of analysis involves estimating substitution parameters, reconstructing ancestral states and simulating histories, in order to study the evolution of multiple types of discrete characters (e.g. morphological features, presence of genes, habitats...), without necessarily relying on a single phylogenetic tree.
 
