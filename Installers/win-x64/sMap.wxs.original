@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="sMap" Language="1033" Manufacturer="G. Bianchini" Version="@@VersionHere@@" UpgradeCode="7f05f10a-f8ff-4106-84e1-f30135c21cff">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+    <Upgrade Id='7f05f10a-f8ff-4106-84e1-f30135c21cff'>
+      <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
+          Minimum='1.0.0' IncludeMinimum='yes'
+          Maximum='@@VersionHere@@' IncludeMaximum='no' />
+    </Upgrade>
+
+
+    <Media Id='1' Cabinet='sMap.cab' EmbedCab='yes' />
+
+		<Feature Id="Complete" Title="sMap @@VersionHere@@" Level="1" Description="The complete sMap package." ConfigurableDirectory="INSTALLFOLDER" Display='expand' AllowAdvertise='no' InstallDefault='local' Absent='disallow'>
+      <Feature Id='MainProgram' Title='Program' Description='sMap executables and libraries.' Level='1' AllowAdvertise='no' InstallDefault='local' Absent='disallow'>
+        <ComponentGroupRef Id="sMapComponent" />
+      </Feature>
+      <Feature Id="ShortcutFeat" Title="Start Menu shortcut" Description="Add a shortcut to sMap-GUI to the Start Menu." Level="1" AllowAdvertise='no' InstallDefault='local'>
+        <ComponentRef Id="ApplicationShortcut"/>
+      </Feature>
+      <Feature Id="EnvPath" Title="Environment variable" Description="Add the sMap installation folder to the PATH environment variable." Level="1" AllowAdvertise='no' InstallDefault='local'>
+        <ComponentRef Id="EnvVars"/>
+      </Feature>
+      <Feature Id="AlternativePalette" Title="Alternative palette" Description="Install an alternative colour palette for plots produced by sMap. At most one palette should be installed." Level="3" AllowAdvertise='no' InstallDefault='local'>
+<!-- Palettes here -->  
+        <Component Id="DummyComponent2" Guid="ad4fd77a-bfa6-45cb-9703-a2a7c28d9c43" Directory="INSTALLFOLDER">
+        </Component>
+      </Feature>
+      <Component Id="DummyComponent" Guid="360abc42-2572-42ac-8264-f0d7737abd2b" Directory="INSTALLFOLDER">
+      </Component>
+    </Feature>
+
+    <UIRef Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="Licence.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="sMapBanner.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="HeaderBanner.bmp" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+	</Product>
+
+  <Fragment>
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize" />
+    </InstallExecuteSequence>
+  </Fragment>
+
+  <Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="INSTALLFOLDER" Name="sMap" />
+			</Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="sMap"/>
+      </Directory>
+		</Directory>
+	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+    <Component Id="ApplicationShortcut" Guid="1b02521a-e46b-4e90-9a31-21364fc5d6cc">
+        <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="sMap"
+                  Description="sMap"
+                  Target="[#sMap.GUI.exe]"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="sMapIcon.exe"
+                  IconIndex="0" />
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+    </Component>
+    </DirectoryRef>
+  </Fragment>
+  
+  <Fragment>
+    <Icon Id="sMapIcon.exe" SourceFile="SourceDir/sMap-GUI.exe" />
+    <Property Id='ARPPRODUCTICON' Value='sMapIcon.exe' />
+  </Fragment>
+
+  <Fragment>
+    <Component Id='EnvVars' Guid='3494f06d-a3a1-448e-bef8-ca2353665771' Directory="INSTALLFOLDER">
+      <CreateFolder />
+      <Environment Id='PathEnvVar' Action='set' System='yes' Name='PATH' Part='last' Value='[INSTALLFOLDER]' Permanent='no'/>
+    </Component>
+  </Fragment>
+  
+  <Fragment>
+    <ComponentGroup Id="sMapComponent">
+<!-- Files here -->
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>
