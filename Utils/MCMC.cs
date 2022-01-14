@@ -76,6 +76,13 @@ namespace Utils
             }
         }
 
+        public enum WatchdogActions
+        {
+            Nothing,
+            Converge,
+            Restart
+        }
+
         public static double magicAcceptanceRate = 0.37;
 
         public static bool estimateStepSize = true;
@@ -88,6 +95,9 @@ namespace Utils
         public static int sampleFrequency = 10;
         public static int swapFrequency = 10;
         public static int minSamples = 2000;
+        public static int maxSamples = 200000;
+        public static WatchdogActions watchdogAction = WatchdogActions.Restart;
+        public static int watchdogInitialTimeout = 20000;
 
         public static double temperatureIncrement = 0.5;
         public static double globalStepSizeMultiplier = 1;
@@ -98,7 +108,7 @@ namespace Utils
 
         public static ConcurrentDictionary<string, ConsoleCancelEventHandler> cancelEventHandlers = new ConcurrentDictionary<string, ConsoleCancelEventHandler>();
 
-        public static ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) SamplePosterior(CharacterDependency[][] dependencies, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, int dependencyIndex, Func<double[][], int, List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], CharacterDependency[][][], LikelihoodModel, double> logLikelihoodFunction, Random randomSource, string parameterNameFile, string logFile, int numRuns, int numChains, int sampleCount, bool runUnderPrior, double[] currentStepSizeMultipliers)
+        public static ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) SamplePosterior(CharacterDependency[][] dependencies, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, int dependencyIndex, Func<double[][], int, List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], CharacterDependency[][][], LikelihoodModel, double> logLikelihoodFunction, Random randomSource, string parameterNameFile, string logFile, int numRuns, int numChains, int sampleCount, bool runUnderPrior, double[] currentStepSizeMultipliers, out bool mcmcSucceeded)
         {
             CharacterDependency[][][] dependenciesByChain = new CharacterDependency[numChains * numRuns][][];
             Dictionary<string, Parameter>[][] pisByChain = new Dictionary<string, Parameter>[numChains * numRuns][];
@@ -374,6 +384,7 @@ namespace Utils
             double[] stepProgresses = new double[numRuns];
             object[] stepLocks = new object[numRuns];
             double[][] stepSizeMultipliers = new double[numRuns][];
+            double[] stepDurations = new double[numRuns];
 
             for (int i = 0; i < numRuns; i++)
             {
@@ -412,7 +423,7 @@ namespace Utils
 
                 runThreads[i] = new Thread(() =>
                 {
-                    RunRun(likModels, meanLikModel, j, numChains, chains, variables, (tree, vars, chainId) => logLikelihoodFunction(vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, tree), randomSource, logFile + ".run" + (j + 1).ToString() + ".log", variableSamples[j], diagnosticHandles[j], proceedHandles[j], stopHandles[j], ref stepProgresses[j], ref stepSizeMultipliers[j], stepLocks[j], stepSignals[j], finishedStepSignals[j], runs[j], runUnderPrior);
+                    RunRun(likModels, meanLikModel, j, numChains, chains, variables, (tree, vars, chainId) => logLikelihoodFunction(vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, tree), randomSource, logFile + ".run" + (j + 1).ToString() + ".log", variableSamples[j], diagnosticHandles[j], proceedHandles[j], stopHandles[j], ref stepProgresses[j], ref stepSizeMultipliers[j], ref stepDurations[j], stepLocks[j], stepSignals[j], finishedStepSignals[j], runs[j], runUnderPrior);
                 });
 
                 bool threadStarted = false;
@@ -544,13 +555,33 @@ namespace Utils
             {
                 ConsoleWrapper.WriteLine("Performing initial burnin: Done   ");
                 ConsoleWrapper.WriteLine("Fixed step size multipliers: ");
-               
+
                 for (int i = 0; i < variables[0].Length; i++)
                 {
                     averages[i] = (from el in stepSizeMultipliers select el[i]).Average() * globalStepSizeMultiplier;
                     ConsoleWrapper.WriteLine("\t{0}", averages[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
                 }
             }
+
+            long averageStepDuration = (long)Math.Round(stepDurations.Average());
+
+            string timedLikelihood = "";
+
+            if (averageStepDuration < 1000)
+            {
+                timedLikelihood = averageStepDuration.ToString() + "ms";
+            }
+            else if (averageStepDuration < 60000)
+            {
+                timedLikelihood = ((double)averageStepDuration / 1000).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "s";
+            }
+            else
+            {
+                timedLikelihood = ((double)averageStepDuration / 60000).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "min";
+            }
+
+            ConsoleWrapper.WriteLine();
+            ConsoleWrapper.WriteLine("A single MCMC step takes about {0}", timedLikelihood);
 
             if (Utils.RunningGui)
             {
@@ -590,6 +621,79 @@ namespace Utils
             Console.CancelKeyPress += ctrlCHandler;
             cancelEventHandlers.TryAdd(guid, ctrlCHandler);
 
+            EventWaitHandle watchdogHandle1 = new EventWaitHandle(false, EventResetMode.ManualReset);
+            EventWaitHandle watchdogHandle1Proceed = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            EventWaitHandle watchdogHandle2 = new EventWaitHandle(false, EventResetMode.ManualReset);
+            EventWaitHandle watchdogHandle2Proceed = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            EventWaitHandle watchdogExit = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            bool localMCMCSucceeded = true;
+
+            Thread watchdogThread = new Thread(() =>
+            {
+                EventWaitHandle[] handles = new EventWaitHandle[] { watchdogHandle1, watchdogExit };
+
+                long lastDiagnosticInterval = (watchdogInitialTimeout + averageStepDuration * diagnosticFrequency) / 2 - 500;
+                long lastDiagnosticFinished = Environment.TickCount64;
+
+                while (true)
+                {
+                    int handleResult = EventWaitHandle.WaitAny(handles, (int)(2 * lastDiagnosticInterval + 1000));
+
+                    if (handleResult == 0)
+                    {
+                        watchdogHandle1.Reset();
+                        lastDiagnosticInterval = Environment.TickCount64 - lastDiagnosticFinished;
+                        watchdogHandle1Proceed.Set();
+
+                        watchdogHandle2.WaitOne();
+                        watchdogHandle2.Reset();
+
+                        lastDiagnosticFinished = Environment.TickCount64;
+                        watchdogHandle2Proceed.Set();
+                    }
+                    else if (handleResult == 1)
+                    {
+                        ConsoleWrapper.WriteLine("");
+                        ConsoleWrapper.WriteLine("Terminating watchdog thread");
+                        ConsoleWrapper.WriteLine("");
+                        break;
+                    }
+                    else if (handleResult == EventWaitHandle.WaitTimeout)
+                    {
+                        ConsoleWrapper.WriteLine("");
+                        ConsoleWrapper.WriteLine("Deadlock detected (" + ((int)(2 * lastDiagnosticInterval + 1000)).ToString() + "ms)!");
+
+                        if (watchdogAction == WatchdogActions.Restart)
+                        {
+                            ConsoleWrapper.WriteLine("Stopping and restarting all chains...");
+
+                            localMCMCSucceeded = false;
+
+                            foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
+                            {
+                                h.Value.Invoke(h.Value.Target, null);
+                            }
+                        }
+                        else if (watchdogAction == WatchdogActions.Converge)
+                        {
+                            ConsoleWrapper.WriteLine("Assuming convergence has been reached...");
+                            foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
+                            {
+                                h.Value.Invoke(h.Value.Target, null);
+                            }
+                        }
+                        
+
+                        ConsoleWrapper.WriteLine("");
+                    }
+                }
+            });
+
+            watchdogThread.Start();
+
             while (!converged && !cancelled)
             {
                 EventWaitHandle.WaitAll(diagnosticHandles);
@@ -600,6 +704,8 @@ namespace Utils
                 }
 
                 diagnosticCount++;
+
+                EventWaitHandle.SignalAndWait(watchdogHandle1, watchdogHandle1Proceed);
 
                 double maxCoVMean = double.MinValue;
                 double maxCoVStdDev = double.MinValue;
@@ -696,7 +802,9 @@ namespace Utils
 
                 ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVMean.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVStdDev.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (minESS >= 0 ? minESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
 
-                converged = maxCoVMean < convergenceCoVThreshold && maxCoVStdDev < convergenceCoVThreshold && minESS > convergenceESSThreshold && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency;
+                converged = (maxCoVMean < convergenceCoVThreshold && maxCoVStdDev < convergenceCoVThreshold && minESS > convergenceESSThreshold && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency) || (maxSamples > 0 && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= maxSamples * sampleFrequency);
+
+                EventWaitHandle.SignalAndWait(watchdogHandle2, watchdogHandle2Proceed);
             }
 
             for (int i = 0; i < numRuns; i++)
@@ -704,6 +812,8 @@ namespace Utils
                 stopHandles[i].Set();
                 proceedHandles[i].Set();
             }
+
+            watchdogExit.Set();
 
             ConsoleWrapper.WriteLine();
             ConsoleWrapper.WriteLine("Converged!");
@@ -844,6 +954,8 @@ namespace Utils
                 stepSizeMultipliersAverages[i] = (from el in stepSizeMultipliers select el[i]).Average();
             }
 
+            mcmcSucceeded = localMCMCSucceeded;
+
             return (tbr, ratesToEstimateByChain, pisToEstimateByChain, samples, dependenciesByChain, pisByChain, ratesByChain, stepSizeMultipliersAverages, averageSamples);
         }
 
@@ -863,7 +975,7 @@ namespace Utils
             public double SwapAcceptanceRate { get; set; }
         }
 
-        private static void RunRun(LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int runId, int chainCount, MCMCChain[] chains, MCMCVariable[][] variablesByChain, Func<LikelihoodModel, double[][], int, double> logLikelihoodFunction, Random randomSource, string logFile, List<(int, double[][])> coldSamples, EventWaitHandle diagnosticHandle, EventWaitHandle proceedHandle, EventWaitHandle stopHandle, ref double stepProgress, ref double[] stepSizeMultipliers, object stepLock, EventWaitHandle stepSignal, EventWaitHandle finishedStepSignal, MCMCRun run, bool runUnderPrior)
+        private static void RunRun(LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int runId, int chainCount, MCMCChain[] chains, MCMCVariable[][] variablesByChain, Func<LikelihoodModel, double[][], int, double> logLikelihoodFunction, Random randomSource, string logFile, List<(int, double[][])> coldSamples, EventWaitHandle diagnosticHandle, EventWaitHandle proceedHandle, EventWaitHandle stopHandle, ref double stepProgress, ref double[] stepSizeMultipliers, ref double stepDuration, object stepLock, EventWaitHandle stepSignal, EventWaitHandle finishedStepSignal, MCMCRun run, bool runUnderPrior)
         {
             using (StreamWriter sw = new StreamWriter(logFile))
             {
@@ -938,10 +1050,16 @@ namespace Utils
                         currentLogLikelihood = 0;
                     }
 
+                    Stopwatch stopWatch = Stopwatch.StartNew();
+
                     for (int step = 0; step < initialBurnin; step++)
                     {
                         currentVariableValues = MCMCStep(1, likModels, meanLikModel, ref currentTreeIndex, variables, currentVariableValues, ref currentLogLikelihood, ref currentLogPrior, logLikelihoodFunction, randomSource, runId * chainCount, out bool accepted, runUnderPrior);
                     }
+
+                    stopWatch.Stop();
+
+                    stepDuration = (double)stopWatch.ElapsedMilliseconds / initialBurnin;
 
 
                     double[] stepSizes = (from el in variables select el.StepSize).ToArray();
@@ -1052,10 +1170,16 @@ namespace Utils
                         currentLogLikelihood = 0;
                     }
 
+                    Stopwatch stopWatch = Stopwatch.StartNew();
+
                     for (int step = 0; step < initialBurnin; step++)
                     {
                         currentVariableValues = MCMCStep(1, likModels, meanLikModel, ref currentTreeIndex, variables, currentVariableValues, ref currentLogLikelihood, ref currentLogPrior, logLikelihoodFunction, randomSource, runId, out bool accepted, runUnderPrior);
                     }
+
+                    stopWatch.Stop();
+
+                    stepDuration = (double)stopWatch.ElapsedMilliseconds / initialBurnin;
 
                     for (int j = 0; j < variables.Length; j++)
                     {
