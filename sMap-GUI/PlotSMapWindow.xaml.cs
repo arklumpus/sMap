@@ -286,6 +286,15 @@ namespace sMap_GUI
             await prev.ShowDialog(this);
         }
 
+        private void TreeViewerLinkClicked(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = "https://treeviewer.org",
+                UseShellExecute = true
+            });
+        }
+
         async Task Plot(string outputFileName, int index)
         {
             switch (index)

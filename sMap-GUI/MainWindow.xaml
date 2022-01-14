@@ -321,6 +321,36 @@
           <StackPanel>
             <Grid>
               <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+              </Grid.ColumnDefinitions>
+              <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Watchdog action:</TextBlock>
+                <ComboBox Grid.Column="1" SelectedIndex="2" Name="WatchdogActionBox">
+                  <ComboBox.Items>
+                    <ComboBoxItem>Nothing</ComboBoxItem>
+                    <ComboBoxItem>Converge</ComboBoxItem>
+                    <ComboBoxItem>Restart</ComboBoxItem>
+                  </ComboBox.Items>
+                </ComboBox>
+              </Grid>
+              <Grid Grid.Column="1" Margin="5,0,5,10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"></ColumnDefinition>
+                  <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Watchdog timeout tolerance:</TextBlock>
+                <NumericUpDown Grid.Column="1" Value="20000" Increment="1" Minimum="0" Name="WatchdogTimeoutBox"></NumericUpDown>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">ms</TextBlock>
+              </Grid>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -409,8 +439,11 @@
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="1*"></ColumnDefinition>
                   <ColumnDefinition Width="1*"></ColumnDefinition>
-                  <ColumnDefinition Width="1*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 <Grid Margin="0,0,5,10">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -419,7 +452,15 @@
                   <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Minimum samples:</TextBlock>
                   <NumericUpDown Grid.Column="1" Value="2000" Increment="1" Minimum="1" Name="MinSamplesBox"></NumericUpDown>
                 </Grid>
-                <Grid Grid.Column="1" Margin="5,0,5,10">
+                <Grid Margin="5,0,5,10" Grid.Column="1">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                  </Grid.ColumnDefinitions>
+                  <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="MaxSamplesCheckBox">Maximum samples:</CheckBox>
+                  <NumericUpDown Grid.Column="2" Value="200000" Increment="1" Minimum="1" Name="MaxSamplesBox"></NumericUpDown>
+                </Grid>
+                <Grid Grid.Row="1" Margin="5,0,5,10">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -427,7 +468,7 @@
                   <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum CoV:</TextBlock>
                   <NumericUpDown Grid.Column="1" Value="0.05" Minimum="0" Name="MaxCoVBox"></NumericUpDown>
                 </Grid>
-                <Grid Grid.Column="2" Margin="5,0,0,10">
+                <Grid Grid.Row="1" Grid.Column="1" Margin="5,0,0,10">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>

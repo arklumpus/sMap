@@ -331,7 +331,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Data="M0,5 L4.5,.5 9,5 6,5 4.5,3.5 3,5 z"/>
-          
+
         </Template>
       </Setter>
     </Style>
@@ -645,7 +645,7 @@
             </Viewbox>
             <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="SaveSampledLikelihoods">Save sampled likelihood values</CheckBox>
           </StackPanel>
-          
+
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
               <local:Octagon Fill="#22b14c"></local:Octagon>
@@ -660,7 +660,7 @@
             </Viewbox>
             <CheckBox VerticalAlignment="Center" BorderBrush="#22b14c" Name="ComputeHessianBox" IsChecked="True">Compute Hessian matrix</CheckBox>
           </StackPanel>-->
-          
+
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
               <local:Octagon Fill="#22b14c"></local:Octagon>
@@ -698,6 +698,22 @@
             </StackPanel>
 
             <StackPanel Margin="20,0,0,0" Name="MCMCOptionsPanel" IsVisible="False">
+              <StackPanel Orientation="Horizontal" Classes="VeryAdvanced" Margin="0,0,0,5">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+                <TextBlock VerticalAlignment="Center">Watchdog action:</TextBlock>
+                <ComboBox SelectedIndex="2" Name="WatchdogActionBox" Margin="10,0,10,0" Padding="5,0,5,0">
+                  <ComboBox.Items>
+                    <ComboBoxItem>Nothing</ComboBoxItem>
+                    <ComboBoxItem>Converge</ComboBoxItem>
+                    <ComboBoxItem>Restart</ComboBoxItem>
+                  </ComboBox.Items>
+                </ComboBox>
+                <TextBlock VerticalAlignment="Center">Watchdog timeout tolerance: </TextBlock>
+                <NumericUpDown BorderBrush="#22b14c" Width="125" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="20000" Name="WatchdogTimeoutBox"></NumericUpDown>
+              </StackPanel>
+              
               <StackPanel Orientation="Horizontal">
                 <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
                   <local:Octagon Fill="#22b14c"></local:Octagon>
@@ -730,9 +746,18 @@
                 </Viewbox>
                 <TextBlock VerticalAlignment="Center">Minimum samples:</TextBlock>
                 <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="2000" Name="MinSamplesBox"></NumericUpDown>
+                <CheckBox VerticalAlignment="Center" Name="MaxSamplesCheckBox" IsChecked="True" BorderBrush="#22b14c">Maximum samples:</CheckBox>
+                <NumericUpDown BorderBrush="#22b14c" Width="125" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" FormatString="0" Value="200000" Name="MaxSamplesBox"></NumericUpDown>
+              </StackPanel>
+              
+              <StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
+                <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+                  <local:Octagon Fill="#22b14c"></local:Octagon>
+                </Viewbox>
+
                 <TextBlock VerticalAlignment="Center">Maximum CoV: </TextBlock>
-                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Name="MaxCoVBox"></NumericUpDown>
-                <TextBlock VerticalAlignment="Center" Classes="VeryAdvanced">Minimum ESS: </TextBlock>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Increment="0.01" Name="MaxCoVBox"></NumericUpDown>
+                <TextBlock VerticalAlignment="Center">Minimum ESS: </TextBlock>
                 <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="200" Name="MinESSBox"></NumericUpDown>
 
               </StackPanel>

@@ -513,6 +513,31 @@ namespace sMap_GUI
                 args.Add("--poll");
             }
 
+            if (this.FindControl<ComboBox>("WatchdogActionBox").SelectedIndex != 2)
+            {
+                switch (this.FindControl<ComboBox>("WatchdogActionBox").SelectedIndex)
+                {
+                    case 0:
+                        args.Add("--watchdog");
+                        args.Add("Nothing");
+                        break;
+                    case 1:
+                        args.Add("--watchdog");
+                        args.Add("Converge");
+                        break;
+                    case 2:
+                        args.Add("--watchdog");
+                        args.Add("Restart");
+                        break;
+                }
+            }
+
+            if (this.FindControl<NumericUpDown>("WatchdogTimeoutBox").Value != 20000)
+            {
+                args.Add("--watchdog-timeout");
+                args.Add(((long)this.FindControl<NumericUpDown>("WatchdogTimeoutBox").Value).ToString());
+            }
+
             if (this.FindControl<NumericUpDown>("NumRunsBox").Value != 2)
             {
                 args.Add("--num-runs");
@@ -547,6 +572,12 @@ namespace sMap_GUI
             {
                 args.Add("--df");
                 args.Add(((int)this.FindControl<NumericUpDown>("dfBox").Value).ToString());
+            }
+
+            if (this.FindControl<CheckBox>("MaxSamplesCheckBox").IsChecked == true)
+            {
+                args.Add("--max-samples");
+                args.Add(((int)this.FindControl<NumericUpDown>("MaxSamplesBox").Value).ToString());
             }
 
             if (this.FindControl<NumericUpDown>("MinSamplesBox").Value != 2 * ((int)this.FindControl<NumericUpDown>("NumSimBox").Value))

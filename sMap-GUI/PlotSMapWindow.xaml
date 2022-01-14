@@ -8,6 +8,7 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="1*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
@@ -23,7 +24,17 @@
         <Path Stroke="#22b14c" StrokeThickness="10" StrokeLineCap="Square" Data="M5,0 L25,40"  Name="PostPath"></Path>
       </Canvas>
     </StackPanel>
-    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Margin="0,0,10,0">
+    <StackPanel Grid.Row="1">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock FontWeight="Bold" Margin="0,0,5,0">Note:</TextBlock>
+        <TextBlock>You should use TreeViewer for more customisation options.</TextBlock>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock Margin="0,0,5,0">Download it from </TextBlock>
+        <TextBlock Foreground="CornflowerBlue" Cursor="Hand" PointerPressed="TreeViewerLinkClicked">https://treeviewer.org</TextBlock>
+      </StackPanel>
+    </StackPanel>
+    <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" Margin="0,0,10,0">
       <Grid Margin="10">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
@@ -110,7 +121,7 @@
         <NumericUpDown Grid.Row="10" Grid.Column="1" Margin="5" VerticalAlignment="Center" Value="2" Name="TimeResolutionBox" FormatString="0.###"></NumericUpDown>
 
         <Button Grid.Column="3" Margin="10" Width="120" Click="LoadSettingsClicked" HorizontalAlignment="Center" Grid.ColumnSpan="2">Load settings...</Button>
-       
+
         <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,5">State colours:</TextBlock>
         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Padding="5" Grid.Row="1" Grid.Column="4" Margin="5,0,5,0">
           <StackPanel Orientation="Horizontal" Name="StateColoursContainer">
@@ -148,7 +159,7 @@
         <NumericUpDown Grid.Row="10" Grid.Column="4" Margin="5" VerticalAlignment="Center" Value="1" Name="TreeAgeScaleBox" FormatString="0.###"></NumericUpDown>
       </Grid>
     </ScrollViewer>
-    <Grid Grid.Row="2">
+    <Grid Grid.Row="3">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="1*"/>
         <ColumnDefinition Width="Auto"/>
