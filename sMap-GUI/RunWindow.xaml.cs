@@ -140,6 +140,8 @@ namespace sMap_GUI
 
         public SerializedRun[] FinishedRuns;
 
+        bool treesClockLike;
+
         private async Task ProgressTrigger(string state, object[] data)
         {
             if (state == "DataRead")
@@ -212,8 +214,10 @@ namespace sMap_GUI
                 {
                     this.FindControl<Button>("ViewMeanTreeButton").IsVisible = true;
                 });
-
-
+            }
+            else if (state == "TreesClockLike")
+            {
+                this.treesClockLike = (bool)data[0];
             }
             else if (state == "ReadModel")
             {
@@ -1924,14 +1928,14 @@ namespace sMap_GUI
             }
 
 
-            ViewSMap win = new ViewSMap(histories, meanTree, realStates, stateProbs, treeSamples, likModels, meanLikModel, meanNodeCorresp, ViewSMap.SMapWindowType.SMap);
+            ViewSMap win = new ViewSMap(histories, meanTree, realStates, stateProbs, treeSamples, likModels, meanLikModel, meanNodeCorresp, ViewSMap.SMapWindowType.SMap, treesClockLike);
             await win.ShowDialog(this);
         }
 
 
         private async void ViewSampleSizesClicked(object sender, RoutedEventArgs e)
         {
-            ViewSMap win = new ViewSMap(histories, meanTree, charData.States, stateProbs, treeSamples, likModels, meanLikModel, meanNodeCorresp, ViewSMap.SMapWindowType.SampleSizes);
+            ViewSMap win = new ViewSMap(histories, meanTree, charData.States, stateProbs, treeSamples, likModels, meanLikModel, meanNodeCorresp, ViewSMap.SMapWindowType.SampleSizes, treesClockLike);
             await win.ShowDialog(this);
         }
 

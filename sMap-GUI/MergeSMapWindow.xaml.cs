@@ -250,12 +250,14 @@ namespace sMap_GUI
             string summaryTreeString = "";
             int[][] meanNodeCorresp = null;
             LikelihoodModel[] LikelihoodModels = null;
+            bool treesClockLike = false;
 
             for (int i = 0; i < runs.Length; i++)
             {
 
                 if (i == 0)
                 {
+                    treesClockLike = runs[i].TreesClockLike;
                     summaryTreeString = runs[i].SummaryTree.ToString();
                     meanNodeCorresp = runs[i].SummaryNodeCorresp;
                     ageScale = runs[i].AgeScale;
@@ -570,11 +572,11 @@ namespace sMap_GUI
 
             if (!includePriorHistories)
             {
-                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale);
+                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, treesClockLike);
             }
             else
             {
-                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), priorHistories, States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, null, null);
+                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), priorHistories, States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, null, null, treesClockLike);
             }
 
             progressAction("Saving output...", -1);
@@ -590,7 +592,7 @@ namespace sMap_GUI
                 {
                     foreach (TaggedHistory history in histories)
                     {
-                        sw.WriteLine(Utils.Utils.GetSmapString(LikelihoodModels[treeSamples[history.Tag]], history.History));
+                        sw.WriteLine(Utils.Utils.GetSmapString(LikelihoodModels[treeSamples[history.Tag]], history.History, ageScale));
                     }
                 }
             }

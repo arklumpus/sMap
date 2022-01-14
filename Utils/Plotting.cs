@@ -700,7 +700,7 @@ namespace Utils
             PlotTree(tree, pageWidth, pageHeight, margin, path, options, NodePie(options, stateProbs, stateColours), BranchSimple(options.LineWidth), StandardLegend(tree, margin, pageWidth, pageHeight, options, states, stateColours), realHeight, logProgress);
         }
 
-        public static void PlotTreeWithPiesAndBranchStates(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] stateProbs, IEnumerable<TaggedHistory> histories, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, double resolution, List<string> states, bool logProgress = false)
+        public static void PlotTreeWithPiesAndBranchStates(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] stateProbs, IEnumerable<TaggedHistory> histories, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, double resolution, List<string> states,bool isClockLike, bool logProgress = false)
         {
             List<(int r, int g, int b, double a)> stateColours = new List<(int r, int g, int b, double a)>();
 
@@ -726,12 +726,10 @@ namespace Utils
                 realHeight = pageHeight - options.LineWidth - options.FontSize * 3;
             }
 
-            bool isClockLike = tree.IsClocklike();
-
             PlotTree(tree, pageWidth, pageHeight, margin, path, options, NodePie(options, stateProbs, stateColours), BranchSMap(resolution, histories, isClockLike, treeSamples, likModels, meanLikModel, meanNodeCorresp, states, options, stateColours), StandardLegend(tree, margin, pageWidth, pageHeight, options, states.ToArray(), stateColours), realHeight, logProgress);
         }
 
-        public static void PlotTreeWithBranchSampleSizes(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, IEnumerable<TaggedHistory> histories, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, double resolution, List<string> states, bool logProgress = false)
+        public static void PlotTreeWithBranchSampleSizes(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, IEnumerable<TaggedHistory> histories, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, double resolution, List<string> states, bool isClockLike, bool logProgress = false)
         {
             float realHeight = pageHeight;
 
@@ -740,7 +738,6 @@ namespace Utils
                 realHeight = pageHeight - options.LineWidth - options.FontSize * 3;
             }
 
-            bool isClockLike = tree.IsClocklike();
             List<double> sampleSizes = new List<double>();
 
             PlotTree(tree, pageWidth, pageHeight, margin, path, options, NodeNoAction, (nodes, i, context, x, y, pX, pY) =>

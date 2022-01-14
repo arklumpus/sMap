@@ -794,7 +794,7 @@ namespace sMap_GUI
 
         double[][] GetConditionedProbabilities()
         {
-            bool isClockLike = Run.SummaryTree.IsClocklike();
+            bool isClockLike = Run.TreesClockLike;
 
             double[][] tbr = new double[Run.MeanPosterior.Length][];
 

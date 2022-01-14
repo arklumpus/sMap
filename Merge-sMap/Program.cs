@@ -81,7 +81,7 @@ namespace Merge_sMap
 
             if (!showHelp)
             {
-                if (string.IsNullOrEmpty(outputsMap) && string.IsNullOrEmpty(outputsMap))
+                if (string.IsNullOrEmpty(outputsMap) && string.IsNullOrEmpty(outputPhytools))
                 {
                     ConsoleWrapper.WriteLine();
                     ConsoleWrapper.WriteLine("No output file name specified!");
@@ -144,6 +144,7 @@ namespace Merge_sMap
             string summaryTreeString = "";
             int[][] meanNodeCorresp = null;
             LikelihoodModel[] LikelihoodModels = null;
+            bool treesClockLike = false;
 
             for (int i = 0; i < runs.Length; i++)
             {
@@ -156,6 +157,7 @@ namespace Merge_sMap
 
                 if (i == 0)
                 {
+                    treesClockLike = runs[i].TreesClockLike;
                     summaryTreeString = runs[i].SummaryTree.ToString();
                     ageScale = runs[i].AgeScale;
                     meanNodeCorresp = runs[i].SummaryNodeCorresp;
@@ -444,11 +446,11 @@ namespace Merge_sMap
 
             if (!includePriorHistories)
             {
-                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale);
+                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, treesClockLike);
             }
             else
             {
-                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), priorHistories, States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, null, null);
+                mergedRun = new SerializedRun(summaryTree, histories.ToArray(), priorHistories, States, meanPosterior, meanPrior, meanNodeCorresp, treeSamples, LikelihoodModels, allPossibleStates, ageScale, null, null, treesClockLike);
             }
 
             ConsoleWrapper.WriteLine("Saving output...");
@@ -465,7 +467,7 @@ namespace Merge_sMap
                 {
                     foreach (TaggedHistory history in histories)
                     {
-                        sw.WriteLine(Utils.Utils.GetSmapString(LikelihoodModels[treeSamples[history.Tag]], history.History));
+                        sw.WriteLine(Utils.Utils.GetSmapString(LikelihoodModels[treeSamples[history.Tag]], history.History, ageScale));
                     }
                 }
             }

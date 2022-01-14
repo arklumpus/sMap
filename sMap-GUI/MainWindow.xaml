@@ -201,6 +201,7 @@
             <NumericUpDown Grid.Column="1" Value="1" Increment="1" Minimum="1" Name="ThreadsBox"></NumericUpDown>
           </Grid>
         </Grid>
+
         <Grid Margin="0,0,0,10">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -243,7 +244,8 @@
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <Grid Margin="5,0,5,10">
             <Grid.ColumnDefinitions>
@@ -253,7 +255,21 @@
             <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="CoerceBox">Coerce branch lengths:</CheckBox>
             <NumericUpDown Grid.Column="1" Value="0" Minimum="0" Name="CoerceValueBox"></NumericUpDown>
           </Grid>
-          <CheckBox Grid.Column="1" Margin="5,0,0,10" Name="PollBox" HorizontalAlignment="Center">Poll for interrupts</CheckBox>
+          <CheckBox Grid.Column="1" Margin="25,0,20,10" Name="PollBox" HorizontalAlignment="Center">Poll for interrupts</CheckBox>
+          <Grid Margin="5,0,0,10" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"></ColumnDefinition>
+              <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Clock-like trees:</TextBlock>
+            <ComboBox Grid.Column="1" SelectedIndex="0" Name="ClockLikeTreesBox">
+              <ComboBox.Items>
+                <ComboBoxItem>Auto</ComboBoxItem>
+                <ComboBoxItem>Yes</ComboBoxItem>
+                <ComboBoxItem>No</ComboBoxItem>
+              </ComboBox.Items>
+            </ComboBox>
+          </Grid>
         </Grid>
         <Grid>
           <Grid.ColumnDefinitions>

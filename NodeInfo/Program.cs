@@ -133,7 +133,7 @@ namespace NodeInfo
                     allNodes = run.SummaryTree.GetChildrenRecursive();
                 }
 
-                bool isClockLike = run.SummaryTree.IsClocklike();
+                bool isClockLike = run.TreesClockLike;
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(run.SummaryTree);
 
 
@@ -438,7 +438,7 @@ namespace NodeInfo
             ConsoleFrameBuffer frameBuffer = new ConsoleFrameBuffer();
 
             double[] conditionedMeanPosterior;
-            bool isClockLike = run.SummaryTree.IsClocklike();
+            bool isClockLike = run.TreesClockLike;
 
             LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(run.SummaryTree);
 

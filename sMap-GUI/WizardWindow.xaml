@@ -583,6 +583,21 @@
             <NumericUpDown Width="100" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Classes="VeryAdvanced" Name="NormValueBox" BorderBrush="#22b14c"></NumericUpDown>
           </StackPanel>
 
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
+            <TextBlock VerticalAlignment="Center">Clock-like trees:</TextBlock>
+            <ComboBox SelectedIndex="0" Name="ClockLikeTreesBox" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center">
+              <ComboBox.Items>
+                <ComboBoxItem>Auto</ComboBoxItem>
+                <ComboBoxItem>Yes</ComboBoxItem>
+                <ComboBoxItem>No</ComboBoxItem>
+              </ComboBox.Items>
+            </ComboBox>
+          </StackPanel>
+
+
           <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
               <local:Octagon Fill="#22b14c"></local:Octagon>

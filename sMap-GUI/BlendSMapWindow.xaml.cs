@@ -192,6 +192,8 @@ namespace sMap_GUI
             int[][] summaryNodeCorresp = null;
             LikelihoodModel[] likModels = null;
 
+            bool treesClockLike = false;
+
             progressAction("Reading input files...", 0);
 
             List<SerializedRun> runs = new List<SerializedRun>();
@@ -217,6 +219,7 @@ namespace sMap_GUI
 
                 if (i == 0)
                 {
+                    treesClockLike = run.TreesClockLike;
                     summaryTreeString = run.SummaryTree.ToString();
                     ageScale = run.AgeScale;
                     allPossibleStates = run.AllPossibleStates;
@@ -406,15 +409,15 @@ namespace sMap_GUI
             
             if (includeDStats)
             {
-                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), allDStats.ToArray(), states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale, null, null);
+                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), allDStats.ToArray(), states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale, null, null, treesClockLike);
             }
             else if (includePriorHistories)
             {
-                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), blendedPriorHistories, states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale, null, null);
+                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), blendedPriorHistories, states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale, null, null, treesClockLike);
             }
             else
             {
-                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale);
+                tbr = new SerializedRun(TreeNode.Parse(summaryTreeString, null), blendedHistories.ToArray(), states, blendedMeanPosterior, blendedMeanPrior, summaryNodeCorresp, blendedTreeSamples.ToArray(), likModels, allPossibleStates, ageScale, treesClockLike);
             }
 
             tbr.Serialize(outputFile);

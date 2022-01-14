@@ -1290,6 +1290,19 @@ namespace sMap_GUI
                 }
             }
 
+            if (this.FindControl<ComboBox>("ClockLikeTreesBox").SelectedIndex != 0)
+            {
+                args.Add("-l");
+                if (this.FindControl<ComboBox>("ClockLikeTreesBox").SelectedIndex == 1)
+                {
+                    args.Add("yes");
+                }
+                else
+                {
+                    args.Add("no");
+                }
+            }
+
             if (this.FindControl<CheckBox>("CoerceBox").IsChecked == true)
             {
                 args.Add("-c");

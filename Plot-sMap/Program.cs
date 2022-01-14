@@ -1962,7 +1962,7 @@ namespace PlotSmap
                 BranchSize = branchWidth
             };
 
-            run.SummaryTree.PlotTreeWithPiesAndBranchStates(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), GetMarginalHistories(), run.TreeSamples, run.LikelihoodModels, new LikelihoodModel(run.SummaryTree), run.SummaryNodeCorresp, branchTimeResolution, new List<string>(activeStateNames));
+            run.SummaryTree.PlotTreeWithPiesAndBranchStates(plotWidth, plotHeight, margins, outputFileName, opt, GetMarginalProbabilities(GetConditionedProbabilities()), GetMarginalHistories(), run.TreeSamples, run.LikelihoodModels, new LikelihoodModel(run.SummaryTree), run.SummaryNodeCorresp, branchTimeResolution, new List<string>(activeStateNames), run.TreesClockLike);
 
         }
 
@@ -2009,7 +2009,7 @@ namespace PlotSmap
                 BranchSize = branchWidth
             };
 
-            run.SummaryTree.PlotTreeWithBranchSampleSizes(plotWidth, plotHeight, margins, outputFileName, opt, run.Histories, run.TreeSamples, run.LikelihoodModels, new LikelihoodModel(run.SummaryTree), run.SummaryNodeCorresp, branchTimeResolution, new List<string>(activeStateNames));
+            run.SummaryTree.PlotTreeWithBranchSampleSizes(plotWidth, plotHeight, margins, outputFileName, opt, run.Histories, run.TreeSamples, run.LikelihoodModels, new LikelihoodModel(run.SummaryTree), run.SummaryNodeCorresp, branchTimeResolution, new List<string>(activeStateNames), run.TreesClockLike);
         }
 
         static TaggedHistory[] GetMarginalHistories()
@@ -2152,7 +2152,7 @@ namespace PlotSmap
 
         static double[][] GetConditionedProbabilities()
         {
-            bool isClockLike = run.SummaryTree.IsClocklike();
+            bool isClockLike = run.TreesClockLike;
 
             double[][] tbr = new double[run.MeanPosterior.Length][];
 

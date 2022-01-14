@@ -154,8 +154,11 @@ namespace Utils
         public double[][][] Parameters { get; set; }
         public string[][] ParameterNames { get; set; }
 
+        public bool TreesClockLike { get; set; }
+        public bool TreesClockLikeAuto { get; set; } = true;
+
         const byte minRev = 0;
-        const byte maxRev = 3;
+        const byte maxRev = 4;
 
         public byte revision = 255;
 
@@ -172,7 +175,7 @@ namespace Utils
             }
         }
 
-        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale)
+        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, bool clockLikeTrees)
         {
             revision = 0;
             SummaryTree = summaryTree;
@@ -188,9 +191,11 @@ namespace Utils
             AgeScale = ageScale;
             Parameters = null;
             ParameterNames = null;
+            TreesClockLikeAuto = false;
+            TreesClockLike = clockLikeTrees;
         }
 
-        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, DStats[][][][] dStats, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, double[][][] parameters, string[][] parameterNames)
+        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, DStats[][][][] dStats, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, double[][][] parameters, string[][] parameterNames, bool clockLikeTrees)
         {
             revision = 2;
             SummaryTree = summaryTree;
@@ -207,9 +212,11 @@ namespace Utils
             Parameters = parameters;
             ParameterNames = parameterNames;
             AllDStats = dStats;
+            TreesClockLikeAuto = false;
+            TreesClockLike = clockLikeTrees;
         }
 
-        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, Stream priorHistories, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, double[][][] parameters, string[][] parameterNames)
+        public SerializedRun(TreeNode summaryTree, TaggedHistory[] histories, Stream priorHistories, string[] states, double[][] meanPosterior, double[][] meanPrior, int[][] summaryNodeCorresp, int[] treeSamples, LikelihoodModel[] likelihoodModels, string[] allPossibleStates, double ageScale, double[][][] parameters, string[][] parameterNames, bool clockLikeTrees)
         {
             revision = 0;
             SummaryTree = summaryTree;
@@ -225,6 +232,8 @@ namespace Utils
             AgeScale = ageScale;
             Parameters = parameters;
             ParameterNames = parameterNames;
+            TreesClockLikeAuto = false;
+            TreesClockLike = clockLikeTrees;
 
             if (priorHistories != null)
             {
@@ -364,6 +373,12 @@ namespace Utils
                 }
 
                 tbr.priorHistoriesStream = fs;
+            }
+
+            if (tbr.TreesClockLikeAuto)
+            {
+                tbr.TreesClockLike = false;
+                tbr.TreesClockLike = tbr.SummaryTree.IsClocklike();
             }
 
             return tbr;

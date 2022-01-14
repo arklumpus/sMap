@@ -126,7 +126,7 @@ namespace sMap_GUI
 
             pageHeight = plotHeight + opt.LineWidth + opt.FontSize * 3;
 
-            bool isClockLike = Tree.IsClocklike();
+            bool isClockLike = Run.TreesClockLike;
 
             double resolution = 2;
             Action<Path> enterAction = path =>
@@ -216,7 +216,7 @@ namespace sMap_GUI
 
             pageHeight = plotHeight + opt.LineWidth + opt.FontSize * 3;
 
-            bool isClockLike = Tree.IsClocklike();
+            bool isClockLike = Run.TreesClockLike;
 
             Action<Path> enterAction = path =>
             {
@@ -305,7 +305,7 @@ namespace sMap_GUI
 
             pageHeight = plotHeight + opt.LineWidth + opt.FontSize * 3;
 
-            bool isClockLike = Tree.IsClocklike();
+            bool isClockLike = Run.TreesClockLike;
 
             Action<Path> enterAction = path =>
             {
@@ -343,7 +343,7 @@ namespace sMap_GUI
 
         private double[][] GetConditionedProbabilities()
         {
-            bool isClockLike = Run.SummaryTree.IsClocklike();
+            bool isClockLike = Run.TreesClockLike;
 
             double[][] tbr = new double[Run.MeanPosterior.Length][];
 
@@ -799,7 +799,7 @@ namespace sMap_GUI
                     stateColours.Add(Plotting.GetColor(j, 1, Run.States.Length));
                 }
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -868,7 +868,7 @@ namespace sMap_GUI
                     stateColours.Add(Plotting.GetColor(j, 1, Run.States.Length));
                 }
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -924,7 +924,7 @@ namespace sMap_GUI
                     stateColours.Add(Plotting.GetColor(j, 1, Run.States.Length));
                 }
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -974,7 +974,7 @@ namespace sMap_GUI
             else if (probType == 3)
             {
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -1095,7 +1095,7 @@ namespace sMap_GUI
             else if (probType == 4)
             {
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -1202,7 +1202,7 @@ namespace sMap_GUI
             else if (probType == 5)
             {
 
-                bool isClockLike = Run.SummaryTree.IsClocklike();
+                bool isClockLike = Run.TreesClockLike;
 
                 LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 
@@ -1326,7 +1326,7 @@ namespace sMap_GUI
                 {
                     double realX = Nodes[nodeID].Length / 100 * i;
 
-                    bool isClockLike = Run.SummaryTree.IsClocklike();
+                    bool isClockLike = Run.TreesClockLike;
 
                     LikelihoodModel summaryLikelihoodModel = new LikelihoodModel(Run.SummaryTree);
 

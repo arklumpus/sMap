@@ -13,7 +13,7 @@ namespace sMap_GUI
 {
     public class MainWindow : Window
     {
-        public static string Version = "1.0.6";
+        public static string Version = "1.0.7";
 
         public MainWindow()
         {
@@ -435,6 +435,19 @@ namespace sMap_GUI
                 else
                 {
                     args.Add("-N");
+                }
+            }
+
+            if (this.FindControl<ComboBox>("ClockLikeTreesBox").SelectedIndex != 0)
+            {
+                args.Add("-l");
+                if (this.FindControl<ComboBox>("ClockLikeTreesBox").SelectedIndex == 1)
+                {
+                    args.Add("yes");
+                }
+                else
+                {
+                    args.Add("no");
                 }
             }
 

@@ -23,6 +23,7 @@ namespace sMap_GUI
         }
 
         TreeNode Tree;
+        bool TreesClockLike;
         string[][] States;
 
         bool initialised = false;
@@ -45,7 +46,7 @@ namespace sMap_GUI
 
         SMapWindowType WindowType;
 
-        public ViewSMap(Utils.TaggedHistory[][] histories, TreeNode tree, string[][] states, double[][][] stateProbs, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, SMapWindowType windowType)
+        public ViewSMap(Utils.TaggedHistory[][] histories, TreeNode tree, string[][] states, double[][][] stateProbs, int[] treeSamples, LikelihoodModel[] likModels, LikelihoodModel meanLikModel, int[][] meanNodeCorresp, SMapWindowType windowType, bool treesClockLike)
         {
             this.InitializeComponent();
 #if DEBUG
@@ -65,6 +66,8 @@ namespace sMap_GUI
                     break;
             }
 
+
+            this.TreesClockLike = treesClockLike;
 
             WindowType = windowType;
 
@@ -158,7 +161,7 @@ namespace sMap_GUI
 
             pageHeight = plotHeight + opt.LineWidth + opt.FontSize * 3;
 
-            bool isClockLike = Tree.IsClocklike();
+            bool isClockLike = TreesClockLike;
 
             double resolution = 2;
 
