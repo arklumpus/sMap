@@ -78,14 +78,14 @@ printf "\n"
 printf "[104;97mBuilding Script-sMap...[0m\n"
 
 cd Script-sMap
-dotnet publish -c Release /p:PublishProfile=Properties/PublishProfiles/$platform.pubxml -f netcoreapp3.0
+dotnet publish -c Release /p:PublishProfile=Properties/PublishProfiles/$platform.pubxml -f net6.0
 cd ..
 
 printf "\n"
 printf "[104;97mBuilding sMap-GUI...[0m\n"
 
 cd sMap-GUI
-dotnet publish -c Release /p:PublishProfile=Properties/PublishProfiles/$platform.pubxml -f netcoreapp3.0
+dotnet publish -c Release /p:PublishProfile=Properties/PublishProfiles/$platform.pubxml -f net6.0
 cd ..
 
 printf "\n"
