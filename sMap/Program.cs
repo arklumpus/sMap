@@ -34,7 +34,7 @@ namespace sMap
 
         private static bool _runningGui = false;
 
-        public static string Version = "1.0.6";
+        public static string Version = "1.0.7";
 
         public static bool RunningGUI
         {
@@ -76,8 +76,11 @@ namespace sMap
             MCMC.diagnosticFrequency = 1000;
 
             MCMC.minSamples = -1;
+            MCMC.maxSamples = -1;
             MCMC.convergenceCoVThreshold = -1;
             MCMC.convergenceESSThreshold = 200;
+            MCMC.watchdogAction = MCMC.WatchdogActions.Restart;
+            MCMC.watchdogInitialTimeout = 20000;
 
             MCMC.initialBurnin = 1000;
 
@@ -123,6 +126,9 @@ namespace sMap
             bool plotLikelihoodEstimates = false;
 
             bool useEstimatedPis = false;
+
+            bool autoClockLikeTrees = true;
+            bool clockLikeTrees = false;
 
             //bool computeHessian = false;
 
@@ -181,7 +187,7 @@ namespace sMap
                 { "d|x|data=", "A data matrix file in (relaxed) PHYLIP format.", v => { dataFile = v; } },
                 { "o|output=", "Output file prefix. May point to a different directory.", v => { outputPrefix = v; } },
                 { "n|num-sim=", "Number of simulations/MCMC samples. Has to be greater than 0.", v => { numSim = int.Parse(v); } },
-                { "T|mean-tree=", "A mean tree file. It should contain exactly one tree in newick format. If the tree file contains only one tree, this parameter is optional and its default value equals the tree file; if the tree file contains more than one tree, this parameter is required.", v => { meanTreeFile = v; } },
+                { "T|mean-tree=", "A summary tree file. It should contain exactly one tree in newick format. If the tree file contains only one tree, this parameter is optional and its default value equals the tree file; if the tree file contains more than one tree, this parameter is required.", v => { meanTreeFile = v; } },
                 { "a|archive=", "Analysis archive. A ZIP file containing all the data and command-line parameters necessary to perform the analysis.", v => { } },
                 { "D|dependency=", "Optional. A NEXUS format file containing one or more \"Dependency\" blocks that specify dependency relationships between characters. Characters whose relationships have not been specified are assumed to be independent.", v => { dependencyFile = v; } },
                 { "r|rates=", "Optional. A NEXUS format file containing one or more \"Rates\" blocks that specify transition rates between character states. Rates that are not specified will be estimated using Maximum-Likelihood.", v => { rateFile = v; } },
@@ -191,6 +197,7 @@ namespace sMap
                 { "s|seed=", "Optional. Random number seed. Should only be used for debug purposes, as it will likely cause degradation of random number quality. Default: none.", v => { seed = int.Parse(v); } },
                 { "N|norm:", "Optional. If enabled, the branch lengths of the trees are normalised. If an optional {VALUE} is supplied, the branch lengths are all divided by that VALUE, otherwise they are divided by the mean tree height. Default: disabled.", v => { normaliseLength = true; if (!string.IsNullOrEmpty(v)) { normalisationFactor = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } } },
                 { "c|coerce=", "Optional. If enabled, any branch lengths that are smaller than the specified {VALUE} are coerced to VALUE. Default: disabled.", v=> { coerceLengths = true; coercionThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "l|clock=", "Optional. If the {VALUE} is 'yes', during the summarisation step the trees will be treated as clock-like trees (i.e. the tips of each tree will be aligned with the summary tree). If the {VALUE} is set to 'no', the trees will be treated as non-clock-like trees (i.e the root of each tree will be aligned with the summary tree). If the value is set to 'auto', the summary tree will be inspected, and the trees will be treated as clock-like if it is ultrametric. Default: auto.", v => { if (v == "auto") { autoClockLikeTrees = true; } else if (v == "yes") { autoClockLikeTrees = false; clockLikeTrees = true; }else if (v == "no") { autoClockLikeTrees = false; clockLikeTrees = false; } else { ConsoleWrapper.WriteLine();  ConsoleWrapper.WriteLine("\"" + v + "\" is not a valid value for -l/--clock-like!"); showUsage = true; } } },
                 { "m=", "Optional. Maximum likelihood optimisation strategy. Default: IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot).", v => { MLStrategies = (from el in v.Split('|') select MaximisationStrategy.Parse(el)).ToArray(); } },
                 { "pm|parallel-ml=", "Optional. Number of parallel maximum-likelihood optimisations for the \"RandomWalk\" and \"NesterovClimbing\" strategies. Note that this is independent of the --nt option. \"IterativeSampling\" strategies are still parallelised using the setting from --nt. Default: 1.", v => { Likelihoods.ParallelMLE = int.Parse(v); } },
                 { "mr|ml-rounds=", "Optional. Number of consecutive rounds of maximum-likelihood optimisation. Default: 1.", v => { Likelihoods.MLERounds = int.Parse(v); } },
@@ -208,8 +215,14 @@ namespace sMap
                 { "wf|swap-frequency=", "Optional. Chain swapping frequency. Must be a multiple of sampling-frequency. Default: 10.", v => { MCMC.swapFrequency = int.Parse(v); } },
                 { "df|diagnostic-frequency=", "Optional. MCMC diagnostic frequency. Default: 1000.", v => { MCMC.diagnosticFrequency = int.Parse(v); } },
                 { "min-samples=", "Optional. Minimum number of MCMC samples that a MCMC run needs to pass the convergence test. Default: 2 * num-sim.", v => { MCMC.minSamples = int.Parse(v); } },
+                { "max-samples=", "Optional. Maximum number of MCMC samples that a MCMC run can collect before convergence is assumed and the convergence test is skipped. Default: -1 (i.e. no limit).", v => { MCMC.maxSamples = int.Parse(v); } },
                 { "max-cov=", "Optional. The coefficient of variation of the mean and of the standard deviation of each sampled parameter must have a lower values than this for the run to pass the convergence test. Default: -ln(1 - (7/3 - 2 / (2 * num-runs - 1)) / 3) / 16.", v => { MCMC.convergenceCoVThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "min-ess=", "Optional. Minimum Effective Sample Size (ESS) that each sampled parameter in each run must have for the run to pass the convergence test. Default: 200.", v => { MCMC.convergenceESSThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "watchdog=", @"Optional. The watchdog detects deadlocks in the MCMC process, which may happen when the likelihood computation is very fast. This parameter determines what the watchdog does when it detects a deadlock. Default: Restart. Possible values:
+Nothing: the watchdog prints a message, but does nothing else.
+Converge: the watchdog forces the MCMC sampler to assume that the analysis has converged.
+Restart: the watchdog forces the MCMC sampler to assume that the analysis has converged, then discards everything and restarts the MCMC sampling from scratch (expecting that the deadlock will not happen again).", v => { MCMC.convergenceESSThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "watchdog-timeout=", "Optional. Initial timeout in milliseconds for the watchdog timer. After the first diagnostic is completed, the timeout is determined automatically based on the interval between two consecutive diagnostics. Default: 20000 ms.", v => { MCMC.watchdogInitialTimeout = int.Parse(v); } },
                 { "burn-in=", "Optional. Number of MCMC steps that will be discarded for the initial burn-in. Default: 1000.", v => { MCMC.initialBurnin = int.Parse(v); } },
                 { "estimate-steps", "Optional. If enabled, an optimal MCMC proposal step sizes will be estimated. If disabled, the default step sizes will be used. Default: on.", v => { MCMC.estimateStepSize = v != null; } },
                 { "tuning-attempts=", "Optional. Number of tuning attempts to estimate the optimal MCMC proposal step sizes. Default: 10.", v => { MCMC.tuningAttempts = int.Parse(v); } },
@@ -508,11 +521,31 @@ namespace sMap
 
             if (isMeanTreeClockLike)
             {
-                ConsoleWrapper.WriteLine("Mean tree is clock-like");
+                ConsoleWrapper.WriteLine("Summary tree is clock-like");
             }
             else
             {
-                ConsoleWrapper.WriteLine("Mean tree is not clock-like");
+                ConsoleWrapper.WriteLine("Summary tree is not clock-like");
+            }
+
+            if (autoClockLikeTrees)
+            {
+                clockLikeTrees = isMeanTreeClockLike;
+            }
+
+            if (clockLikeTrees)
+            {
+                ConsoleWrapper.WriteLine("Assuming all trees are clock-like");
+            }
+            else
+            {
+                ConsoleWrapper.WriteLine("Assuming all trees are not clock-like");
+            }
+
+
+            if (RunningGUI)
+            {
+                Utils.Utils.Trigger("TreesClockLike", new object[] { clockLikeTrees });
             }
 
             if (normaliseLength && (normalisationFactor == null))
@@ -1500,37 +1533,45 @@ namespace sMap
                             ConsoleWrapper.WriteLine("Sampling parameters for character " + dependencies[i][0].InputDependencyName);
                         }
 
-                        ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) mcmc;
+                        ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) mcmc = default;
 
                         if (RunningGUI)
                         {
                             Utils.Utils.Trigger("BayesianSetStarted", new object[] { i, numRuns });
                         }
 
-                        mcmc = MCMC.SamplePosterior(dependencies, likModels, meanLikModel, rates, pi, i, (vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, tree) =>
-                        {
-                            int varInd = 0;
+                        bool mcmcSucceeded = false;
 
-                            for (int j = 0; j < ratesToEstimateByChain[chainId].Count; j++)
+                        while (!mcmcSucceeded)
+                        {
+                            mcmc = MCMC.SamplePosterior(dependencies, likModels, meanLikModel, rates, pi, i, (vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, tree) =>
                             {
-                                for (int k = 0; k < ratesToEstimateByChain[chainId][j].Count; k++)
+                                int varInd = 0;
+
+                                for (int j = 0; j < ratesToEstimateByChain[chainId].Count; j++)
                                 {
-                                    ratesToEstimateByChain[chainId][j][k].Value = vars[varInd][0];
+                                    for (int k = 0; k < ratesToEstimateByChain[chainId][j].Count; k++)
+                                    {
+                                        ratesToEstimateByChain[chainId][j][k].Value = vars[varInd][0];
+                                        varInd++;
+                                    }
+                                }
+
+                                for (int j = 0; j < pisToEstimateByChain[chainId].Count; j++)
+                                {
+                                    for (int k = 0; k < pisToEstimateByChain[chainId][j].pis.Count; k++)
+                                    {
+                                        pisToEstimateByChain[chainId][j].pis[k].Value = vars[varInd][k];
+                                    }
                                     varInd++;
                                 }
-                            }
 
-                            for (int j = 0; j < pisToEstimateByChain[chainId].Count; j++)
-                            {
-                                for (int k = 0; k < pisToEstimateByChain[chainId][j].pis.Count; k++)
-                                {
-                                    pisToEstimateByChain[chainId][j].pis[k].Value = vars[varInd][k];
-                                }
-                                varInd++;
-                            }
+                                return Likelihoods.ComputeAllLikelihoods(tree, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _);
+                            }, mainRandom, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".paramNames.txt", outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : ""), numRuns, numChains, numSim, runUnderPrior, inputStepSizeMultipliers, out mcmcSucceeded);
 
-                            return Likelihoods.ComputeAllLikelihoods(tree, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _);
-                        }, mainRandom, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".paramNames.txt", outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : ""), numRuns, numChains, numSim, runUnderPrior, inputStepSizeMultipliers);
+
+                        }
+
 
                         (int, double[])[] mcmcSamples = mcmc.Item1;
 
@@ -1659,30 +1700,38 @@ namespace sMap
                                     ConsoleWrapper.WriteLine("Step {0}/{1}...", step, steppingStoneSteps);
                                     ConsoleWrapper.WriteLine();
 
-                                    ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) mcmcSamples = MCMC.SamplePosterior(dependencies, likModels, meanLikModel, rates, pi, i, (vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, likModel) =>
-                                    {
-                                        int varInd = 0;
+                                    ((int, double[])[], List<List<Parameter>>[], List<(double remainingPi, List<Parameter> pis)>[], (int, double[][])[], CharacterDependency[][][], Dictionary<string, Parameter>[][], Dictionary<string, Parameter>[][], double[], double) mcmcSamples = default;
 
-                                        for (int j = 0; j < ratesToEstimateByChain[chainId].Count; j++)
+                                    bool mcmcSucceeded = false;
+
+                                    while (!mcmcSucceeded)
+                                    {
+
+                                        mcmcSamples = MCMC.SamplePosterior(dependencies, likModels, meanLikModel, rates, pi, i, (vars, chainId, ratesToEstimateByChain, pisToEstimateByChain, ratesByChain, pisByChain, dependenciesByChain, likModel) =>
                                         {
-                                            for (int k = 0; k < ratesToEstimateByChain[chainId][j].Count; k++)
+                                            int varInd = 0;
+
+                                            for (int j = 0; j < ratesToEstimateByChain[chainId].Count; j++)
                                             {
-                                                ratesToEstimateByChain[chainId][j][k].Value = vars[varInd][0];
+                                                for (int k = 0; k < ratesToEstimateByChain[chainId][j].Count; k++)
+                                                {
+                                                    ratesToEstimateByChain[chainId][j][k].Value = vars[varInd][0];
+                                                    varInd++;
+                                                }
+                                            }
+
+                                            for (int j = 0; j < pisToEstimateByChain[chainId].Count; j++)
+                                            {
+                                                for (int k = 0; k < pisToEstimateByChain[chainId][j].pis.Count; k++)
+                                                {
+                                                    pisToEstimateByChain[chainId][j].pis[k].Value = vars[varInd][k];
+                                                }
                                                 varInd++;
                                             }
-                                        }
 
-                                        for (int j = 0; j < pisToEstimateByChain[chainId].Count; j++)
-                                        {
-                                            for (int k = 0; k < pisToEstimateByChain[chainId][j].pis.Count; k++)
-                                            {
-                                                pisToEstimateByChain[chainId][j].pis[k].Value = vars[varInd][k];
-                                            }
-                                            varInd++;
-                                        }
-
-                                        return Likelihoods.ComputeAllLikelihoods(likModel, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _) * beta[step - 1];
-                                    }, mainRandom, null, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ss" + step.ToString(), numRuns, numChains, steppingStoneSamples, beta[step - 1] == 0, stepSizeMultipliers[i]);
+                                            return Likelihoods.ComputeAllLikelihoods(likModel, data, dependenciesByChain[chainId], pisByChain[chainId], ratesByChain[chainId], false, false, out _) * beta[step - 1];
+                                        }, mainRandom, null, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ss" + step.ToString(), numRuns, numChains, steppingStoneSamples, beta[step - 1] == 0, stepSizeMultipliers[i], out mcmcSucceeded);
+                                    }
 
                                     double[] likelihoodSamples = new double[steppingStoneSamples];
 
@@ -3170,7 +3219,7 @@ namespace sMap
                 {
                     foreach (TaggedHistory history in histories)
                     {
-                        sw.WriteLine(Utils.Utils.GetSmapString(likModels[treeSamples[history.Tag]], history.History));
+                        sw.WriteLine(Utils.Utils.GetSmapString(likModels[treeSamples[history.Tag]], history.History, normalisationFactor ?? 1));
                     }
                 }
 
@@ -3178,11 +3227,11 @@ namespace sMap
 
                 if (computeDTest)
                 {
-                    run = new SerializedRun(meanTree, histories, allPPDStats, allPossibleStates, meanPosterior[i], meanPrior[i], meanNodeCorresp, treeSamples, likModels, allPossibleStates, normaliseLength ? (double)normalisationFactor : 1.0, parameters, (from el in paramNames select el.ToArray()).ToArray());
+                    run = new SerializedRun(meanTree, histories, allPPDStats, allPossibleStates, meanPosterior[i], meanPrior[i], meanNodeCorresp, treeSamples, likModels, allPossibleStates, normaliseLength ? (double)normalisationFactor : 1.0, parameters, (from el in paramNames select el.ToArray()).ToArray(), clockLikeTrees);
                 }
                 else
                 {
-                    run = new SerializedRun(meanTree, histories, finalPriorStream, allPossibleStates, meanPosterior[i], meanPrior[i], meanNodeCorresp, treeSamples, likModels, allPossibleStates, normaliseLength ? (double)normalisationFactor : 1.0, parameters, (from el in paramNames select el.ToArray()).ToArray());
+                    run = new SerializedRun(meanTree, histories, finalPriorStream, allPossibleStates, meanPosterior[i], meanPrior[i], meanNodeCorresp, treeSamples, likModels, allPossibleStates, normaliseLength ? (double)normalisationFactor : 1.0, parameters, (from el in paramNames select el.ToArray()).ToArray(), clockLikeTrees);
                 }
 
                 run.Serialize(outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".smap.bin");
@@ -3205,7 +3254,7 @@ namespace sMap
 
                 for (int j = 0; j < conditionedMeanPosterior.Length; j++)
                 {
-                    if (isMeanTreeClockLike)
+                    if (clockLikeTrees)
                     {
                         conditionedMeanPosterior[j] = Utils.Utils.GetBranchStateProbs(histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, new List<string>(allPossibleStates), j, 0, true);
                     }
@@ -3216,7 +3265,7 @@ namespace sMap
                 }
 
 
-                if (!isMeanTreeClockLike)
+                if (!clockLikeTrees)
                 {
                     conditionedMeanPosterior[conditionedMeanPosterior.Length - 1] = meanPosterior[i][conditionedMeanPosterior.Length - 1];
                 }
@@ -3226,11 +3275,11 @@ namespace sMap
                     Utils.Utils.Trigger("SimulationStepFinished", new object[] { histories, conditionedMeanPosterior });
                 }
 
-                meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, conditionedMeanPosterior, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates));
+                meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, conditionedMeanPosterior, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees);
 
                 if (trees.Count > 1)
                 {
-                    meanTree.PlotTreeWithBranchSampleSizes(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ssize.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates));
+                    meanTree.PlotTreeWithBranchSampleSizes(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ssize.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees);
                 }
 
                 if (inputData.States.Length > 1)
@@ -3296,7 +3345,7 @@ namespace sMap
                                 }
                             }
 
-                            meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + ".character" + charInds[k] + ".marginal.smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanMarginalPosterior[charInds[k]], marginalHistories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(inputData.States[charInds[k]]));
+                            meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + ".character" + charInds[k] + ".marginal.smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanMarginalPosterior[charInds[k]], marginalHistories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(inputData.States[charInds[k]]), clockLikeTrees);
 
                             ConsoleWrapper.CursorLeft = cursorPos;
                             ConsoleWrapper.Write("{0}   ", ((double)(doneChars + k + 1) / totalChars).ToString("0%", System.Globalization.CultureInfo.InvariantCulture));
