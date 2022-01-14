@@ -2191,25 +2191,25 @@ namespace Utils
             return history[currInd - 1].State;
         }
 
-        public static string GetBranchHistoryString(BranchState[] history)
+        public static string GetBranchHistoryString(BranchState[] history, double ageScale)
         {
             string tbr = "{";
 
             for (int i = 0; i < history.Length; i++)
             {
-                tbr += history[history.Length - 1 - i].State.Replace(",", "|") + "," + history[history.Length - 1 - i].Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + (i < history.Length - 1 ? ":" : "");
+                tbr += history[history.Length - 1 - i].State.Replace(",", "|") + "," + (history[history.Length - 1 - i].Length * ageScale).ToString(System.Globalization.CultureInfo.InvariantCulture) + (i < history.Length - 1 ? ":" : "");
             }
 
             return tbr + "}";
         }
 
-        public static string GetSmapString(LikelihoodModel lik, BranchState[][] history)
+        public static string GetSmapString(LikelihoodModel lik, BranchState[][] history, double ageScale)
         {
             string[] stringValues = new string[lik.Children.Length];
 
             foreach (KeyValuePair<string, int> kvp in lik.NamedBranches)
             {
-                stringValues[kvp.Value] = kvp.Key + ":" + GetBranchHistoryString(history[kvp.Value]);
+                stringValues[kvp.Value] = kvp.Key + ":" + GetBranchHistoryString(history[kvp.Value], ageScale);
             }
 
             for (int i = 0; i < lik.Children.Length; i++)
@@ -2221,7 +2221,7 @@ namespace Utils
                     {
                         stringValues[i] += stringValues[lik.Children[i][j]] + (j < lik.Children[i].Length - 1 ? "," : "");
                     }
-                    stringValues[i] += ")" + (lik.Parents[i] >= 0 ? (":" + GetBranchHistoryString(history[i])) : ";");
+                    stringValues[i] += ")" + (lik.Parents[i] >= 0 ? (":" + GetBranchHistoryString(history[i], ageScale)) : ";");
                 }
             }
 
