@@ -82,14 +82,14 @@ echo.
 echo [104;97mBuilding Script-sMap...[0m
 
 cd Script-sMap
-dotnet publish -c Release /p:PublishProfile=Properties\PublishProfiles\%1.pubxml -f netcoreapp3.0
+dotnet publish -c Release /p:PublishProfile=Properties\PublishProfiles\%1.pubxml -f net6.0
 cd ..
 
 echo.
 echo [104;97mBuilding sMap-GUI...[0m
 
 cd sMap-GUI
-dotnet publish -c Release /p:PublishProfile=Properties\PublishProfiles\%1.pubxml -f netcoreapp3.0
+dotnet publish -c Release /p:PublishProfile=Properties\PublishProfiles\%1.pubxml -f net6.0
 cd ..
 
 echo.
