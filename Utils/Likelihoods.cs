@@ -914,14 +914,18 @@ namespace Utils
                     break;
             }
 
-            double tbr = 0;
+            double tbr;
 
             if (!useEstimatedPis)
             {
+                double[] actualPi = new double[numStates];
+
                 for (int i = 0; i < numStates; i++)
                 {
-                    tbr += pi[data.States[i]] * Math.Exp(likelihoods[likelihoods.Length - 1][i]);
+                    actualPi[i] = pi[data.States[i]];
                 }
+
+                tbr = Utils.LogSumExpTimes(likelihoods[likelihoods.Length - 1], actualPi);
             }
             else
             {
@@ -934,13 +938,8 @@ namespace Utils
                     estimatedPis[i] = Math.Exp(likelihoods[likelihoods.Length - 1][i] - denomin);
                 }
 
-                for (int i = 0; i < numStates; i++)
-                {
-                    tbr += estimatedPis[i] * Math.Exp(likelihoods[likelihoods.Length - 1][i]);
-                }
+                tbr = Utils.LogSumExpTimes(likelihoods[likelihoods.Length - 1], estimatedPis);
             }
-
-            tbr = Math.Log(tbr);
 
             return tbr;
         }
