@@ -1,0 +1,88 @@
+#!/bin/sh
+
+printf "\nWelcome to the sMap setup!\n\n"
+
+#Check that we are running as root
+if [ $(id -u) -gt 0 ]; then
+    printf "This script needs to be run as root!\n\n"
+    exit 1
+fi
+
+printf "This script will copy the program files and (optionally) symlink\nthe sMap executables so that they can be recalled from anywhere.\n\n"
+
+printf "\n"
+
+prefix="/usr/lib"
+
+printf "\nThe sMap program files will now be copied.\n\nThe default location is: $prefix/sMap\n"
+
+confirm="a"
+
+while [ "$confirm" != "Y" ] && [ "$confirm" != "y" ] && [ "$confirm" != "N" ] && [ "$confirm" != "n" ]; do
+    read -p "Do you wish to install sMap in the default location? [Y/n] " confirm
+done
+
+if [ "$confirm" != "Y" ] && [ "$confirm" != "y" ]; then
+    read -p "Enter new install location: " prefix
+fi
+
+printf "\nsMap will be installed in: $prefix/sMap\n"
+
+confirm="a"
+
+while [ "$confirm" != "Y" ] && [ "$confirm" != "y" ] && [ "$confirm" != "N" ] && [ "$confirm" != "n" ]; do
+    read -p "Do you wish to continue? [Y/n] " confirm
+done
+
+if [ "$confirm" != "Y" ] && [ "$confirm" != "y" ]; then
+    printf "\nAborted.\n\n"
+    exit 0
+fi
+
+rm -rf "${prefix}/sMap"
+mv sMap-linux-x64 "${prefix}/sMap"
+
+printf "\nInstalling a custom colour palette will replace the default\ncolours for plots produced by sMap.\n"
+printf "This can be useful e.g. to have more colour-blind-friendly colours.\n"
+
+confirm="a"
+
+while [ "$confirm" != "Y" ] && [ "$confirm" != "y" ] && [ "$confirm" != "N" ] && [ "$confirm" != "n" ]; do
+    read -p "Do you wish to install a custom colour palette? [Y/n] " confirm
+done
+
+if [ "$confirm" = "Y" ] || [ "$confirm" = "y" ]; then
+    printf "\nAvailable palettes:\n"
+    printf "\t0. Cancel\n\n"
+#Palettes here#
+    confirm="a"
+
+    while #Palette condition here#; do
+        read -p "Enter the number corresponding to the chosen palette: [0-#Palette max here#] " confirm
+    done
+
+    if [ "$confirm" = "0" ]; then
+        printf "\nCustom palette not installed.\n\n"
+    else
+        #Install palette command here#
+    fi
+
+fi
+
+printf "\nWe will now create symlinks to the executables Blend-sMap,\nChainMonitor, Merge-sMap, NodeInfo, Plot-sMap, Script-sMap,\nsMap, sMap-GUI and Stat-sMap in /usr/bin\n"
+
+confirm="a"
+
+while [ "$confirm" != "Y" ] && [ "$confirm" != "y" ] && [ "$confirm" != "N" ] && [ "$confirm" != "n" ]; do
+    read -p "Do you wish to continue? [Y/n] " confirm
+done
+
+if [ "$confirm" != "Y" ] && [ "$confirm" != "y" ]; then
+    printf "\nSymlinks were not created.\n"
+    exit 0
+else
+    ln -sf "${prefix}/sMap/Blend-sMap" "${prefix}/sMap/ChainMonitor" "${prefix}/sMap/Merge-sMap" "${prefix}/sMap/NodeInfo" "${prefix}/sMap/Plot-sMap" "${prefix}/sMap/Script-sMap" "${prefix}/sMap/sMap" "${prefix}/sMap/sMap-GUI" "${prefix}/sMap/Stat-sMap" /usr/bin
+    printf "\nSymlinks created.\n"
+fi
+
+printf "\nInstallation complete!\n\n"
