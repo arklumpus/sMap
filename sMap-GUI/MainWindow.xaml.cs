@@ -463,6 +463,11 @@ namespace sMap_GUI
                 args.Add(((int)this.FindControl<NumericUpDown>("ThreadsBox").Value).ToString());
             }
 
+            if (this.FindControl<CheckBox>("KillBox").IsChecked == false)
+            {
+                args.Add("--kill-");
+            }
+
             if (this.FindControl<TextBox>("MLStrategy").Text != "IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot)")
             {
                 args.Add("-m");

@@ -618,6 +618,13 @@
             <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
               <local:Octagon Fill="#22b14c"></local:Octagon>
             </Viewbox>
+            <CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="KillBox">Kill process after finishing the analysis</CheckBox>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
+            <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+              <local:Octagon Fill="#22b14c"></local:Octagon>
+            </Viewbox>
             <TextBlock VerticalAlignment="Center">Maximum-likelihood strategy: </TextBlock>
             <TextBox Width="300" Margin="10,0,0,0" Padding="5,5,5,5" VerticalAlignment="Center" Name="MLStrategy">IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot)</TextBox>
             <Button Classes="Green" VerticalAlignment="Center" Margin="10" Click="EditMLStrategyClicked">Edit...</Button>

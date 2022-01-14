@@ -101,6 +101,8 @@ namespace sMap
             float plotWidth = -1;
             float? plotHeight = null;
 
+            bool kill = true;
+
             Plotting.BinRules binRule = Plotting.BinRules.FreedmanDiaconis;
 
             bool showHelp = false;
@@ -198,6 +200,7 @@ namespace sMap
                 { "N|norm:", "Optional. If enabled, the branch lengths of the trees are normalised. If an optional {VALUE} is supplied, the branch lengths are all divided by that VALUE, otherwise they are divided by the mean tree height. Default: disabled.", v => { normaliseLength = true; if (!string.IsNullOrEmpty(v)) { normalisationFactor = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } } },
                 { "c|coerce=", "Optional. If enabled, any branch lengths that are smaller than the specified {VALUE} are coerced to VALUE. Default: disabled.", v=> { coerceLengths = true; coercionThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "l|clock=", "Optional. If the {VALUE} is 'yes', during the summarisation step the trees will be treated as clock-like trees (i.e. the tips of each tree will be aligned with the summary tree). If the {VALUE} is set to 'no', the trees will be treated as non-clock-like trees (i.e the root of each tree will be aligned with the summary tree). If the value is set to 'auto', the summary tree will be inspected, and the trees will be treated as clock-like if it is ultrametric. Default: auto.", v => { if (v == "auto") { autoClockLikeTrees = true; } else if (v == "yes") { autoClockLikeTrees = false; clockLikeTrees = true; }else if (v == "no") { autoClockLikeTrees = false; clockLikeTrees = false; } else { ConsoleWrapper.WriteLine();  ConsoleWrapper.WriteLine("\"" + v + "\" is not a valid value for -l/--clock-like!"); showUsage = true; } } },
+                { "k|kill", "Optional. If enabled, the program will ensure that its process is killed after finishing the analysis. This can help with multi-threaded analyses on some scheduling platforms. Default: on.", v => { kill = v != null; } },
                 { "m=", "Optional. Maximum likelihood optimisation strategy. Default: IterativeSampling(0.0001,10.0001,0.1,plot,Value,0.001)|RandomWalk(Value,0.001,10000,plot)|NesterovClimbing(Value,0.001,100,plot).", v => { MLStrategies = (from el in v.Split('|') select MaximisationStrategy.Parse(el)).ToArray(); } },
                 { "pm|parallel-ml=", "Optional. Number of parallel maximum-likelihood optimisations for the \"RandomWalk\" and \"NesterovClimbing\" strategies. Note that this is independent of the --nt option. \"IterativeSampling\" strategies are still parallelised using the setting from --nt. Default: 1.", v => { Likelihoods.ParallelMLE = int.Parse(v); } },
                 { "mr|ml-rounds=", "Optional. Number of consecutive rounds of maximum-likelihood optimisation. Default: 1.", v => { Likelihoods.MLERounds = int.Parse(v); } },
@@ -222,7 +225,7 @@ namespace sMap
 Nothing: the watchdog prints a message, but does nothing else.
 Converge: the watchdog forces the MCMC sampler to assume that the analysis has converged.
 Restart: the watchdog forces the MCMC sampler to assume that the analysis has converged, then discards everything and restarts the MCMC sampling from scratch (expecting that the deadlock will not happen again).", v => { MCMC.convergenceESSThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
-                { "watchdog-timeout=", "Optional. Initial timeout in milliseconds for the watchdog timer. After the first diagnostic is completed, the timeout is determined automatically based on the interval between two consecutive diagnostics. Default: 20000 ms.", v => { MCMC.watchdogInitialTimeout = int.Parse(v); } },
+                { "watchdog-timeout=", "Optional. Initial timeout tolerance in milliseconds for the watchdog timer. After the first diagnostic is completed, the timeout is determined automatically based on the interval between two consecutive diagnostics. Default: 20000 ms.", v => { MCMC.watchdogInitialTimeout = int.Parse(v); } },
                 { "burn-in=", "Optional. Number of MCMC steps that will be discarded for the initial burn-in. Default: 1000.", v => { MCMC.initialBurnin = int.Parse(v); } },
                 { "estimate-steps", "Optional. If enabled, an optimal MCMC proposal step sizes will be estimated. If disabled, the default step sizes will be used. Default: on.", v => { MCMC.estimateStepSize = v != null; } },
                 { "tuning-attempts=", "Optional. Number of tuning attempts to estimate the optimal MCMC proposal step sizes. Default: 10.", v => { MCMC.tuningAttempts = int.Parse(v); } },
@@ -3386,6 +3389,13 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
             if (RunningGUI)
             {
                 Utils.Utils.Trigger("AllFinished", new object[] { });
+            }
+            
+            if (!RunningGUI && kill)
+            {
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.WriteLine("Killing the current process.");
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
             }
 
             return 0;
