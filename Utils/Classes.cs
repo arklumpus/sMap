@@ -95,7 +95,7 @@ namespace Utils
 
         public static int CursorLeft { get { if (ConsoleEnabled && !Console.IsOutputRedirected) { return Console.CursorLeft; } else { return 0; } } set { if (ConsoleEnabled && !Console.IsOutputRedirected) { Console.CursorLeft = value; } } }
 
-        public static bool CursorVisible { get { if (ConsoleEnabled && !Console.IsOutputRedirected) { try { return Console.CursorVisible; } catch { return false; } } else { return false; } } set { if (ConsoleEnabled && !Console.IsOutputRedirected) { try { Console.CursorVisible = value; } catch { } } } }
+        public static bool CursorVisible { get { if (ConsoleEnabled && !Console.IsOutputRedirected && System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) { try { return Console.CursorVisible; } catch { return false; } } else { return false; } } set { if (ConsoleEnabled && !Console.IsOutputRedirected) { try { Console.CursorVisible = value; } catch { } } } }
     }
 
     [Serializable]
@@ -745,7 +745,6 @@ namespace Utils
     }
     public class ThreadSafeRandom : Random
     {
-        private static RNGCryptoServiceProvider _global = new RNGCryptoServiceProvider();
         private static Random _globalRandom;
         private static object _globalLock = new object();
         [ThreadStatic] private static Random _local;
@@ -772,8 +771,7 @@ namespace Utils
             {
                 if (!_useGlobalRandom)
                 {
-                    byte[] buffer = new byte[4];
-                    _global.GetBytes(buffer);
+                    byte[] buffer = RandomNumberGenerator.GetBytes(4);
                     _local = new Random(BitConverter.ToInt32(buffer, 0));
                 }
                 else
