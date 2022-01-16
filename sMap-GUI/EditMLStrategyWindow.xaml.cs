@@ -8,13 +8,14 @@ using Avalonia.Media;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using System;
-using System.Drawing;
 using System.IO;
 using MathNet.Numerics.Distributions;
 using System.Threading;
-using System.Drawing.Drawing2D;
 using Avalonia.Threading;
 using System.Threading.Tasks;
+using VectSharp;
+using VectSharp.Canvas;
+using Avalonia.Media.Imaging;
 
 namespace sMap_GUI
 {
@@ -45,6 +46,8 @@ namespace sMap_GUI
         int selectedIndex = 0;
 
         public string result = null;
+
+        WriteableBitmap landscapeBmp;
 
         void BuildStrategyList()
         {
@@ -299,25 +302,49 @@ namespace sMap_GUI
             AvaloniaXamlLoader.Load(this);
         }
 
+        private void SetPixel(Avalonia.Platform.ILockedFramebuffer fb, int x, int y, Color col)
+        {
+            int address = y * fb.RowBytes + x * 4;
+
+            byte[] pixel = new byte[4];
+
+            if (fb.Format == Avalonia.Platform.PixelFormat.Rgba8888)
+            {
+                pixel[0] = col.R;
+                pixel[1] = col.G;
+                pixel[2] = col.B;
+                pixel[3] = col.A;
+            }
+            else if (fb.Format == Avalonia.Platform.PixelFormat.Bgra8888)
+            {
+                pixel[0] = col.B;
+                pixel[1] = col.G;
+                pixel[2] = col.R;
+                pixel[3] = col.A;
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(pixel, 0, IntPtr.Add(fb.Address, address), 4);
+        }
+
         private void TestButtonClicked(object sender, RoutedEventArgs e)
         {
             varMax = 10;
 
             (Func<double, double, double> func, double[] maxPoint) likFunc = Utils.FunctionGenerator.GetFake2VariateLikelihood(varMax);
 
-            Bitmap bmp = new Bitmap(150, 150);
+            WriteableBitmap bmp = new WriteableBitmap(new PixelSize(150, 150), new Vector(72, 72));
 
-            double[,] computedVals = new double[bmp.Width, bmp.Height];
+            double[,] computedVals = new double[bmp.PixelSize.Width, bmp.PixelSize.Height];
 
             double max = double.MinValue;
             double min = double.MaxValue;
 
-            for (int x = 0; x < bmp.Width; x++)
+            for (int x = 0; x < bmp.PixelSize.Width; x++)
             {
-                for (int y = 0; y < bmp.Height; y++)
+                for (int y = 0; y < bmp.PixelSize.Height; y++)
                 {
-                    double realX = (double)x / bmp.Width * varMax;
-                    double realY = (double)y / bmp.Height * varMax;
+                    double realX = (double)x / bmp.PixelSize.Width * varMax;
+                    double realY = (double)y / bmp.PixelSize.Height * varMax;
                     double val = -Math.Log(-likFunc.func(realX, realY));
                     max = Math.Max(max, val);
                     min = Math.Min(min, val);
@@ -332,23 +359,20 @@ namespace sMap_GUI
 
             maximum = likFunc.func(likFunc.maxPoint[0], likFunc.maxPoint[1]);
 
-            for (int x = 0; x < bmp.Width; x++)
+            using (Avalonia.Platform.ILockedFramebuffer fb = bmp.Lock())
             {
-                for (int y = 0; y < bmp.Height; y++)
+                for (int x = 0; x < bmp.PixelSize.Width; x++)
                 {
-                    int col = Math.Max(0, Math.Min(255, (int)((computedVals[x, y] - min) / (max - min) * 255)));
-                    bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(col, col, col));
+                    for (int y = 0; y < bmp.PixelSize.Height; y++)
+                    {
+                        byte col = (byte)Math.Max(0, Math.Min(255, (int)((computedVals[x, y] - min) / (max - min) * 255)));
+
+                        SetPixel(fb, x, y, Color.FromRgb(col, col, col));
+                    }
                 }
             }
 
-            MemoryStream s = new MemoryStream();
-            bmp.Save(s, System.Drawing.Imaging.ImageFormat.Bmp);
-
-            s.Position = 0;
-
-            Avalonia.Media.Imaging.Bitmap avaloniaBmp = new Avalonia.Media.Imaging.Bitmap(s);
-
-            this.FindControl<Avalonia.Controls.Image>("SampledValuesImage").Source = avaloniaBmp;
+            this.FindControl<Avalonia.Controls.Image>("SampledValuesImage").Source = bmp;
 
             lock (plotLock)
             {
@@ -383,8 +407,6 @@ namespace sMap_GUI
         bool plotEnqueued = false;
 
         double maximum;
-
-        Bitmap landscapeBmp;
 
         List<double[]> sampledValues;
 
@@ -421,36 +443,32 @@ namespace sMap_GUI
                 w = (int)this.FindControl<Grid>("PlotsGrid").ColumnDefinitions[0].ActualWidth;
             });
 
-            Bitmap bmp = new Bitmap(w, 150);
+            Page pag = new Page(w, 150);
 
-            Graphics gpr = Graphics.FromImage(bmp);
+            Graphics gpr = pag.Graphics;
 
-            gpr.SmoothingMode = SmoothingMode.HighQuality;
-            gpr.InterpolationMode = InterpolationMode.High;
+            gpr.StrokePath(new GraphicsPath().MoveTo(5, 145).LineTo(w - 3, 145), Colour.FromRgb(0, 0, 0), 2);
+            gpr.StrokePath(new GraphicsPath().MoveTo(5, 145).LineTo(5, 3), Colour.FromRgb(0, 0, 0), 2);
 
-            gpr.Clear(System.Drawing.Color.White);
 
-            gpr.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black) { Width = 2 }, 5, 145, w - 3, 145);
-            gpr.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black) { Width = 2 }, 5, 145, 5, 3);
 
             GraphicsPath pth = new GraphicsPath();
-            pth.StartFigure();
-            pth.AddLine(0, 10, 5, 0);
-            pth.AddLine(5, 0, 10, 10);
-            pth.CloseFigure();
+            pth.MoveTo(0, 10);
+            pth.LineTo(5, 0);
+            pth.LineTo(10, 10);
+            pth.Close();
 
-            gpr.FillPath(new SolidBrush(System.Drawing.Color.Black), pth);
+            gpr.FillPath(pth, Colour.FromRgb(0, 0, 0));
 
             pth = new GraphicsPath();
-            pth.StartFigure();
-            pth.AddLine(w - 10, 140, w, 145);
-            pth.AddLine(w, 145, w - 10, 150);
-            pth.CloseFigure();
+            pth.MoveTo(w - 10, 140);
+            pth.LineTo(w, 145);
+            pth.LineTo(w - 10, 150);
+            pth.Close();
 
-            gpr.FillPath(new SolidBrush(System.Drawing.Color.Black), pth);
+            gpr.FillPath(pth, Colour.FromRgb(0, 0, 0));
 
             
-
             if (localCurrentYs.Length > 0 || localPlottedYs.Length > 0)
             {
 
@@ -471,7 +489,7 @@ namespace sMap_GUI
 
                 maxY = maximum;
 
-                gpr.DrawLine(new System.Drawing.Pen(System.Drawing.Color.FromArgb(0, 162, 232)), 5, 10 + (float)(135.0 - (maximum - minY) / (maxY - minY) * 135.0), w, 10 + (float)(135.0 - (maximum - minY) / (maxY - minY) * 135.0));
+                gpr.StrokePath(new GraphicsPath().MoveTo(5, 10 + (float)(135.0 - (maximum - minY) / (maxY - minY) * 135.0)).LineTo(w, 10 + (float)(135.0 - (maximum - minY) / (maxY - minY) * 135.0)), Colour.FromRgb(0, 162, 232));
 
                 double maxX = localPlottedYs.Length + localSteps;
 
@@ -479,7 +497,6 @@ namespace sMap_GUI
                 float lastY = 0;
 
                 pth = new GraphicsPath();
-                pth.StartFigure();
 
                 for (int x = 0; x < localPlottedYs.Length; x++)
                 {
@@ -488,12 +505,13 @@ namespace sMap_GUI
 
                     if (x == 0)
                     {
+                        pth.MoveTo(plotX, plotY);
                         lastX = plotX;
                         lastY = plotY;
                     }
                     else
                     {
-                        pth.AddLine(lastX, lastY, plotX, plotY);
+                        pth.LineTo(plotX, plotY);
                         lastX = plotX;
                         lastY = plotY;
                     }
@@ -506,59 +524,50 @@ namespace sMap_GUI
 
                     if (x != 0 || localPlottedYs.Length > 0)
                     {
-                        pth.AddLine(lastX, lastY, plotX, plotY);
+                        pth.LineTo(plotX, plotY);
                     }
 
                     lastX = plotX;
                     lastY = plotY;
                 }
-
-                gpr.DrawPath(new System.Drawing.Pen(System.Drawing.Color.FromArgb(58, 78, 124), 2) { LineJoin = LineJoin.Round }, pth);
+                //new System.Drawing.Pen(System.Drawing.Color.FromArgb(58, 78, 124), 2) { LineJoin = LineJoin.Round }
+                gpr.StrokePath(pth, Colour.FromRgb(58, 78, 124), 2, lineJoin: LineJoins.Round);
             }
-
-            gpr.Flush();
-            gpr.Dispose();
-
-            MemoryStream s = new MemoryStream();
-            bmp.Save(s, System.Drawing.Imaging.ImageFormat.Bmp);
-
-            s.Position = 0;
-
-            Avalonia.Media.Imaging.Bitmap avaloniaBmp = new Avalonia.Media.Imaging.Bitmap(s);
-
-            MemoryStream s2 = new MemoryStream();
 
             lock (plotLock)
             {
-
-                for (int i = lastSampledPlotted + 1; i < sampledValues.Count; i++)
+                using (Avalonia.Platform.ILockedFramebuffer fb = landscapeBmp.Lock())
                 {
-                    int x = (int)(sampledValues[i][0] / varMax * landscapeBmp.Width);
-                    int y = (int)(sampledValues[i][1] / varMax * landscapeBmp.Height);
-
-                    
-
-                    if (x >= 0 && x < landscapeBmp.Width && y >= 0 && y < landscapeBmp.Height)
+                    for (int i = lastSampledPlotted + 1; i < sampledValues.Count; i++)
                     {
-                        double val = -Math.Log(-currLikFunc(sampledValues[i][0], sampledValues[i][1]));
+                        int x = (int)(sampledValues[i][0] / varMax * landscapeBmp.PixelSize.Width);
+                        int y = (int)(sampledValues[i][1] / varMax * landscapeBmp.PixelSize.Height);
 
-                        int col = Math.Max(0, Math.Min(1023, (int)((val - landscapeMin) / (landscapeMax - landscapeMin) * 1024)));
 
-                        landscapeBmp.SetPixel(x, y, System.Drawing.Color.FromArgb(Plotting.ViridisColorScale[col][0], Plotting.ViridisColorScale[col][1], Plotting.ViridisColorScale[col][2]));
+
+                        if (x >= 0 && x < landscapeBmp.PixelSize.Width && y >= 0 && y < landscapeBmp.PixelSize.Height)
+                        {
+                            double val = -Math.Log(-currLikFunc(sampledValues[i][0], sampledValues[i][1]));
+
+                            int col = Math.Max(0, Math.Min(1023, (int)((val - landscapeMin) / (landscapeMax - landscapeMin) * 1024)));
+
+                            SetPixel(fb, x, y, Color.FromRgb((byte)Plotting.ViridisColorScale[col][0], (byte)Plotting.ViridisColorScale[col][1], (byte)Plotting.ViridisColorScale[col][2]));
+    
+                        }
                     }
+                    lastSampledPlotted = sampledValues.Count;
                 }
-                lastSampledPlotted = sampledValues.Count;
-                landscapeBmp.Save(s2, System.Drawing.Imaging.ImageFormat.Bmp);
             }
-
-            s2.Position = 0;
-
-            Avalonia.Media.Imaging.Bitmap avaloniaLandscapeBmp = new Avalonia.Media.Imaging.Bitmap(s2);
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                this.FindControl<Avalonia.Controls.Image>("EstimateImage").Source = avaloniaBmp;
-                this.FindControl<Avalonia.Controls.Image>("SampledValuesImage").Source = avaloniaLandscapeBmp;
+                this.FindControl<Avalonia.Controls.Canvas>("EstimateImage").Children.Clear();
+                this.FindControl<Avalonia.Controls.Canvas>("EstimateImage").Children.Add(pag.PaintToCanvas(false));
+                lock (plotLock)
+                {
+                    this.FindControl<Avalonia.Controls.Image>("SampledValuesImage").Source = landscapeBmp;
+                    this.FindControl<Avalonia.Controls.Image>("SampledValuesImage").InvalidateVisual();
+                }
             });
         }
 
