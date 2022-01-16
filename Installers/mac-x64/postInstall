@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+sudo mkdir -p /usr/local/bin/
+
+sudo rm -f "/usr/local/bin/Blend-sMap" "/usr/local/bin/ChainMonitor" "/usr/local/bin/Merge-sMap" "/usr/local/bin/NodeInfo" "/usr/local/bin/Plot-sMap" "/usr/local/bin/Script-sMap" "/usr/local/bin/sMap" "/usr/local/bin/sMap-GUI" "/usr/local/bin/Stat-sMap"
+
+sudo ln -s "/Applications/sMap.app/Contents/sMap/Blend-sMap" "/Applications/sMap.app/Contents/sMap/ChainMonitor" "/Applications/sMap.app/Contents/sMap/Merge-sMap" "/Applications/sMap.app/Contents/sMap/NodeInfo" "/Applications/sMap.app/Contents/sMap/Plot-sMap" "/Applications/sMap.app/Contents/sMap/Script-sMap" "/Applications/sMap.app/Contents/sMap/sMap" "/Applications/sMap.app/Contents/sMap/sMap-GUI" "/Applications/sMap.app/Contents/sMap/Stat-sMap" /usr/local/bin/
