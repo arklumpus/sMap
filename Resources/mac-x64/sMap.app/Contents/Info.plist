@@ -2,7 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleExecutable</key>
+	<string>sMap</string>
 	<key>CFBundleIconFile</key>
 	<string>sMapIcon.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.arklumpus.sMap</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>sMap</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleVersion</key>
+	<string>@@VersionHere@@</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@@VersionHere@@</string>
 </dict>
 </plist>
