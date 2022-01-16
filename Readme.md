@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4293924.svg)](https://doi.org/10.5281/zenodo.4293924)
 
+<img src="Icons/sMap.svg" align="right" height="256">
+
 ## Introduction
 **sMap** is a program to perform stochastic mapping (Nielsen, 2002; Huelsenbeck, Nielsen and Bollback, 2003) analyses on discrete characters. This kind of analysis involves estimating substitution parameters, reconstructing ancestral states and simulating histories, in order to study the evolution of multiple types of discrete characters (e.g. morphological features, presence of genes, habitats...), without necessarily relying on a single phylogenetic tree.
 
@@ -25,12 +27,12 @@ You can now run the GUI version of sMap by using the shortcut and the command-li
 ### macOS
 Download [`sMap-mac-x64.pkg`](https://github.com/arklumpus/sMap/releases/latest/download/sMap-mac-x64.pkg) and double click it. The installer will guide you to the process, and will do two main things:
 1. Copy the sMap app to the /Applications folder.
-2. Create symlinks to the sMap executables (`Blend-sMap`, `ChainMonitor`, `Merge-sMap`, `NodeInfo`, `Plot-sMap`, `Script-sMap`, `sMap`, `sMap-GUI`, `Stat-sMap`) in the `/usr/bin` folder.
+2. Create symlinks to the sMap executables (`Blend-sMap`, `ChainMonitor`, `Merge-sMap`, `NodeInfo`, `Plot-sMap`, `Script-sMap`, `sMap`, `sMap-GUI`, `Stat-sMap`) in the `/usr/local/bin` folder.
 
 You can now run the GUI version of sMap by opening the app in your Applications folder and the command-line version by typing `sMap` in a terminal window.
 
 ### Linux
-sMap is officially supported on Debian stretch+, Ubuntu 16.04+, Fedora 29+, and CentOS 7+. An automatic installer is available, which may also work on other distributions.
+sMap is officially supported on Debian bullseye+, Ubuntu 20.04.3+, Fedora 34+, and CentOS 7+. An automatic installer is available, which may also work on other distributions.
 Open a terminal window. Download the installer using `wget` or `curl` (whichever you prefer/have available):
 
 	wget https://github.com/arklumpus/sMap/releases/latest/download/sMap-linux-x64.run
@@ -70,19 +72,6 @@ Once the analysis finishes, close the dialog and the analysis window, then click
 ## Alternative palettes and colour blindness
 The plots produced by sMap convey information primarily through colour. The default palette used by sMap is not colour-blind safe; however, it is possible to enable alternative colour palettes that are colour-blind safe either during the sMap installation process, or afterwards, following the instructions in [Resources/Palettes](Resources/Palettes).
 
-## Troubleshooting and known issues
-- On macOS, if when you try to start the GUI version of sMap by clicking on the app you get a message complaining that the application may be damaged or incomplete, there might be some permission issues on the starter script. Open a terminal and enter:
-
-		chmod +x /Applications/sMap.app/Contents/MacOs/sMap
-
-	Then try again. If it still does not work, open a terminal and type:
-	
-		/Applications/sMap.app/Contents/MacOs/sMap
-
-	This should hopefully lead at least to a more informative error message.
-
-- Known issue on Linux and macOS: sMap-GUI may become randomly unresponsive and need to be forcefully closed. This is because sMap uses the Avalonia framework for its UI ([http://avaloniaui.net/](http://avaloniaui.net/)), which is stil in beta. No workaround for now, unfortunately :-( Just make sure that you save your progress (e.g. the output of the analysis) whenever you can. Also note that if this happens while an analysis is running, the analysis will still run in the background (if you started sMap-GUI from a command-line, you should see the analysis output in the console). In this case you may want to wait until the analysis finishes before killing the program, so that you can scavenge the results!
-
 ## Manual installation
 If you wish to have more control over the installation process, you can manually install sMap following these instructions.
 
@@ -119,7 +108,7 @@ Download the [`sMap-linux-x64.tar.gz`](https://github.com/arklumpus/sMap/release
 
 Depending on  your system, you may want to replace `wget` with `curl -LO`. This will create a folder called `sMap-linux-x64`, which contains the sMap executables. You can now run sMap by typing `sMap-linux-x64/sMap` and the GUI version by typing `sMap-linux-x64/sMap-GUI`.
 
-You can also create symlinks to the sMap executables in a folder that is included in your `PATH` (such as `/usr/bin`): open a terminal and type:
+You can also create symlinks to the sMap executables in a folder that is included in your `PATH` (such as `/usr/bin`). To do this, open a terminal and type:
 
 	ln -s "$(pwd)"/sMap-linux-x64/Blend-sMap "$(pwd)"/sMap-linux-x64/ChainMonitor "$(pwd)"/sMap-linux-x64/Merge-sMap "$(pwd)"/sMap-linux-x64/NodeInfo sMap-linux-x64/Plot-sMap sMap-linux-x64/Script-sMap "$(pwd)"/sMap-linux-x64/sMap "$(pwd)"/sMap-linux-x64/sMap-GUI "$(pwd)"/sMap-linux-x64/Stat-sMap /usr/bin/
 
@@ -127,11 +116,11 @@ If you wish, you can create a desktop shortcut to `sMap-GUI` using your distribu
 
 ## Compiling sMap from source
 
-To be able to compile sMap from source, you will need to install the [.NET Core 3 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.0) or higher for your operating system.
+To be able to compile sMap from source, you will need to install the [.NET Core 6 SDK](https://dotnet.microsoft.com/download/dotnet-core/6.0) for your operating system.
 
 You can use [Microsoft Visual Studio](https://visualstudio.microsoft.com/it/vs/) to compile the program. The following instructions will cover compiling sMap from the command line, instead.
 
-First of all, you will need to download the sMap source code: [sMap-1.0.6.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.6.tar.gz) and extract it somewhere.
+First of all, you will need to download the sMap source code: [sMap-1.0.7.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.7.tar.gz) and extract it somewhere.
 
 ### Windows
 Open a command-line window in the folder where you have extracted the source code, and type:
@@ -152,6 +141,25 @@ Where `<Target>` can be one of `Win-x64`, `Linux-x64` or `Mac-x64` depending on 
 In the Release folder and in the appropriate subfolder for the target platform you selected, you will find the compiled program.
 
 If you receive an error about permissions being denied, try typing `chmod +x BuildAll.sh` first.
+
+### Creating the installers
+
+To create the installers, you will need a Windows machine with Visual Studio to create the Windows and Linux packages, and a macOS machine to create the macOS package.
+
+After building the sMap release, open a Developer Command Prompt in the sMap source code folder, and type:
+
+	BuildBinaries-Win-x64 "path/to/certificate.pfx" "certificate_password"
+	bash -c ./BuildBinaries-Linux-x64.sh
+
+These commands will create the installer for Windows and Linux, which will be placed in the `Binary` folder. To create the Windows installer, you need to supply a code-signing certificate in PFX or P12 format, together with the associated password. Such a certificate can be obtained (for a fee) from a [certificate authority](https://docs.microsoft.com/en-us/windows-hardware/drivers/dashboard/get-a-code-signing-certificate) or can be a self-signed certificate.
+
+You should now move to the macOS machine. To sign the app and the installer on macOS, you will need an Apple "Developer ID Application" certificate and a "Developer ID Installer" certificate, as well as an Apple ID and an app-specific password (which can be generated from the Apple ID page).
+
+On the macOS machine, open a terminal in the folder where you have extracted the sMap source code and type:
+
+	./BuildBinaries-Mac-x64.sh "<Developer ID Application Identity>" "<Developer ID Installer Identity>" "<Apple ID>" "<app-specific password>"
+
+Where `<Developer ID Application Identity>` and `<Developer ID Installer Identity>` are the names of the certificates in your keychain (e.g. `"Developer ID Application: John Smith"`). This should create, sign and notarize the installers for macOS in the Binary folder.
 
 ## Licence
 See the [sMap manual](https://github.com/arklumpus/sMap/raw/master/sMap.pdf) for licensing information.
