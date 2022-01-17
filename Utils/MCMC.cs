@@ -2058,19 +2058,25 @@ namespace Utils
                 proposalLogLikelihood = 0;
             }
 
-            double acceptanceProbability = Math.Exp((proposalLogLikelihood - currentLogLikelihood + proposalLogPrior - currentLogPrior) * temperature + logHastingsRatio);
-
-            if (randomSource.NextDouble() < acceptanceProbability)
+            if (double.IsInfinity(proposalLogLikelihood))
             {
-
-                accepted = true;
-                currentLogLikelihood = proposalLogLikelihood;
-                currentLogPrior = proposalLogPrior;
-                currentVariableValues = proposalVariableValues;
+                accepted = false;
             }
             else
             {
-                accepted = false;
+                double acceptanceProbability = Math.Exp((proposalLogLikelihood - currentLogLikelihood + proposalLogPrior - currentLogPrior) * temperature + logHastingsRatio);
+
+                if (randomSource.NextDouble() < acceptanceProbability)
+                {
+                    accepted = true;
+                    currentLogLikelihood = proposalLogLikelihood;
+                    currentLogPrior = proposalLogPrior;
+                    currentVariableValues = proposalVariableValues;
+                }
+                else
+                {
+                    accepted = false;
+                }
             }
 
             return currentVariableValues;
