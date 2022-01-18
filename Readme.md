@@ -1,6 +1,6 @@
 # sMap: Evolution of Independent, Dependent and Conditioned Discrete Characters in a Bayesian Framework
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4293924.svg)](https://doi.org/10.5281/zenodo.4293924)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4293923.svg)](https://doi.org/10.5281/zenodo.4293923)
 
 <img src="Icons/sMap.svg" align="right" height="256">
 
