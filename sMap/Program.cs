@@ -34,7 +34,7 @@ namespace sMap
 
         private static bool _runningGui = false;
 
-        public static string Version = "1.0.7";
+        public static string Version = "1.0.8";
 
         public static bool RunningGUI
         {
@@ -1767,7 +1767,16 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                                     double maxLikelihood = likelihoodSamples.Max();
 
-                                    rSS[step - 1] = maxLikelihood * (beta[step] - beta[step - 1]) + Math.Log((from el in likelihoodSamples select Math.Exp((el - maxLikelihood) * (beta[step] - beta[step - 1]))).Sum() / steppingStoneSamples);
+                                    int countNaN = likelihoodSamples.Count(x => double.IsNaN(x));
+
+                                    if (countNaN > 0)
+                                    {
+                                        ConsoleWrapper.WriteLine();
+                                        ConsoleWrapper.WriteLine("WARNING: skipping {0} sample{1} because {2} NaN likelihood.", countNaN, countNaN > 1 ? "s" : "", countNaN > 1 ? "they have" : "it has");
+                                        ConsoleWrapper.WriteLine();
+                                    }
+
+                                    rSS[step - 1] = maxLikelihood * (beta[step] - beta[step - 1]) + Math.Log((from el in likelihoodSamples where !double.IsNaN(el) select Math.Exp((el - maxLikelihood) * (beta[step] - beta[step - 1]))).Sum() / steppingStoneSamples);
 
                                     ConsoleWrapper.WriteLine();
                                     ConsoleWrapper.WriteLine("Contribution of step {0}: {1}", step, rSS[step - 1]);
@@ -3390,7 +3399,7 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
             {
                 Utils.Utils.Trigger("AllFinished", new object[] { });
             }
-            
+
             if (!RunningGUI && kill)
             {
                 ConsoleWrapper.WriteLine();
