@@ -1100,7 +1100,7 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
                         Likelihoods.StoredLikelihoods = new ConcurrentBag<string>();
                     }
 
-                    MLEstimates[i] = Utils.Likelihoods.EstimateParameters(MLStrategies, data, dependencies[i], rates, pi, meanLikModel, mainRandom, /*computeHessian,*/ out bool mcmcRequired, out bool thisMlPerformed/*, out double[][,] hessianMatrix*/);
+                    MLEstimates[i] = Utils.Likelihoods.EstimateParameters(MLStrategies, data, dependencies[i], rates, pi, meanLikModel, mainRandom, /*computeHessian,*/ out bool mcmcRequired, out bool thisMlPerformed/*, out double[][,] hessianMatrix*/, outputPrefix);
 
                     /*if (computeHessian && hessianMatrix != null)
                     {

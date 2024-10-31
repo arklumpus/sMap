@@ -636,16 +636,16 @@ namespace sMap_GUI
                     switch (strategies[i].Strategy)
                     {
                         case Strategies.RandomWalk:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionRandomWalk(likelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], rnd, -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionRandomWalk(likelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], rnd, null, -2);
                             break;
                         case Strategies.Sampling:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionSampling(likelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], false, -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionSampling(likelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], false, null, -2);
                             break;
                         case Strategies.NesterovClimbing:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionNesterov(likelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], rnd, -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionNesterov(likelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], rnd, null, -2);
                             break;
                         case Strategies.IterativeSampling:
-                            bestVars = Utils.Utils.AutoMaximiseFunctionIterativeSampling((a, b) => likelihoodFunc(a), bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], false, -2);
+                            bestVars = Utils.Utils.AutoMaximiseFunctionIterativeSampling((a, b) => likelihoodFunc(a), bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], false, null, -2);
                             break;
                     }
                 }

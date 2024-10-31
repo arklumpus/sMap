@@ -77,7 +77,7 @@ namespace Utils
             return tbr;
         }
 
-        public static double[] EstimateParameters(MaximisationStrategy[] strategies, DataMatrix data, CharacterDependency[] dependencies, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, LikelihoodModel likModel, Random randomSource, /*bool computeHessian,*/ out bool mcmcRequired, out bool mlPerformed/*, out double[][,] hessianMatrix*/)
+        public static double[] EstimateParameters(MaximisationStrategy[] strategies, DataMatrix data, CharacterDependency[] dependencies, Dictionary<string, Parameter>[] rates, Dictionary<string, Parameter>[] pi, LikelihoodModel likModel, Random randomSource, /*bool computeHessian,*/ out bool mcmcRequired, out bool mlPerformed/*, out double[][,] hessianMatrix*/, string outputPrefix)
         {
             (int mlParameterCount, int bayesParameterCount, List<List<Parameter>> ratesToEstimate, List<(double remainingPi, List<Parameter> pis, int[] equalCounts)> pisToEstimate) parametersToEstimate = Utils.GetParametersToEstimate(dependencies, rates, pi);
 
@@ -408,30 +408,30 @@ namespace Utils
                         case Strategies.RandomWalk:
                             if (ParallelMLE <= 1)
                             {
-                                bestVars = Utils.AutoMaximiseFunctionRandomWalk(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
+                                bestVars = Utils.AutoMaximiseFunctionRandomWalk(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, outputPrefix, Utils.RunningGui ? -2 : plotTop);
                             }
                             else
                             {
-                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionRandomWalk((vars) => threadSafeLikelihoodFunc(vars, index), parameters, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
+                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionRandomWalk((vars) => threadSafeLikelihoodFunc(vars, index), parameters, stepTypes.ToArray(), (RandomWalk)strategies[i], randomSource, outputPrefix + "." + index.ToString(), Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
                                 threadUnsafeLikelihoodFunc(bestVars);
                             }
                             break;
                         case Strategies.Sampling:
-                            bestVars = Utils.AutoMaximiseFunctionSampling(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], j > 0 || i > 0, Utils.RunningGui ? -2 : plotTop);
+                            bestVars = Utils.AutoMaximiseFunctionSampling(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (Sampling)strategies[i], j > 0 || i > 0, outputPrefix, Utils.RunningGui ? -2 : plotTop);
                             break;
                         case Strategies.NesterovClimbing:
                             if (ParallelMLE <= 1)
                             {
-                                bestVars = Utils.AutoMaximiseFunctionNesterov(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, Utils.RunningGui ? -2 : plotTop);
+                                bestVars = Utils.AutoMaximiseFunctionNesterov(threadUnsafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, outputPrefix, Utils.RunningGui ? -2 : plotTop);
                             }
                             else
                             {
-                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionNesterov((vars) => threadSafeLikelihoodFunc(vars, index), bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
+                                bestVars = RunParallelMaximisation((parameters, index) => Utils.AutoMaximiseFunctionNesterov((vars) => threadSafeLikelihoodFunc(vars, index), bestVars, stepTypes.ToArray(), (NesterovClimbing)strategies[i], randomSource, outputPrefix + "." + index.ToString(), Utils.RunningGui ? -2 : -1), threadSafeLikelihoodFunc, bestVars);
                                 threadUnsafeLikelihoodFunc(bestVars);
                             }
                             break;
                         case Strategies.IterativeSampling:
-                            bestVars = Utils.AutoMaximiseFunctionIterativeSampling(threadSafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], j > 0 || i > 0, Utils.RunningGui ? -2 : plotTop);
+                            bestVars = Utils.AutoMaximiseFunctionIterativeSampling(threadSafeLikelihoodFunc, bestVars, stepTypes.ToArray(), (IterativeSampling)strategies[i], j > 0 || i > 0, outputPrefix, Utils.RunningGui ? -2 : plotTop);
                             threadUnsafeLikelihoodFunc(bestVars);
                             break;
                     }
@@ -908,7 +908,7 @@ namespace Utils
                                 res.TimesLogVectorAndAdd(likelihoods[model.Children[i][l]], likelihoods[i]);
                             }
 
-
+                            
                         }
                     }
                     break;

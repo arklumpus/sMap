@@ -3165,7 +3165,7 @@ namespace Utils
             return ESS;
         }
 
-        public static double[] AutoMaximiseFunctionRandomWalk(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, RandomWalk strategy, Random rnd, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionRandomWalk(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, RandomWalk strategy, Random rnd, string outputPrefix, int plotTop = -1)
         {
             if (strategy.ConvergenceCriterion == ConvergenceCriteria.Value)
             {
@@ -3183,6 +3183,18 @@ namespace Utils
 
                     newVal = func(newVars);
                     startVal = newVars;
+
+                    if (!string.IsNullOrEmpty(outputPrefix))
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                        {
+                            sw.WriteLine(newVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            for (int i = 0; i < startVal.Length; i++)
+                            {
+                                sw.WriteLine(startVal[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            }
+                        }
+                    }
                 }
 
                 //Unregister thread
@@ -3210,6 +3222,18 @@ namespace Utils
                     }
 
                     startVal = newVars;
+
+                    if (!string.IsNullOrEmpty(outputPrefix))
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                        {
+                            sw.WriteLine(newVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            for (int i = 0; i < startVal.Length; i++)
+                            {
+                                sw.WriteLine(startVal[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            }
+                        }
+                    }
                 }
 
                 //Unregister thread
@@ -3223,7 +3247,7 @@ namespace Utils
             return null;
         }
 
-        public static double[] AutoMaximiseFunctionNesterov(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, NesterovClimbing strategy, Random rnd, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionNesterov(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, NesterovClimbing strategy, Random rnd, string outputPrefix, int plotTop = -1)
         {
             List<double> realVals = new List<double>();
 
@@ -3283,6 +3307,18 @@ namespace Utils
 
                     newVal = funcp(newVars);
                     startValp = newVars;
+
+                    if (!string.IsNullOrEmpty(outputPrefix))
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                        {
+                            sw.WriteLine(newVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            for (int i = 0; i < startValp.Length; i++)
+                            {
+                                sw.WriteLine(startValp[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            }
+                        }
+                    }
                 }
 
                 //Unregister thread
@@ -3334,6 +3370,18 @@ namespace Utils
                     }
 
                     startValp = newVars;
+
+                    if (!string.IsNullOrEmpty(outputPrefix))
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                        {
+                            sw.WriteLine(newVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            for (int i = 0; i < startValp.Length; i++)
+                            {
+                                sw.WriteLine(startValp[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            }
+                        }
+                    }
                 }
 
                 //Unregister thread
@@ -3368,7 +3416,7 @@ namespace Utils
             return null;
         }
 
-        public static double[] AutoMaximiseFunctionSampling(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, Sampling strategy, bool autoRecenter, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionSampling(Func<double[], double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, Sampling strategy, bool autoRecenter, string outputPrefix, int plotTop = -1)
         {
             if (!strategy.Plot)
             {
@@ -3470,6 +3518,18 @@ namespace Utils
                 {
                     maxVal = val;
                     bestVals = (double[])currVal.Clone();
+
+                    if (!string.IsNullOrEmpty(outputPrefix))
+                    {
+                        using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                        {
+                            sw.WriteLine(maxVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            for (int i = 0; i < bestVals.Length; i++)
+                            {
+                                sw.WriteLine(bestVals[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            }
+                        }
+                    }
                 }
 
                 stepsDone++;
@@ -3487,7 +3547,7 @@ namespace Utils
                     lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                     y.Add(maxVal);
                     x.Add(lastPerc);
-                    
+
                     PlotTriggerMarshal(x, y);
                 }
 
@@ -3542,7 +3602,7 @@ namespace Utils
             {
                 y.Add(maxVal);
                 x.Add(100);
-                
+
                 StepFinishedTriggerMarshal(x, y)?.WaitOne();
             }
 
@@ -3555,7 +3615,7 @@ namespace Utils
         public static Action<string, object[]> Trigger;
         public static bool RunningGui = false;
 
-        public static double[] AutoMaximiseFunctionIterativeSampling(Func<double[], int, double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, IterativeSampling strategy, bool autoRecenter, int plotTop = -1)
+        public static double[] AutoMaximiseFunctionIterativeSampling(Func<double[], int, double> func, double[] startVal, (VariableStepType stepType, int[] affectedVariables, double sigma)[] variableTypes, IterativeSampling strategy, bool autoRecenter, string outputPrefix, int plotTop = -1)
         {
             if (!strategy.Plot)
             {
@@ -3721,6 +3781,18 @@ namespace Utils
                                         {
                                             maxVal = val;
                                             currVal.CopyTo(bestVals, 0);
+
+                                            if (!string.IsNullOrEmpty(outputPrefix))
+                                            {
+                                                using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                                                {
+                                                    sw.WriteLine(maxVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                                                    for (int i = 0; i < bestVals.Length; i++)
+                                                    {
+                                                        sw.WriteLine(bestVals[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         stepsDone++;
@@ -3743,7 +3815,7 @@ namespace Utils
                                             lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                                             y.Add(maxVal);
                                             x.Add(lastPerc);
-                                            
+
                                             PlotTriggerMarshal(x, y);
                                         }
 
@@ -3820,6 +3892,24 @@ namespace Utils
                                         {
                                             maxVal = val;
                                             bestVals = (double[])currVal.Clone();
+
+                                            if (val >= maxVal)
+                                            {
+                                                maxVal = val;
+                                                currVal.CopyTo(bestVals, 0);
+
+                                                if (!string.IsNullOrEmpty(outputPrefix))
+                                                {
+                                                    using (StreamWriter sw = new StreamWriter(outputPrefix + ".last.maximum.likelihood.txt"))
+                                                    {
+                                                        sw.WriteLine(maxVal.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                                                        for (int i = 0; i < bestVals.Length; i++)
+                                                        {
+                                                            sw.WriteLine(bestVals[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         stepsDone++;
@@ -3842,7 +3932,7 @@ namespace Utils
                                             lastPerc = (int)(stepsDone * 100.0 / totalSteps);
                                             y.Add(maxVal);
                                             x.Add(lastPerc);
-                                            
+
                                             PlotTriggerMarshal(x, y);
                                         }
                                         shouldStart = remainingSteps.Count > 0;
@@ -3875,7 +3965,7 @@ namespace Utils
                 {
                     x.Add(100);
                     y.Add(maxVal);
-                    
+
                     StepFinishedTriggerMarshal(x, y)?.WaitOne();
                 }
 
