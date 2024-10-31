@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>sMap_GUI</RootNamespace>
     <AssemblyName>sMap-GUI</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>

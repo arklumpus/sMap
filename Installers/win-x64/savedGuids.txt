@@ -409,3 +409,8 @@ mscordaccore_amd64_amd64_6.0.21.52210.dll	c0ed07b4-5fbc-4244-99c2-04ee92bd2119
 msquic.dll	9abde911-aeb6-4fe4-986e-6a6bf09346af
 System.IO.Compression.Native.dll	ef06b260-39d8-4cf0-a015-4e4ec2058cd8
 System.Net.Quic.dll	5fef26e3-93ac-47dd-ab9d-b3ba02ee9c01
+clrgc.dll	0166e452-6865-4e24-86b8-b87b67d1f4fe
+mscordaccore_amd64_amd64_8.0.824.36612.dll	a21b3b9d-8967-4559-8cf0-abf9a04f7d1d
+System.Formats.Tar.dll	e57c1f34-4035-40ab-8a90-61eebcda92c0
+System.Runtime.InteropServices.JavaScript.dll	51cd5f4a-c9c9-4ffd-9b56-b0a262ed0708
+System.Security.Cryptography.dll	305b603c-e74e-465b-89dc-541c40658bcb
