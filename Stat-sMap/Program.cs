@@ -9,7 +9,7 @@ namespace Stat_sMap
 {
     class Program
     {
-        const string version = "1.0.0";
+        const string version = "1.0.1";
         static int Main(string[] args)
         {
             string filename = "";
@@ -241,7 +241,7 @@ namespace Stat_sMap
 
                 for (int i = 0; i < run.AllPossibleStates.Length; i++)
                 {
-                    totalTimes.Add(run.AllPossibleStates[i], 0);
+                    totalTimes[run.AllPossibleStates[i]] = 0;
                 }
 
                 for (int i = 0; i < run.Histories.Length; i++)

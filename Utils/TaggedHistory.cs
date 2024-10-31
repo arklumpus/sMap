@@ -87,7 +87,7 @@ namespace Utils
             Dictionary<string, double> tbr = new Dictionary<string, double>();
             for (int i = 0; i < allPossibleStates.Length; i++)
             {
-                tbr.Add(allPossibleStates[i], 0);
+                tbr[allPossibleStates[i]] = 0;
             }
 
             for (int i = 0; i < History.Length; i++)
