@@ -46,7 +46,7 @@ namespace MatrixExponential
                     Matrix<Complex> m = mat.ToComplex();
                     Evd<Complex> evd = m.Evd();
 
-                    HashSet<Complex> eigenValues = new HashSet<Complex>();
+                    List<Complex> eigenValues = new List<Complex>();
 
                     for (int i = 0; i < evd.EigenValues.Count; i++)
                     {
@@ -60,7 +60,17 @@ namespace MatrixExponential
                             evd.EigenValues[i] = new Complex(evd.EigenValues[i].Real, 0);
                         }
 
-                        eigenValues.Add(evd.EigenValues[i]);
+                        double minDiff = double.MaxValue;
+
+                        for (int j = 0; j < eigenValues.Count; j++)
+                        {
+                            minDiff = Math.Min(minDiff, (evd.EigenValues[i] - eigenValues[j]).MagnitudeSquared());
+                        }
+
+                        if (minDiff > 1e-5)
+                        {
+                            eigenValues.Add(evd.EigenValues[i]);
+                        }
                     }
 
                     if (eigenValues.Count == m.ColumnCount)
