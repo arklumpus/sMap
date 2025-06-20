@@ -1636,13 +1636,15 @@ namespace Utils
 
         public static int MaxInd(this double[] arr, double[] multipArr)
         {
-            int tbr = 0;
+            int tbr = -1;
+            double maxVal = double.MinValue;
 
             for (int i = 0; i < arr.Length; i++)
             {
-                if (arr[i] > arr[tbr] && multipArr[i] > 0)
+                if (arr[i] > maxVal && multipArr[i] > 0)
                 {
                     tbr = i;
+                    maxVal = arr[i];
                 }
             }
 
@@ -2953,7 +2955,7 @@ namespace Utils
                 }
             }
 
-            if (!double.IsNaN(log1pArg))
+            if (double.IsFinite(log1pArg))
             {
                 return logs[maxInd] + Math.Log(multipliers[maxInd]) + Log1p(log1pArg);
             }

@@ -129,7 +129,7 @@ namespace MatrixExponential
                     }
                 }
 
-                if (!double.IsNaN(log1pArg))
+                if (double.IsFinite(log1pArg))
                 {
                     toBeAdded += Utils.Utils.Log1p(log1pArg);
                     addToVector[i] += toBeAdded;
