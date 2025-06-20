@@ -799,7 +799,7 @@ namespace Utils
 
 
 
-        public static void PlotTreeWithPieTarget(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] stateLiks, string[] states)
+        public static void PlotTreeWithPieTarget(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] stateLiks, string[] states, bool logProgress = false)
         {
             List<(int r, int g, int b, double a)> stateColours = new List<(int r, int g, int b, double a)>();
 
@@ -822,10 +822,10 @@ namespace Utils
             {
                 context.StrokePath(new GraphicsPath().MoveTo(x, y).LineTo(pX, y).LineTo(pX, pY), BlackColour, options.LineWidth);
 
-            }, StandardLegend(tree, margin, pageWidth, pageHeight, options, states.ToArray(), stateColours));
+            }, StandardLegend(tree, margin, pageWidth, pageHeight, options, states.ToArray(), stateColours), logProgress: logProgress);
         }
 
-        public static void PlotTreeWithSquares(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] statePrior, double[][] stateLiks, string[] states)
+        public static void PlotTreeWithSquares(this TreeNode tree, float pageWidth, float pageHeight, float margin, string path, Options options, double[][] statePrior, double[][] stateLiks, string[] states, bool logProgress = false)
         {
             List<(int r, int g, int b, double a)> stateColours = new List<(int r, int g, int b, double a)>();
 
@@ -981,7 +981,7 @@ namespace Utils
                 }
 
                 return new double[] { width + pageWidth / 32, 0 };
-            });
+            }, logProgress: logProgress);
         }
 
         public enum BinRules { Sqrt, Sturges, Rice, Doane, Scott, FreedmanDiaconis }

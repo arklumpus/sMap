@@ -698,7 +698,7 @@ namespace Utils
         }
 
 
-        public static void PlotBranchProbsTree(double width, double height, TreeNode summaryTree, double[] branchProbs, double[] minBranchProbs, Plotting.Options options, string outputFile)
+        public static void PlotBranchProbsTree(double width, double height, TreeNode summaryTree, double[] branchProbs, double[] minBranchProbs, Plotting.Options options, string outputFile, int cursorPos)
         {
             Document doc = new Document();
             doc.Pages.Add(new Page(width, height + 150));
@@ -714,6 +714,10 @@ namespace Utils
             {
                 int col = (int)Math.Min(1023, ((-(Math.Log10(branchProbs[branchProbs.Length - 1 - i]) - minY) / minY) * 1024));
                 context.StrokePath(new GraphicsPath().MoveTo(x, y).LineTo(pX, y).LineTo(pX, pY), Colour.FromRgb(ViridisColorScale[col][0], ViridisColorScale[col][1], ViridisColorScale[col][2]), options.LineWidth * 3);
+                
+                ConsoleWrapper.CursorLeft = cursorPos;
+                ConsoleWrapper.Write("{0}   ", ((double)i / nodes.Count * 0.5).ToString("0%", System.Globalization.CultureInfo.InvariantCulture));
+                ConsoleWrapper.CursorLeft = ConsoleWrapper.CursorLeft - 3;
             };
 
             summaryTree.PlotTree(gpr, (float)width, (float)height, options, (float)width / 50F, Plotting.NodeNoAction, BranchProb, Plotting.ViridisLegend(summaryTree, (float)width / 50F, (float)width, (float)height, options, minY));
@@ -732,6 +736,10 @@ namespace Utils
             {
                 int col = (int)Math.Min(1023, ((-(Math.Log10(minBranchProbs[minBranchProbs.Length - 1 - i]) - minY) / minY) * 1024));
                 context.StrokePath(new GraphicsPath().MoveTo(x, y).LineTo(pX, y).LineTo(pX, pY), Colour.FromRgb(ViridisColorScale[col][0], ViridisColorScale[col][1], ViridisColorScale[col][2]), options.LineWidth * 3);
+
+                ConsoleWrapper.CursorLeft = cursorPos;
+                ConsoleWrapper.Write("{0}   ", (0.5 + (double)i / nodes.Count * 0.5).ToString("0%", System.Globalization.CultureInfo.InvariantCulture));
+                ConsoleWrapper.CursorLeft = ConsoleWrapper.CursorLeft - 3;
             };
 
             summaryTree.PlotTree(gpr, (float)width, (float)height, options, (float)width / 50F, Plotting.NodeNoAction, BranchProb, Plotting.ViridisLegend(summaryTree, (float)width / 50F, (float)width, (float)height, options, minY));

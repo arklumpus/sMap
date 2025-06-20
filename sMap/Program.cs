@@ -2629,8 +2629,16 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                 float realPlotHeight = plotHeight ?? (12 * meanLikModel.NamedBranches.Count * 1.4F + plotWidth / 25F);
 
-                Utils.Plotting.PlotBranchProbs(meanBranchProbs, minBranchProbs, maxBranchProbs, new Plotting.Options(), outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".branchprobs.pdf");
-                Utils.Plotting.PlotBranchProbsTree(plotWidth, realPlotHeight, meanTree, meanBranchProbs, minBranchProbs, new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F) }, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".branchprobs.tree.pdf");
+                {
+                    ConsoleWrapper.Write("Creating branch probability plots: ");
+                    int cursorPos = ConsoleWrapper.CursorLeft;
+
+                    Utils.Plotting.PlotBranchProbs(meanBranchProbs, minBranchProbs, maxBranchProbs, new Plotting.Options(), outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".branchprobs.pdf");
+                    Utils.Plotting.PlotBranchProbsTree(plotWidth, realPlotHeight, meanTree, meanBranchProbs, minBranchProbs, new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F) }, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".branchprobs.tree.pdf", cursorPos);
+
+                    ConsoleWrapper.CursorLeft = cursorPos;
+                    ConsoleWrapper.WriteLine("Done.   ");
+                }
 
                 double minBranchProb = (from el in branchProbs select el.Min()).Min();
 
@@ -2686,10 +2694,25 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                 double pieSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 0.035) * 0.01;
 
-                meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".prior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPrior[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States));
-                meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".posterior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPosterior[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States));
-                meanTree.PlotTreeWithPieTarget(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".likelihood.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanLikelihood[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States));
-                meanTree.PlotTreeWithSquares(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".all.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPrior[i], meanLikelihood[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States));
+                ConsoleWrapper.WriteLine("Creating node state plots: ");
+
+                ConsoleWrapper.Write("[1 / 4]   ");
+                meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".prior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPrior[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States), logProgress: true);
+
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.Write("[2 / 4]   ");
+                meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".posterior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPosterior[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States), logProgress: true);
+
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.Write("[3 / 4]   ");
+                meanTree.PlotTreeWithPieTarget(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".likelihood.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanLikelihood[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States), logProgress: true);
+
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.Write("[4 / 4]   ");
+                meanTree.PlotTreeWithSquares(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".all.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanPrior[i], meanLikelihood[i], Utils.Utils.GetAllPossibleStatesString(dependencies[i], data.States), logProgress: true);
+
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.WriteLine("Done.   ");
             }
 
             double[][][] meanMarginalPosterior = new double[inputData.States.Length][][];       //[character][node][state]
@@ -2744,7 +2767,7 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                         if (inputData.States.Length > 1)
                         {
-                            meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + ".character" + charInds[k] + ".marginal.posterior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanMarginalPosterior[charInds[k]], inputData.States[charInds[k]]);
+                            meanTree.PlotTreeWithPies(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + ".character" + charInds[k] + ".marginal.posterior.mean.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, meanMarginalPosterior[charInds[k]], inputData.States[charInds[k]], logProgress: true);
                         }
                     }
 
@@ -3287,11 +3310,11 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
                     Utils.Utils.Trigger("SimulationStepFinished", new object[] { histories, conditionedMeanPosterior });
                 }
 
-                meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, conditionedMeanPosterior, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees);
+                meanTree.PlotTreeWithPiesAndBranchStates(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".smap.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, conditionedMeanPosterior, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees, logProgress: true);
 
                 if (trees.Count > 1)
                 {
-                    meanTree.PlotTreeWithBranchSampleSizes(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ssize.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees);
+                    meanTree.PlotTreeWithBranchSampleSizes(plotWidth, realPlotHeight, plotWidth / 50F, outputPrefix + (dependencies.Length > 1 ? ".set" + i.ToString() : "") + ".ssize.pdf", new Plotting.Options() { FontSize = realPlotHeight / (meanLikModel.NamedBranches.Count * 1.4F), PieSize = pieSize, BranchSize = pieSize * 0.6 }, histories, treeSamples, likModels, meanLikModel, meanNodeCorresp, plotWidth / 250F, new List<string>(allPossibleStates), clockLikeTrees, logProgress: true);
                 }
 
                 if (inputData.States.Length > 1)
