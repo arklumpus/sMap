@@ -602,6 +602,7 @@ namespace sMap_GUI
                 if (priorTempFolder != "memory")
                 {
                     priorHistories.Close();
+                    priorHistories.Dispose();
                     File.Delete(Path.Combine(priorTempFolder, prefix + ".prior"));
                 }
             }

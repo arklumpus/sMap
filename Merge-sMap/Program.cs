@@ -485,6 +485,7 @@ namespace Merge_sMap
                 if (priorTempFolder != "memory")
                 {
                     priorHistories.Close();
+                    priorHistories.Dispose();
                     File.Delete(Path.Combine(priorTempFolder, prefix + ".prior"));
                 }
             }
