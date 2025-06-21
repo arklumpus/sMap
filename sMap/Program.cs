@@ -79,6 +79,8 @@ namespace sMap
             MCMC.maxSamples = -1;
             MCMC.convergenceCoVThreshold = -1;
             MCMC.convergenceESSThreshold = 200;
+            MCMC.convergenceRHatThreshold = -1;
+            double steppingStoneRHatThreshold = -1;
             MCMC.watchdogAction = MCMC.WatchdogActions.Restart;
             MCMC.watchdogInitialTimeout = 20000;
 
@@ -217,10 +219,11 @@ namespace sMap
                 { "sf|sampling-frequency=", "Optional. MCMC sampling frequency. Default: 10.", v => { MCMC.sampleFrequency = int.Parse(v); } },
                 { "wf|swap-frequency=", "Optional. Chain swapping frequency. Must be a multiple of sampling-frequency. Default: 10.", v => { MCMC.swapFrequency = int.Parse(v); } },
                 { "df|diagnostic-frequency=", "Optional. MCMC diagnostic frequency. Default: 1000.", v => { MCMC.diagnosticFrequency = int.Parse(v); } },
-                { "min-samples=", "Optional. Minimum number of MCMC samples that a MCMC run needs to pass the convergence test. Default: 2 * num-sim.", v => { MCMC.minSamples = int.Parse(v); } },
+                { "min-samples=", "Optional. Minimum number of MCMC samples that a MCMC run needs to pass the convergence test. Default: num-sim.", v => { MCMC.minSamples = int.Parse(v); } },
                 { "max-samples=", "Optional. Maximum number of MCMC samples that a MCMC run can collect before convergence is assumed and the convergence test is skipped. Default: -1 (i.e. no limit).", v => { MCMC.maxSamples = int.Parse(v); } },
-                { "max-cov=", "Optional. The coefficient of variation of the mean and of the standard deviation of each sampled parameter must have a lower values than this for the run to pass the convergence test. Default: -ln(1 - (7/3 - 2 / (2 * num-runs - 1)) / 3) / 16.", v => { MCMC.convergenceCoVThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
-                { "min-ess=", "Optional. Minimum Effective Sample Size (ESS) that each sampled parameter in each run must have for the run to pass the convergence test. Default: 200.", v => { MCMC.convergenceESSThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "max-rhat=", "Optional. The Rhat for each sampled parameter must have a smaller value than this for the run to pass the convergence test. Set this to a value greater than 100000 to disable the computation of Rhat, bulk ESS and tail ESS. Default: 1.01.", v => { MCMC.convergenceRHatThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "max-cov=", "Optional. The coefficient of variation of the mean and of the standard deviation of each sampled parameter must have a lower value than this for the run to pass the convergence test. Set this to a value greater than 100000 to disable the computation of CoVs and old-style ESS. Default: 200000 if Rhat is being used, otherwise -ln(1 - (7/3 - 2 / (2 * num-runs - 1)) / 3) / 16.", v => { MCMC.convergenceCoVThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
+                { "min-ess=", "Optional. Minimum Effective Sample Size (ESS) that each sampled parameter in each run must have for the run to pass the convergence test. This is applied to both the bulk and tail ESS if Rhat is being used, to the old-style ESS if CoVs are being used, or to all three ESSs if both Rhat and CoVs are being used. Default: 200.", v => { MCMC.convergenceESSThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "watchdog=", @"Optional. The watchdog detects deadlocks in the MCMC process, which may happen when the likelihood computation is very fast. This parameter determines what the watchdog does when it detects a deadlock. Default: Restart. Possible values:
 Nothing: the watchdog prints a message, but does nothing else.
 Converge: the watchdog forces the MCMC sampler to assume that the analysis has converged.
@@ -238,6 +241,7 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
                 { "ss-shape=", "Optional. Shape parameter of the beta distribution determining the likelihood exponent for each stepping-stone step. Default: 0.3.", v => { steppingStoneShape = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "ss-samples=", "Optional. Number of MCMC samples for each stepping-stone step. Default: num-sim.", v => { steppingStoneSamples = int.Parse(v); } },
                 { "ss-estimate-steps", "Optional. If enabled, optimal MCMC proposal step sizes will be estimated for each stepping-stone step. If disabled, the step size determined for the first (posterior) MCMC run will be used instead. Default: off.", v => { steppingStoneEstimateStepSize = v != null; } },
+                { "ss-max-rhat=", "Optional. Rhat threshold to use for the stepping-stone MCMC chains. Default: 1.05.", v => { steppingStoneRHatThreshold = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "parameters=", "Optional. A list of comma-separated files containing samples for every parameter in the model, one file for each set of character. Each file is allowed to have header rows, and must contain exactly num-sim data rows, each with a sample value for every parameter in the model.", v => { parameterFiles = v; } },
                 { "pw|plot-width=", "Optional. Page width in points for the PDF plots. If not specified, it will be determined automatically depending on the plot. Default: auto.", v => { plotWidth = float.Parse(v, System.Globalization.CultureInfo.InvariantCulture); } },
                 { "ph|plot-height=", "Optional. Page height in points for the PDF plots. If not specified, it will be determined automatically depending on the plot. Default: auto.", v => { if (float.TryParse(v, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float parsed)) { plotHeight = parsed; } else { plotHeight= null; } } },
@@ -333,13 +337,32 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
             if (MCMC.minSamples < 0)
             {
-                MCMC.minSamples = 2 * numSim;
+                MCMC.minSamples = numSim;
+            }
+
+            if (MCMC.convergenceRHatThreshold < 0)
+            {
+                MCMC.convergenceRHatThreshold = 1.01;
             }
 
             if (MCMC.convergenceCoVThreshold < 0)
             {
-                MCMC.convergenceCoVThreshold = -Math.Log(1 - (7.0 / 3 - 2.0 / (2 * numRuns - 1)) / 3) / 16;
+                if (MCMC.convergenceRHatThreshold < 1e5)
+                {
+                    MCMC.convergenceCoVThreshold = 2e5;
+                }
+                else
+                {
+                    MCMC.convergenceCoVThreshold = -Math.Log(1 - (7.0 / 3 - 2.0 / (2 * numRuns - 1)) / 3) / 16;
+                }
             }
+
+            if (steppingStoneRHatThreshold < 0)
+            {
+                steppingStoneRHatThreshold = Math.Max(1.05, MCMC.convergenceRHatThreshold);
+            }
+
+            double rHatThreshold = MCMC.convergenceRHatThreshold;
 
             if (steppingStoneSamples < 0)
             {
@@ -1499,6 +1522,8 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                 if (needMCMC)
                 {
+                    MCMC.convergenceRHatThreshold = rHatThreshold;
+
                     if (RunningGUI)
                     {
                         Utils.Utils.Trigger("BayesianStarted", new object[] { });
@@ -1613,6 +1638,8 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
 
                     if (steppingStone)
                     {
+                        MCMC.convergenceRHatThreshold = steppingStoneRHatThreshold;
+
                         if (RunningGUI)
                         {
                             Utils.Utils.Trigger("SteppingStoneStarted", new object[] { steppingStoneEstimateStepSize });

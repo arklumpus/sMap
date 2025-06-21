@@ -699,6 +699,9 @@ namespace sMap_GUI
 
                     bayesianMeanCoVs = new List<double[]>();
                     bayesianSdCoVs = new List<double[]>();
+                    bayesianRHats = new List<double[]>();
+                    bayesianBulkESSs = new List<double[]>();
+                    bayesianTailESSs = new List<double[]>();
 
                     bayesianEssss = new List<double[][]>();
                     bayesianMeanss = new List<double[][]>();
@@ -842,6 +845,9 @@ namespace sMap_GUI
 
                     bayesianMeanCoVs.Add(new double[runCount]);
                     bayesianSdCoVs.Add(new double[runCount]);
+                    bayesianRHats.Add(new double[runCount]);
+                    bayesianBulkESSs.Add(new double[runCount]);
+                    bayesianTailESSs.Add(new double[runCount]);
 
                     bayesianEssss.Add(new double[runCount][]);
                     bayesianMeanss.Add(new double[runCount][]);
@@ -1058,6 +1064,9 @@ namespace sMap_GUI
 
                     steppingStoneMeanCoVs = new List<List<double[]>>();
                     steppingStoneSdCoVs = new List<List<double[]>>();
+                    steppingStoneRHats = new List<List<double[]>>();
+                    steppingStoneBulkESSs = new List<List<double[]>>();
+                    steppingStoneTailESSs = new List<List<double[]>>();
 
                     steppingStoneEssss = new List<List<double[][]>>();
                     steppingStoneMeanss = new List<List<double[][]>>();
@@ -1232,6 +1241,9 @@ namespace sMap_GUI
 
                     steppingStoneMeanCoVs.Add(new List<double[]>());
                     steppingStoneSdCoVs.Add(new List<double[]>());
+                    steppingStoneRHats.Add(new List<double[]>());
+                    steppingStoneBulkESSs.Add(new List<double[]>());
+                    steppingStoneTailESSs.Add(new List<double[]>());
 
                     steppingStoneEssss.Add(new List<double[][]>());
                     steppingStoneMeanss.Add(new List<double[][]>());
@@ -1290,6 +1302,9 @@ namespace sMap_GUI
 
                     steppingStoneMeanCoVs[index].Add(new double[runCount]);
                     steppingStoneSdCoVs[index].Add(new double[runCount]);
+                    steppingStoneRHats[index].Add(new double[runCount]);
+                    steppingStoneBulkESSs[index].Add(new double[runCount]);
+                    steppingStoneTailESSs[index].Add(new double[runCount]);
 
                     steppingStoneEssss[index].Add(new double[runCount][]);
                     steppingStoneMeanss[index].Add(new double[runCount][]);

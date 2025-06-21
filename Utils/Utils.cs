@@ -3112,6 +3112,11 @@ namespace Utils
             int samples = values.Length - skip;
             int maxLag = Math.Min(samples - 1, MAX_LAG);
 
+            if (samples < 3)
+            {
+                return 1;
+            }
+
             int samplingFrequency = 1;
 
             double[] gammaStat = new double[maxLag];

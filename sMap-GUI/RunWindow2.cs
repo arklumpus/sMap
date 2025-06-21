@@ -16,6 +16,9 @@ namespace sMap_GUI
 
         List<double[]> bayesianMeanCoVs;
         List<double[]> bayesianSdCoVs;
+        List<double[]> bayesianRHats;
+        List<double[]> bayesianBulkESSs;
+        List<double[]> bayesianTailESSs;
 
         List<double[][]> bayesianEssss;
         List<double[][]> bayesianMeanss;
@@ -34,6 +37,9 @@ namespace sMap_GUI
 
         List<List<double[]>> steppingStoneMeanCoVs;
         List<List<double[]>> steppingStoneSdCoVs;
+        List<List<double[]>> steppingStoneRHats;
+        List<List<double[]>> steppingStoneBulkESSs;
+        List<List<double[]>> steppingStoneTailESSs;
 
         List<List<double[][]>> steppingStoneEssss;
         List<List<double[][]>> steppingStoneMeanss;
@@ -78,6 +84,9 @@ namespace sMap_GUI
 
             double[] meanCoVs = new double[realParamNames[index].Count];
             double[] sdCoVs = new double[realParamNames[index].Count];
+            double[] rHats = new double[realParamNames[index].Count];
+            double[] bulkESSs = new double[realParamNames[index].Count];
+            double[] tailESSs = new double[realParamNames[index].Count];
 
             double[][] essss = new double[realParamNames[index].Count][];
             double[][] meanss = new double[realParamNames[index].Count][];
@@ -93,6 +102,11 @@ namespace sMap_GUI
                 int[] paramRealIndex = Utils.Utils.GetRealIndex(selIndex - 1, realParamNames[index]);
 
                 double[][] values = allValues[selIndex - 1];
+
+                if (!values.All(x => x.Length > 10))
+                {
+                    return;
+                }
 
                 double min;
                 double max;
@@ -118,7 +132,12 @@ namespace sMap_GUI
                 double meanStdDev = Math.Sqrt((from el in means select el * el).Average() - meanMean * meanMean);
                 double meanCoV = meanStdDev / meanMean;
 
+                (double rHat, double bulkESS, double tailESS) = Utils.Convergence.ComputeConvergenceStats(values);
+
                 meanCoVs[selIndex - 1] = meanCoV;
+                rHats[selIndex - 1] = rHat;
+                bulkESSs[selIndex - 1] = bulkESS;
+                tailESSs[selIndex - 1] = tailESS;
 
                 double stdDevMean = stdDevs.Average();
                 double stdDevStdDev = Math.Sqrt((from el in stdDevs select el * el).Average() - stdDevMean * stdDevMean);
@@ -183,13 +202,16 @@ namespace sMap_GUI
                 bayesianEssss[index] = essss;
                 bayesianMaxBinss[index] = maxBinss;
                 bayesianMeanCoVs[index] = meanCoVs;
+                bayesianRHats[index] = rHats;
+                bayesianBulkESSs[index] = bulkESSs;
+                bayesianTailESSs[index] = tailESSs;
                 bayesianMeanss[index] = meanss;
                 bayesianRealBinWidthss[index] = realBinWidthss;
                 bayesianSdCoVs[index] = sdCoVs;
                 bayesianStdDevss[index] = stdDevss;
                 bayesianSampleCounts[index] = sampleCounts;
 
-                bayesianConvergenceStats[index].Add(new double[] { sampleCounts.Average(), meanCoVs.Max(), sdCoVs.Max(), (from el in essss.Skip(1) select el.Min()).Min() });
+                bayesianConvergenceStats[index].Add(new double[] { sampleCounts.Average(), meanCoVs.Max(), sdCoVs.Max(), (from el in essss.Skip(1) select el.Min()).Min(), rHats.Max(), bulkESSs.Min(), tailESSs.Min() });
             }
         }
 
@@ -232,6 +254,9 @@ namespace sMap_GUI
 
             double[] meanCoVs = new double[realParamNames[index].Count + 1];
             double[] sdCoVs = new double[realParamNames[index].Count + 1];
+            double[] rHats = new double[realParamNames[index].Count + 1];
+            double[] bulkESSs = new double[realParamNames[index].Count + 1];
+            double[] tailESSs = new double[realParamNames[index].Count + 1];
 
             double[][] essss = new double[realParamNames[index].Count + 1][];
             double[][] meanss = new double[realParamNames[index].Count + 1][];
@@ -257,6 +282,11 @@ namespace sMap_GUI
 
                 double[][] values = allValues[selIndex - 1];
 
+                if (!values.All(x => x.Length > 10))
+                {
+                    return;
+                }
+
                 double min;
                 double max;
 
@@ -281,7 +311,12 @@ namespace sMap_GUI
                 double meanStdDev = Math.Sqrt((from el in means select el * el).Average() - meanMean * meanMean);
                 double meanCoV = Math.Abs(meanStdDev / meanMean);
 
+                (double rHat, double bulkESS, double tailESS) = Utils.Convergence.ComputeConvergenceStats(values);
+
                 meanCoVs[selIndex - 1] = meanCoV;
+                rHats[selIndex - 1] = rHat;
+                bulkESSs[selIndex - 1] = bulkESS;
+                tailESSs[selIndex - 1] = tailESS;
 
                 double stdDevMean = stdDevs.Average();
                 double stdDevStdDev = Math.Sqrt((from el in stdDevs select el * el).Average() - stdDevMean * stdDevMean);
@@ -347,13 +382,16 @@ namespace sMap_GUI
                 steppingStoneMaxBinss[index][stepIndex] = maxBinss;
                 steppingStoneMeanCoVs[index][stepIndex] = meanCoVs;
                 steppingStoneMeanss[index][stepIndex] = meanss;
+                steppingStoneRHats[index][stepIndex] = rHats;
+                steppingStoneBulkESSs[index][stepIndex] = bulkESSs;
+                steppingStoneTailESSs[index][stepIndex] = tailESSs;
                 steppingStoneRealBinWidthss[index][stepIndex] = realBinWidthss;
                 steppingStoneSdCoVs[index][stepIndex] = sdCoVs;
                 steppingStoneStdDevss[index][stepIndex] = stdDevss;
                 steppingStoneSampleCounts[index][stepIndex] = sampleCounts;
 
-                steppingStoneConvergenceStats[index][stepIndex].Add(new double[] { sampleCounts.Average(), meanCoVs.Skip(1).Max(), sdCoVs.Skip(1).Max(), (from el in essss.Skip(1) select el.Min()).Min() });
-                steppingStoneLikelihoodConvergenceStats[index][stepIndex].Add(new double[] { sampleCounts.Average(), meanCoVs[0], sdCoVs[0], essss[0].Min() });
+                steppingStoneConvergenceStats[index][stepIndex].Add(new double[] { sampleCounts.Average(), meanCoVs.Take(1).Concat(meanCoVs.Skip(2)).Max(), sdCoVs.Take(1).Concat(sdCoVs.Skip(2)).Max(), (from el in essss.Take(stepIndex > 0 ? 1 : 0).Concat(essss.Skip(2)) select el.Min()).Min(), rHats.Max(), bulkESSs.Min(), tailESSs.Min() });
+                steppingStoneLikelihoodConvergenceStats[index][stepIndex].Add(new double[] { sampleCounts.Average(), meanCoVs[0], sdCoVs[0], essss[0].Min(), rHats[0], bulkESSs[0], tailESSs[0] });
             }
         }
 
@@ -361,6 +399,9 @@ namespace sMap_GUI
         {
             double meanCoV;
             double sdCoV;
+            double rHat;
+            double bulkESS;
+            double tailESS;
 
             double[] esss;
             double[] means;
@@ -378,6 +419,9 @@ namespace sMap_GUI
             {
                 meanCoV = bayesianMeanCoVs[index][selIndex - 1];
                 sdCoV = bayesianSdCoVs[index][selIndex - 1];
+                rHat = bayesianRHats[index][selIndex - 1];
+                bulkESS = bayesianBulkESSs[index][selIndex - 1];
+                tailESS = bayesianTailESSs[index][selIndex - 1];
 
                 esss = (double[])bayesianEssss[index][selIndex - 1].Clone();
                 means = (double[])bayesianMeanss[index][selIndex - 1].Clone();
@@ -403,6 +447,21 @@ namespace sMap_GUI
                 sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = sdCoV <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
                 sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(sdPanel);
+
+                StackPanel rHatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                rHatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = rHat < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                rHatPanel.Children.Add(new TextBlock() { Text = "Rhat: " + rHat.ToString(4), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(rHatPanel);
+
+                StackPanel bulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                bulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = bulkESS > MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                bulkESSPanel.Children.Add(new TextBlock() { Text = "Bulk ESS: " + bulkESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(bulkESSPanel);
+
+                StackPanel tailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                tailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = tailESS > MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                tailESSPanel.Children.Add(new TextBlock() { Text = "Tail ESS: " + tailESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(tailESSPanel);
 
 
                 for (int runInd = 0; runInd < samples[index].Length; runInd++)
@@ -473,6 +532,9 @@ namespace sMap_GUI
             {
                 double meanCoV;
                 double sdCoV;
+                double rhat;
+                double bulkESS;
+                double tailESS;
 
                 double[] esss;
                 double[] means;
@@ -490,6 +552,9 @@ namespace sMap_GUI
                 {
                     meanCoV = steppingStoneMeanCoVs[index][stepIndex][selIndex - 1];
                     sdCoV = steppingStoneSdCoVs[index][stepIndex][selIndex - 1];
+                    rhat = steppingStoneRHats[index][stepIndex][selIndex - 1];
+                    bulkESS = steppingStoneBulkESSs[index][stepIndex][selIndex - 1];
+                    tailESS = steppingStoneTailESSs[index][stepIndex][selIndex - 1];
 
                     esss = (double[])steppingStoneEssss[index][stepIndex][selIndex - 1].Clone();
                     means = (double[])steppingStoneMeanss[index][stepIndex][selIndex - 1].Clone();
@@ -516,6 +581,20 @@ namespace sMap_GUI
                     sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                     statsContainer.Children.Add(sdPanel);
 
+                    StackPanel rhatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    rhatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = rhat < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    rhatPanel.Children.Add(new TextBlock() { Text = "Rhat: " + rhat.ToString(4), Margin = new Thickness(5, 0, 0, 0) });
+                    statsContainer.Children.Add(rhatPanel);
+
+                    StackPanel bulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    bulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = bulkESS >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    bulkESSPanel.Children.Add(new TextBlock() { Text = "Bulk ESS: " + bulkESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                    statsContainer.Children.Add(bulkESSPanel);
+
+                    StackPanel tailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    tailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = tailESS >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    tailESSPanel.Children.Add(new TextBlock() { Text = "Tail ESS: " + tailESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                    statsContainer.Children.Add(tailESSPanel);
 
                     for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
                     {
@@ -580,6 +659,9 @@ namespace sMap_GUI
             {
                 double meanCoV = 0;
                 double sdCoV = 0;
+                double rhat = 0;
+                double bulkESS = 0;
+                double tailESS = 0;
 
                 double[] esss;
                 double[] means;
@@ -589,7 +671,7 @@ namespace sMap_GUI
 
                 lock (plotObject)
                 {
-                    
+
                     esss = (double[])steppingStoneEssss[index][stepIndex][selIndex - 1].Clone();
                     means = (double[])steppingStoneMeanss[index][stepIndex][selIndex - 1].Clone();
                     stdDevs = (double[])steppingStoneStdDevss[index][stepIndex][selIndex - 1].Clone();
@@ -607,6 +689,20 @@ namespace sMap_GUI
                 sdPanel.Children.Add(new TextBlock() { Text = "SD CoV: " + sdCoV.ToString(3, false), Margin = new Thickness(5, 0, 0, 0) });
                 statsContainer.Children.Add(sdPanel);
 
+                StackPanel rhatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                rhatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = rhat < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                rhatPanel.Children.Add(new TextBlock() { Text = "Rhat: " + rhat.ToString(4), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(rhatPanel);
+
+                StackPanel bulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                bulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = bulkESS >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                bulkESSPanel.Children.Add(new TextBlock() { Text = "Bulk ESS: " + bulkESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(bulkESSPanel);
+
+                StackPanel tailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                tailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = tailESS >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                tailESSPanel.Children.Add(new TextBlock() { Text = "Tail ESS: " + tailESS.ToString(2), Margin = new Thickness(5, 0, 0, 0) });
+                statsContainer.Children.Add(tailESSPanel);
 
                 for (int runInd = 0; runInd < steppingStoneSamples[index][stepIndex].Length; runInd++)
                 {
@@ -634,6 +730,9 @@ namespace sMap_GUI
                 convergenceStats = (from el in Utils.Utils.Range(0, bayesianConvergenceStats[index].Count) where el % samplingSkip == 0 select bayesianConvergenceStats[index][el]).ToArray();
             }
 
+            bool oldConvergence = MCMC.convergenceCoVThreshold < 1e5;
+            bool newConvergence = MCMC.convergenceRHatThreshold < 1e5;
+
             if (convergenceStats.Length > 0)
             {
 
@@ -642,34 +741,81 @@ namespace sMap_GUI
                 samplesPanel.Children.Add(new TextBlock() { Text = "Samples: " + convergenceStats.Last()[0].ToString(0), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold });
                 statsContainer.Children.Add(samplesPanel);
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
-                statsContainer.Children.Add(meanPanel);
+                if (oldConvergence)
+                {
+                    StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
+                    statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
-                statsContainer.Children.Add(sdPanel);
+                    StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
+                    statsContainer.Children.Add(sdPanel);
 
-                StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
-                statsContainer.Children.Add(ESSPanel);
+                    StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
+                    statsContainer.Children.Add(ESSPanel);
+                }
 
+                if (newConvergence)
+                {
+                    StackPanel rHatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    rHatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[4] < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    rHatPanel.Children.Add(new TextBlock() { Text = "Max Rhat: " + convergenceStats.Last()[4].ToString(4), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 114, 178)) });
+                    statsContainer.Children.Add(rHatPanel);
 
+                    StackPanel bulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    bulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[5] > MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    bulkESSPanel.Children.Add(new TextBlock() { Text = "Min bulk ESS: " + convergenceStats.Last()[5].ToString(2), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0)) });
+                    statsContainer.Children.Add(bulkESSPanel);
+
+                    StackPanel tailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    tailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[6] > MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    tailESSPanel.Children.Add(new TextBlock() { Text = "Min tail ESS: " + convergenceStats.Last()[6].ToString(2), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 230, 159, 0)) });
+                    statsContainer.Children.Add(tailESSPanel);
+                }
 
                 double maxX = Math.Max((from el in convergenceStats select el[0]).Max(), MCMC.minSamples * 1.1) * 1.05;
                 double maxCoV = Math.Max((from el in convergenceStats select Math.Max(el[1], el[2])).Max(), MCMC.convergenceCoVThreshold) * 1.05;
-                double maxESS = Math.Max((from el in convergenceStats select el[3]).Max(), MCMC.convergenceESSThreshold) * 1.05;
+                double maxESS = Math.Max(convergenceStats.Select(x =>
+                {
+                    if (oldConvergence && !newConvergence)
+                    {
+                        return x[3];
+                    }
+                    else if (oldConvergence && newConvergence)
+                    {
+                        return Math.Max(x[3], Math.Max(x[5], x[6]));
+                    }
+                    else
+                    {
+                        return Math.Max(x[5], x[6]);
+                    }
+                }).Max(), MCMC.convergenceESSThreshold) * 1.05;
+                double maxRhat = Math.Max((from el in convergenceStats select el[4]).Max(), MCMC.convergenceRHatThreshold) * 1.05;
 
                 plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 246, 142, 146)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceESSThreshold / maxESS), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceESSThreshold / maxESS) });
-                plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 136, 212, 205)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV) });
+
+                if (oldConvergence)
+                {
+                    plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 136, 212, 205)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV) });
+                }
+
+                if (newConvergence)
+                {
+                    plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 75, 152, 220)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceRHatThreshold / maxRhat), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceRHatThreshold / maxRhat) });
+                }
+
                 plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180)), StartPoint = new Point(10 + 575 * MCMC.minSamples * 1.1 / maxX, 20), EndPoint = new Point(10 + 575 * MCMC.minSamples * 1.1 / maxX, 290) });
 
                 PathFigure figMeanCoV = new PathFigure() { IsClosed = false };
                 PathFigure figSDCoV = new PathFigure() { IsClosed = false };
                 PathFigure figESS = new PathFigure() { IsClosed = false };
+                PathFigure figRhat = new PathFigure() { IsClosed = false };
+                PathFigure figBulkESS = new PathFigure() { IsClosed = false };
+                PathFigure figTailESS = new PathFigure() { IsClosed = false };
 
                 for (int i = 0; i < convergenceStats.Length; i++)
                 {
@@ -678,33 +824,73 @@ namespace sMap_GUI
                     double yMeanCov = 290 - 270 * (convergenceStats[i][1] / maxCoV);
                     double ySDCov = 290 - 270 * (convergenceStats[i][2] / maxCoV);
                     double yESS = 290 - 270 * (convergenceStats[i][3] / maxESS);
+                    double yRhat = 290 - 270 * (convergenceStats[i][4] / maxRhat);
+                    double yBulkESS = 290 - 270 * (convergenceStats[i][5] / maxESS);
+                    double yTailESS = 290 - 270 * (convergenceStats[i][6] / maxESS);
 
                     if (i == 0)
                     {
-                        figMeanCoV.StartPoint = new Point(x, yMeanCov);
-                        figSDCoV.StartPoint = new Point(x, ySDCov);
-                        figESS.StartPoint = new Point(x, yESS);
+                        if (oldConvergence)
+                        {
+                            figMeanCoV.StartPoint = new Point(x, yMeanCov);
+                            figSDCoV.StartPoint = new Point(x, ySDCov);
+                            figESS.StartPoint = new Point(x, yESS);
+                        }
+
+                        if (newConvergence)
+                        {
+                            figRhat.StartPoint = new Point(x, yRhat);
+                            figBulkESS.StartPoint = new Point(x, yBulkESS);
+                            figTailESS.StartPoint = new Point(x, yTailESS);
+                        }
                     }
                     else
                     {
-                        figMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yMeanCov) });
-                        figSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, ySDCov) });
-                        figESS.Segments.Add(new LineSegment() { Point = new Point(x, yESS) });
+                        if (oldConvergence)
+                        {
+                            figMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yMeanCov) });
+                            figSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, ySDCov) });
+                            figESS.Segments.Add(new LineSegment() { Point = new Point(x, yESS) });
+                        }
+
+                        if (newConvergence)
+                        {
+                            figRhat.Segments.Add(new LineSegment() { Point = new Point(x, yRhat) });
+                            figBulkESS.Segments.Add(new LineSegment() { Point = new Point(x, yBulkESS) });
+                            figTailESS.Segments.Add(new LineSegment() { Point = new Point(x, yTailESS) });
+                        }
                     }
                 }
 
-                PathGeometry geoMeanCov = new PathGeometry();
-                geoMeanCov.Figures.Add(figMeanCoV);
+                if (oldConvergence)
+                {
+                    PathGeometry geoESS = new PathGeometry();
+                    geoESS.Figures.Add(figESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoESS });
 
-                PathGeometry geoSDCov = new PathGeometry();
-                geoSDCov.Figures.Add(figSDCoV);
+                    PathGeometry geoSDCov = new PathGeometry();
+                    geoSDCov.Figures.Add(figSDCoV);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoSDCov });
 
-                PathGeometry geoESS = new PathGeometry();
-                geoESS.Figures.Add(figESS);
+                    PathGeometry geoMeanCov = new PathGeometry();
+                    geoMeanCov.Figures.Add(figMeanCoV);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoMeanCov });
+                }
 
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoESS });
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoSDCov });
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoMeanCov });
+                if (newConvergence)
+                {
+                    PathGeometry geoTailESS = new PathGeometry();
+                    geoTailESS.Figures.Add(figTailESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 230, 159, 0)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoTailESS });
+
+                    PathGeometry geoBulkESS = new PathGeometry();
+                    geoBulkESS.Figures.Add(figBulkESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoBulkESS });
+
+                    PathGeometry geoRhat = new PathGeometry();
+                    geoRhat.Figures.Add(figRhat);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 114, 178)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoRhat });
+                }
             }
         }
 
@@ -715,6 +901,8 @@ namespace sMap_GUI
             double[][] convergenceStats;
             double[][] likelihoodConvergenceStats = null;
 
+            bool oldConvergence = MCMC.convergenceCoVThreshold < 1e5;
+            bool newConvergence = MCMC.convergenceRHatThreshold < 1e5;
 
             lock (plotObject)
             {
@@ -734,60 +922,149 @@ namespace sMap_GUI
                 samplesPanel.Children.Add(new TextBlock() { Text = "Samples: " + convergenceStats.Last()[0].ToString(0), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold });
                 statsContainer.Children.Add(samplesPanel);
 
-                StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
-                statsContainer.Children.Add(meanPanel);
+                if (oldConvergence)
+                {
+                    StackPanel meanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    meanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    meanPanel.Children.Add(new TextBlock() { Text = "Max Mean CoV: " + convergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)) });
+                    statsContainer.Children.Add(meanPanel);
 
-                StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
-                statsContainer.Children.Add(sdPanel);
+                    StackPanel sdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    sdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    sdPanel.Children.Add(new TextBlock() { Text = "Max SD CoV: " + convergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)) });
+                    statsContainer.Children.Add(sdPanel);
 
-                StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
-                statsContainer.Children.Add(ESSPanel);
+                    StackPanel ESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    ESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    ESSPanel.Children.Add(new TextBlock() { Text = "Min ESS: " + convergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)) });
+                    statsContainer.Children.Add(ESSPanel);
+                }
+
+                if (newConvergence)
+                {
+                    StackPanel rHatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    rHatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[4] < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    rHatPanel.Children.Add(new TextBlock() { Text = "Max Rhat: " + convergenceStats.Last()[4].ToString(4), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 114, 178)) });
+                    statsContainer.Children.Add(rHatPanel);
+
+                    StackPanel bulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    bulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[5] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    bulkESSPanel.Children.Add(new TextBlock() { Text = "Min bulk  ESS: " + convergenceStats.Last()[5].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0)) });
+                    statsContainer.Children.Add(bulkESSPanel);
+
+                    StackPanel tailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                    tailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = convergenceStats.Last()[6] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                    tailESSPanel.Children.Add(new TextBlock() { Text = "Min tail  ESS: " + convergenceStats.Last()[6].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 230, 159, 0)) });
+                    statsContainer.Children.Add(tailESSPanel);
+                }
 
                 if (stepIndex > 0)
                 {
-                    StackPanel likMeanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                    likMeanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                    likMeanPanel.Children.Add(new TextBlock() { Text = "Likelihood Mean CoV: " + likelihoodConvergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 153, 217, 234)) });
-                    statsContainer.Children.Add(likMeanPanel);
+                    if (oldConvergence)
+                    {
+                        StackPanel likMeanPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likMeanPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[1] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likMeanPanel.Children.Add(new TextBlock() { Text = "Likelihood Mean CoV: " + likelihoodConvergenceStats.Last()[1].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 153, 217, 234)) });
+                        statsContainer.Children.Add(likMeanPanel);
 
-                    StackPanel likSdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                    likSdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                    likSdPanel.Children.Add(new TextBlock() { Text = "Likelihood SD CoV: " + likelihoodConvergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 168, 238, 189)) });
-                    statsContainer.Children.Add(likSdPanel);
+                        StackPanel likSdPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likSdPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[2] <= MCMC.convergenceCoVThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likSdPanel.Children.Add(new TextBlock() { Text = "Likelihood SD CoV: " + likelihoodConvergenceStats.Last()[2].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 168, 238, 189)) });
+                        statsContainer.Children.Add(likSdPanel);
 
-                    StackPanel likESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-                    likESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
-                    likESSPanel.Children.Add(new TextBlock() { Text = "Likelihood Min ESS: " + likelihoodConvergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 174, 201)) });
-                    statsContainer.Children.Add(likESSPanel);
+                        StackPanel likESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[3] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likESSPanel.Children.Add(new TextBlock() { Text = "Likelihood Min ESS: " + likelihoodConvergenceStats.Last()[3].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 174, 201)) });
+                        statsContainer.Children.Add(likESSPanel);
+                    }
+
+                    if (newConvergence)
+                    {
+                        StackPanel likRhatPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likRhatPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[4] < MCMC.convergenceRHatThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likRhatPanel.Children.Add(new TextBlock() { Text = "Likelihood Rhat: " + likelihoodConvergenceStats.Last()[4].ToString(4), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 75, 152, 220)) });
+                        statsContainer.Children.Add(likRhatPanel);
+
+                        StackPanel likBulkESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likBulkESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[5] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likBulkESSPanel.Children.Add(new TextBlock() { Text = "Likelihood bulk ESS: " + likelihoodConvergenceStats.Last()[5].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 134, 51)) });
+                        statsContainer.Children.Add(likBulkESSPanel);
+
+                        StackPanel likTailESSPanel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+                        likTailESSPanel.Children.Add(new Viewbox() { Width = 12, Height = 12, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, Child = new Tick() { IconType = likelihoodConvergenceStats.Last()[6] >= MCMC.convergenceESSThreshold ? Tick.Type.Tick : Tick.Type.Cross } });
+                        likTailESSPanel.Children.Add(new TextBlock() { Text = "Likelihood tail ESS: " + likelihoodConvergenceStats.Last()[6].ToString(3, false), Margin = new Thickness(5, 0, 0, 0), FontWeight = FontWeight.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 200, 62)) });
+                        statsContainer.Children.Add(likTailESSPanel);
+                    }
                 }
 
                 double maxX = Math.Max((from el in convergenceStats select el[0]).Max(), MCMC.minSamples * 1.1) * 1.05;
                 double maxCoV = Math.Max((from el in convergenceStats select Math.Max(el[1], el[2])).Max(), MCMC.convergenceCoVThreshold);
-                double maxESS = Math.Max((from el in convergenceStats select el[3]).Max(), MCMC.convergenceESSThreshold);
+                double maxESS = Math.Max(convergenceStats.Select(x =>
+                {
+                    if (oldConvergence && !newConvergence)
+                    {
+                        return x[3];
+                    }
+                    else if (oldConvergence && newConvergence)
+                    {
+                        return Math.Max(x[3], Math.Max(x[5], x[6]));
+                    }
+                    else
+                    {
+                        return Math.Max(x[5], x[6]);
+                    }
+                }).Max(), MCMC.convergenceESSThreshold);
+
+                double maxRhat = Math.Max((from el in convergenceStats select el[4]).Max(), MCMC.convergenceRHatThreshold) * 1.05;
 
                 if (stepIndex > 0)
                 {
                     maxCoV = Math.Max((from el in likelihoodConvergenceStats select Math.Max(el[1], el[2])).Max(), maxCoV);
-                    maxESS = Math.Max((from el in likelihoodConvergenceStats select el[3]).Max(), maxESS);
+                    maxESS = Math.Max(likelihoodConvergenceStats.Select(x =>
+                    {
+                        if (oldConvergence && !newConvergence)
+                        {
+                            return x[3];
+                        }
+                        else if (oldConvergence && newConvergence)
+                        {
+                            return Math.Max(x[3], Math.Max(x[5], x[6]));
+                        }
+                        else
+                        {
+                            return Math.Max(x[5], x[6]);
+                        }
+                    }).Max(), maxESS);
+                    maxRhat = Math.Max((from el in likelihoodConvergenceStats select el[4]).Max(), maxRhat);
                 }
 
                 plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 246, 142, 146)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceESSThreshold / maxESS), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceESSThreshold / maxESS) });
-                plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 136, 212, 205)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV) });
+
+                if (oldConvergence)
+                {
+                    plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 136, 212, 205)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceCoVThreshold / maxCoV) });
+                }
+
+                if (newConvergence)
+                {
+                    plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 75, 152, 220)), StartPoint = new Point(10, 290 - 270 * MCMC.convergenceRHatThreshold / maxRhat), EndPoint = new Point(585, 290 - 270 * MCMC.convergenceRHatThreshold / maxRhat) });
+                }
+
                 plotCan.Children.Add(new Line() { StrokeThickness = 2, Stroke = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180)), StartPoint = new Point(10 + 575 * MCMC.minSamples * 1.1 / maxX, 20), EndPoint = new Point(10 + 575 * MCMC.minSamples * 1.1 / maxX, 290) });
 
                 PathFigure figMeanCoV = new PathFigure() { IsClosed = false };
                 PathFigure figSDCoV = new PathFigure() { IsClosed = false };
                 PathFigure figESS = new PathFigure() { IsClosed = false };
+                PathFigure figRhat = new PathFigure() { IsClosed = false };
+                PathFigure figBulkESS = new PathFigure() { IsClosed = false };
+                PathFigure figTailESS = new PathFigure() { IsClosed = false };
 
                 PathFigure figLikMeanCoV = new PathFigure() { IsClosed = false };
                 PathFigure figLikSDCoV = new PathFigure() { IsClosed = false };
                 PathFigure figLikESS = new PathFigure() { IsClosed = false };
+                PathFigure figLikRhat = new PathFigure() { IsClosed = false };
+                PathFigure figLikBulKESS = new PathFigure() { IsClosed = false };
+                PathFigure figLikTailESS = new PathFigure() { IsClosed = false };
 
                 for (int i = 0; i < convergenceStats.Length; i++)
                 {
@@ -796,18 +1073,41 @@ namespace sMap_GUI
                     double yMeanCov = 290 - 270 * (convergenceStats[i][1] / maxCoV);
                     double ySDCov = 290 - 270 * (convergenceStats[i][2] / maxCoV);
                     double yESS = 290 - 270 * (convergenceStats[i][3] / maxESS);
+                    double yRhat = 290 - 270 * (convergenceStats[i][4] / maxRhat);
+                    double yBulkESS = 290 - 270 * (convergenceStats[i][5] / maxESS);
+                    double yTailESS = 290 - 270 * (convergenceStats[i][6] / maxESS);
 
                     if (i == 0)
                     {
-                        figMeanCoV.StartPoint = new Point(x, yMeanCov);
-                        figSDCoV.StartPoint = new Point(x, ySDCov);
-                        figESS.StartPoint = new Point(x, yESS);
+                        if (oldConvergence)
+                        {
+                            figMeanCoV.StartPoint = new Point(x, yMeanCov);
+                            figSDCoV.StartPoint = new Point(x, ySDCov);
+                            figESS.StartPoint = new Point(x, yESS);
+                        }
+
+                        if (newConvergence)
+                        {
+                            figRhat.StartPoint = new Point(x, yRhat);
+                            figBulkESS.StartPoint = new Point(x, yBulkESS);
+                            figTailESS.StartPoint = new Point(x, yTailESS);
+                        }
                     }
                     else
                     {
-                        figMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yMeanCov) });
-                        figSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, ySDCov) });
-                        figESS.Segments.Add(new LineSegment() { Point = new Point(x, yESS) });   
+                        if (oldConvergence)
+                        {
+                            figMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yMeanCov) });
+                            figSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, ySDCov) });
+                            figESS.Segments.Add(new LineSegment() { Point = new Point(x, yESS) });
+                        }
+
+                        if (newConvergence)
+                        {
+                            figRhat.Segments.Add(new LineSegment() { Point = new Point(x, yRhat) });
+                            figBulkESS.Segments.Add(new LineSegment() { Point = new Point(x, yBulkESS) });
+                            figTailESS.Segments.Add(new LineSegment() { Point = new Point(x, yTailESS) });
+                        }
                     }
 
                     if (stepIndex > 0)
@@ -815,51 +1115,107 @@ namespace sMap_GUI
                         double yLikMeanCov = 290 - 270 * (likelihoodConvergenceStats[i][1] / maxCoV);
                         double yLikSDCov = 290 - 270 * (likelihoodConvergenceStats[i][2] / maxCoV);
                         double yLikESS = 290 - 270 * (likelihoodConvergenceStats[i][3] / maxESS);
+                        double yLikRhat = 290 - 270 * (likelihoodConvergenceStats[i][4] / maxRhat);
+                        double yLikBulkESS = 290 - 270 * (likelihoodConvergenceStats[i][5] / maxESS);
+                        double yLikTailESS = 290 - 270 * (likelihoodConvergenceStats[i][6] / maxESS);
 
                         if (i == 0)
                         {
-                            figLikMeanCoV.StartPoint = new Point(x, yLikMeanCov);
-                            figLikSDCoV.StartPoint = new Point(x, yLikSDCov);
-                            figLikESS.StartPoint = new Point(x, yLikESS);
+                            if (oldConvergence)
+                            {
+                                figLikMeanCoV.StartPoint = new Point(x, yLikMeanCov);
+                                figLikSDCoV.StartPoint = new Point(x, yLikSDCov);
+                                figLikESS.StartPoint = new Point(x, yLikESS);
+                            }
+
+                            if (newConvergence)
+                            {
+                                figLikRhat.StartPoint = new Point(x, yLikRhat);
+                                figLikBulKESS.StartPoint = new Point(x, yLikBulkESS);
+                                figLikTailESS.StartPoint = new Point(x, yLikTailESS);
+                            }
                         }
                         else
                         {
-                            figLikMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yLikMeanCov) });
-                            figLikSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, yLikSDCov) });
-                            figLikESS.Segments.Add(new LineSegment() { Point = new Point(x, yLikESS) });
+                            if (oldConvergence)
+                            {
+                                figLikMeanCoV.Segments.Add(new LineSegment() { Point = new Point(x, yLikMeanCov) });
+                                figLikSDCoV.Segments.Add(new LineSegment() { Point = new Point(x, yLikSDCov) });
+                                figLikESS.Segments.Add(new LineSegment() { Point = new Point(x, yLikESS) });
+                            }
+
+                            if (newConvergence)
+                            {
+                                figLikRhat.Segments.Add(new LineSegment() { Point = new Point(x, yLikRhat) });
+                                figLikBulKESS.Segments.Add(new LineSegment() { Point = new Point(x, yLikBulkESS) });
+                                figLikTailESS.Segments.Add(new LineSegment() { Point = new Point(x, yLikTailESS) });
+                            }
                         }
                     }
                 }
 
                 if (stepIndex > 0)
                 {
+                    if (oldConvergence)
+                    {
+                        PathGeometry geoLikESS = new PathGeometry();
+                        geoLikESS.Figures.Add(figLikESS);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 174, 201)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikESS });
 
-                    PathGeometry geoLikMeanCov = new PathGeometry();
-                    geoLikMeanCov.Figures.Add(figLikMeanCoV);
+                        PathGeometry geoLikSDCov = new PathGeometry();
+                        geoLikSDCov.Figures.Add(figLikSDCoV);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 168, 238, 189)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikSDCov });
 
-                    PathGeometry geoLikSDCov = new PathGeometry();
-                    geoLikSDCov.Figures.Add(figLikSDCoV);
+                        PathGeometry geoLikMeanCov = new PathGeometry();
+                        geoLikMeanCov.Figures.Add(figLikMeanCoV);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 153, 217, 234)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikMeanCov });
+                    }
 
-                    PathGeometry geoLikESS = new PathGeometry();
-                    geoLikESS.Figures.Add(figLikESS);
+                    if (newConvergence)
+                    {
+                        PathGeometry geoLikTailESS = new PathGeometry();
+                        geoLikTailESS.Figures.Add(figLikTailESS);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 200, 62)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikTailESS });
 
-                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 174, 201)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikESS });
-                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 168, 238, 189)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikSDCov });
-                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 153, 217, 234)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikMeanCov });
+                        PathGeometry geoLikBulkESS = new PathGeometry();
+                        geoLikBulkESS.Figures.Add(figLikBulKESS);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 134, 51)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikBulkESS });
+
+                        PathGeometry geoLikRhat = new PathGeometry();
+                        geoLikRhat.Figures.Add(figLikRhat);
+                        plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 75, 152, 220)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoLikRhat });
+                    }
                 }
 
-                PathGeometry geoMeanCov = new PathGeometry();
-                geoMeanCov.Figures.Add(figMeanCoV);
+                if (oldConvergence)
+                {
+                    PathGeometry geoESS = new PathGeometry();
+                    geoESS.Figures.Add(figESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoESS });
 
-                PathGeometry geoSDCov = new PathGeometry();
-                geoSDCov.Figures.Add(figSDCoV);
+                    PathGeometry geoSDCov = new PathGeometry();
+                    geoSDCov.Figures.Add(figSDCoV);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoSDCov });
 
-                PathGeometry geoESS = new PathGeometry();
-                geoESS.Figures.Add(figESS);
+                    PathGeometry geoMeanCov = new PathGeometry();
+                    geoMeanCov.Figures.Add(figMeanCoV);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoMeanCov });
+                }
 
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 237, 28, 36)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoESS });
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 34, 177, 76)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoSDCov });
-                plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 162, 232)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoMeanCov });
+                if (newConvergence)
+                {
+                    PathGeometry geoTailESS = new PathGeometry();
+                    geoTailESS.Figures.Add(figTailESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 230, 159, 0)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoTailESS });
+
+                    PathGeometry geoBulkESS = new PathGeometry();
+                    geoBulkESS.Figures.Add(figBulkESS);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 213, 94, 0)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoBulkESS });
+
+                    PathGeometry geoRhat = new PathGeometry();
+                    geoRhat.Figures.Add(figRhat);
+                    plotCan.Children.Add(new Path() { Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 114, 178)), StrokeThickness = 2, StrokeJoin = PenLineJoin.Round, Data = geoRhat });
+                }
             }
         }
     }

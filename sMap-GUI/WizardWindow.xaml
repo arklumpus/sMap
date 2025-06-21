@@ -762,12 +762,23 @@
                   <local:Octagon Fill="#22b14c"></local:Octagon>
                 </Viewbox>
 
-                <TextBlock VerticalAlignment="Center">Maximum CoV: </TextBlock>
-                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="0.5" Increment="0.01" Name="MaxCoVBox"></NumericUpDown>
+				<CheckBox VerticalAlignment="Center" IsChecked="False" BorderBrush="#22b14c" Name="MaxCoVCheckBox">Maximum CoV:</CheckBox>
+                <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="0" Value="0.5" Increment="0.01" Name="MaxCoVBox"></NumericUpDown>
                 <TextBlock VerticalAlignment="Center">Minimum ESS: </TextBlock>
                 <NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="200" Name="MinESSBox"></NumericUpDown>
 
               </StackPanel>
+
+				<StackPanel Orientation="Horizontal" Margin="20,0,0,0" Classes="VeryAdvanced">
+					<Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">
+						<local:Octagon Fill="#22b14c"></local:Octagon>
+					</Viewbox>
+
+					<CheckBox VerticalAlignment="Center" IsChecked="True" BorderBrush="#22b14c" Name="MaxRhatCheckBox">Maximum Rhat:</CheckBox>
+					<NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,10,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="1.01" Increment="0.01" Name="MaxRhatBox"></NumericUpDown>
+					<TextBlock VerticalAlignment="Center">Maximum stepping-stone Rhat: </TextBlock>
+					<NumericUpDown BorderBrush="#22b14c" Width="75" Margin="10,0,0,0" Padding="5,0,5,0" VerticalAlignment="Center" Minimum="1" Value="1.05" Increment="0.01" Name="MaxSSRhatBox"></NumericUpDown>
+				</StackPanel>
 
               <StackPanel Orientation="Horizontal" Classes="VeryAdvanced">
                 <Viewbox Width="16" Height="16" VerticalAlignment="Center" Margin="10">

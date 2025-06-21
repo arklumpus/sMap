@@ -94,7 +94,7 @@ namespace Utils
         public static int diagnosticFrequency = 1000;
         public static int sampleFrequency = 10;
         public static int swapFrequency = 10;
-        public static int minSamples = 2000;
+        public static int minSamples = 1000;
         public static int maxSamples = 200000;
         public static WatchdogActions watchdogAction = WatchdogActions.Restart;
         public static int watchdogInitialTimeout = 20000;
@@ -103,6 +103,7 @@ namespace Utils
         public static double globalStepSizeMultiplier = 1;
         public static double convergenceCoVThreshold = 0.01;
         public static double convergenceESSThreshold = 200;
+        public static double convergenceRHatThreshold = 1.01;
 
         public static double globalTreeSwapProbability = 0.37;
 
@@ -575,7 +576,22 @@ namespace Utils
 
             ConsoleWrapper.WriteLine();
 
-            ConsoleWrapper.WriteLine("   Sample   │ Acceptance │   Swap AR  │  MCoV Mean │   MCoV SD  │   Min ESS  ");
+            bool oldConvergence = MCMC.convergenceCoVThreshold < 1e5;
+            bool newConvergence = MCMC.convergenceRHatThreshold < 1e5;
+
+            if (oldConvergence && !newConvergence)
+            {
+                ConsoleWrapper.WriteLine("   Sample   │ Acceptance │   Swap AR  │  MCoV Mean │   MCoV SD  │   Min ESS  ");
+            }
+            else if (oldConvergence && newConvergence)
+            {
+                ConsoleWrapper.WriteLine("   Sample   │ Acceptance │   Swap AR  │  Max  CoV  │  Max Rhat  │   Min ESS  ");
+            }
+            else
+            {
+                ConsoleWrapper.WriteLine("   Sample   │ Acceptance │   Swap AR  │  Max Rhat  │  Bulk ESS  │  Tail ESS  ");
+            }
+            
             ConsoleWrapper.WriteLine("────────────┼────────────┼────────────┼────────────┼────────────┼────────────");
 
             bool converged = false;
@@ -692,7 +708,23 @@ namespace Utils
 
                 EventWaitHandle.SignalAndWait(watchdogHandle1, watchdogHandle1Proceed);
 
-                (double maxCoVMean, double maxCoVStdDev, double minESS, _) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, false);
+                double maxCoVMean = double.NaN;
+                double maxCoVStdDev = double.NaN;
+                double minESS = double.NaN;
+
+                double maxRhat = double.NaN;
+                double minBulkESS = double.NaN;
+                double minTailESS = double.NaN;
+
+                if (oldConvergence)
+                {
+                    (maxCoVMean, maxCoVStdDev, minESS, _) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, false);
+                }
+
+                if (newConvergence)
+                {
+                    (maxRhat, minBulkESS, minTailESS, _) = Convergence.ComputeConvergenceStats(numRuns, variableSamples, false);
+                }
 
                 double avgAR = 0;
                 double avgSAR = 0;
@@ -712,9 +744,23 @@ namespace Utils
 
                 }
 
-                ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVMean.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVStdDev.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (minESS >= 0 ? minESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
+                if (oldConvergence && !newConvergence)
+                {
+                    ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVMean.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVStdDev.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (minESS >= 0 ? minESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
+                }
+                else if (newConvergence && oldConvergence)
+                {
+                    ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), Math.Max(maxCoVMean, maxCoVStdDev).ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxRhat.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (Math.Min(minESS, Math.Min(minBulkESS, minTailESS)) >= 0 ? Math.Min(minESS, Math.Min(minBulkESS, minTailESS)).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
+                }
+                else
+                {
+                    ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxRhat.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (minBulkESS >= 0 ? minBulkESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center), (minTailESS >= 0 ? minTailESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
+                }
 
-                converged = (maxCoVMean < convergenceCoVThreshold && maxCoVStdDev < convergenceCoVThreshold && minESS > convergenceESSThreshold && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency) || (maxSamples > 0 && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= maxSamples * sampleFrequency);
+                bool oldConverged = (!oldConvergence || (maxCoVMean < convergenceCoVThreshold && maxCoVStdDev < convergenceCoVThreshold && minESS > convergenceESSThreshold)) && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency;
+                bool newConverged = (!newConvergence || (maxRhat < convergenceRHatThreshold && minBulkESS > convergenceESSThreshold && minTailESS > convergenceESSThreshold)) && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency;
+
+                converged = (oldConverged && newConverged) || (maxSamples > 0 && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= maxSamples * sampleFrequency);
 
                 EventWaitHandle.SignalAndWait(watchdogHandle2, watchdogHandle2Proceed);
             }
@@ -733,7 +779,16 @@ namespace Utils
             Console.CancelKeyPress -= ctrlCHandler;
             cancelEventHandlers.TryRemove(guid, out ConsoleCancelEventHandler ignored);
 
-            (_, _, _, double[] minEffSizes) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, true);
+            double[] minEffSizes;
+
+            if (oldConvergence && !newConvergence)
+            {
+                (_, _, _, minEffSizes) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, true);
+            }
+            else
+            {
+                (_, _, _, minEffSizes) = Convergence.ComputeConvergenceStats(numRuns, variableSamples, true);
+            }
 
             (int, double[][])[] samples = new (int, double[][])[sampleCount];
 

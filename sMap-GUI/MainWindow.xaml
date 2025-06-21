@@ -447,6 +447,7 @@
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
+			      <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Margin="0,0,5,10">
                   <Grid.ColumnDefinitions>
@@ -464,12 +465,12 @@
                   <CheckBox VerticalAlignment="Center" Margin="0,0,10,0" Name="MaxSamplesCheckBox">Maximum samples:</CheckBox>
                   <NumericUpDown Grid.Column="2" Value="200000" Increment="1" Minimum="1" Name="MaxSamplesBox"></NumericUpDown>
                 </Grid>
-                <Grid Grid.Row="1" Margin="5,0,5,10">
+                <Grid Grid.Row="1" Margin="0,0,5,10">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                   </Grid.ColumnDefinitions>
-                  <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum CoV:</TextBlock>
+			      <CheckBox VerticalAlignment="Center" IsChecked="False" Margin="0,0,10,0" Name="MaxCoVCheckBox">Maximum CoV:</CheckBox>
                   <NumericUpDown Grid.Column="1" Value="0.05" Minimum="0" Name="MaxCoVBox"></NumericUpDown>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="1" Margin="5,0,0,10">
@@ -480,6 +481,23 @@
                   <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Minimum ESS:</TextBlock>
                   <NumericUpDown Grid.Column="1" Value="200" Minimum="1" Name="MinESSBox"></NumericUpDown>
                 </Grid>
+
+				<Grid Grid.Row="2" Margin="0,0,5,10">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="1*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<CheckBox VerticalAlignment="Center" IsChecked="False" Margin="0,0,10,0" Name="MaxRhatCheckBox">Maximum Rhat:</CheckBox>
+					<NumericUpDown Grid.Column="1" Value="1.01" Minimum="1" Name="MaxRhatBox" Increment="0.01"></NumericUpDown>
+				</Grid>
+				<Grid Grid.Row="2" Grid.Column="1" Margin="5,0,0,10">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="1*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Maximum stepping-stone Rhat:</TextBlock>
+					<NumericUpDown Grid.Column="1" Value="1.05" Minimum="1" Name="MaxSSRhatBox" Increment="0.01"></NumericUpDown>
+				</Grid>
               </Grid>
             </HeaderedContentControl>
             <HeaderedContentControl Background="Black">

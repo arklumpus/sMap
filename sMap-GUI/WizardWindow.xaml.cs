@@ -1445,7 +1445,7 @@ namespace sMap_GUI
                 args.Add(((int)this.FindControl<NumericUpDown>("MaxSamplesBox").Value).ToString());
             }
 
-            if (this.FindControl<NumericUpDown>("MaxCoVBox").Value != -1.0 / 16.0 * Math.Log⁡(1.0 - 1.0 / 3.0 * (7.0 / 3.0 - 2.0 / (2.0 * ((int)this.FindControl<NumericUpDown>("NumRunsBox").Value) - 1.0))))
+            if (this.FindControl<CheckBox>("MaxCoVCheckBox").IsChecked == true)
             {
                 args.Add("--max-cov");
                 args.Add(this.FindControl<NumericUpDown>("MaxCoVBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -1455,6 +1455,15 @@ namespace sMap_GUI
             {
                 args.Add("--min-ess");
                 args.Add(((int)this.FindControl<NumericUpDown>("MinESSBox").Value).ToString());
+            }
+
+            if (this.FindControl<CheckBox>("MaxRhatCheckBox").IsChecked == true)
+            {
+                args.Add("--max-rhat");
+                args.Add(this.FindControl<NumericUpDown>("MaxRhatBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+                args.Add("--ss-max-rhat");
+                args.Add(this.FindControl<NumericUpDown>("MaxSSRhatBox").Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             }
 
             if (this.FindControl<CheckBox>("EstimateStepsBox").IsChecked != true)
