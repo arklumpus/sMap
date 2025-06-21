@@ -591,7 +591,7 @@ namespace Utils
             {
                 ConsoleWrapper.WriteLine("   Sample   │ Acceptance │   Swap AR  │  Max Rhat  │  Bulk ESS  │  Tail ESS  ");
             }
-            
+
             ConsoleWrapper.WriteLine("────────────┼────────────┼────────────┼────────────┼────────────┼────────────");
 
             bool converged = false;
@@ -639,6 +639,8 @@ namespace Utils
                 long lastDiagnosticInterval = (watchdogInitialTimeout + averageStepDuration * diagnosticFrequency) / 2 - 500;
                 long lastDiagnosticFinished = Environment.TickCount64;
 
+                int lastCollectedSamples = -1;
+
                 while (true)
                 {
                     int handleResult = EventWaitHandle.WaitAny(handles, (int)(2 * lastDiagnosticInterval + 1000));
@@ -664,31 +666,49 @@ namespace Utils
                     }
                     else if (handleResult == EventWaitHandle.WaitTimeout)
                     {
-                        ConsoleWrapper.WriteLine("");
-                        ConsoleWrapper.WriteLine("Deadlock detected (" + ((int)(2 * lastDiagnosticInterval + 1000)).ToString() + "ms)!");
-
-                        if (watchdogAction == WatchdogActions.Restart)
+                        if (lastCollectedSamples < 0)
                         {
-                            ConsoleWrapper.WriteLine("Stopping and restarting all chains...");
-
-                            localMCMCSucceeded = false;
-
-                            foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
-                            {
-                                h.Value.Invoke(h.Value.Target, null);
-                            }
+                            lastCollectedSamples = variableSamples.Select(x => x.Count).Min();
+                            Thread.Sleep((int)(2 * lastDiagnosticInterval + 1000));
                         }
-                        else if (watchdogAction == WatchdogActions.Converge)
+
+                        if (variableSamples.Select(x => x.Count).Min() <= lastCollectedSamples)
                         {
-                            ConsoleWrapper.WriteLine("Assuming convergence has been reached...");
-                            foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
-                            {
-                                h.Value.Invoke(h.Value.Target, null);
-                            }
-                        }
-                        
+                            lastCollectedSamples = -1;
 
-                        ConsoleWrapper.WriteLine("");
+                            ConsoleWrapper.WriteLine("");
+                            ConsoleWrapper.WriteLine("Deadlock detected (" + ((int)(2 * lastDiagnosticInterval + 1000)).ToString() + "ms)!");
+
+                            if (watchdogAction == WatchdogActions.Restart)
+                            {
+                                ConsoleWrapper.WriteLine("Stopping and restarting all chains...");
+
+                                localMCMCSucceeded = false;
+
+                                foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
+                                {
+                                    h.Value.Invoke(h.Value.Target, null);
+                                }
+                            }
+                            else if (watchdogAction == WatchdogActions.Converge)
+                            {
+                                ConsoleWrapper.WriteLine("Assuming convergence has been reached...");
+                                foreach (KeyValuePair<string, ConsoleCancelEventHandler> h in MCMC.cancelEventHandlers)
+                                {
+                                    h.Value.Invoke(h.Value.Target, null);
+                                }
+                            }
+
+                            ConsoleWrapper.WriteLine("");
+                        }
+                        else
+                        {
+                            lastCollectedSamples = -1;
+
+                            ConsoleWrapper.WriteLine("");
+                            ConsoleWrapper.WriteLine("Potential deadlock detected (" + ((int)(2 * lastDiagnosticInterval + 1000)).ToString() + "ms), but sampling continues...");
+                            ConsoleWrapper.WriteLine("");
+                        }
                     }
                 }
             });
