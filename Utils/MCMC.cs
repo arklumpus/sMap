@@ -465,21 +465,6 @@ namespace Utils
                 }
             }
 
-
-
-            double[][][] means = new double[variables[0].Length][][];
-            double[] minEffSizes = new double[numRuns];
-
-            for (int j = 0; j < variables[0].Length; j++)
-            {
-                means[j] = new double[variables[0][j].Length][];
-                for (int i = 0; i < means[j].Length; i++)
-                {
-                    means[j][i] = new double[numRuns];
-                }
-            }
-
-
             int diagnosticCount = 0;
 
             if (Utils.RunningGui)
@@ -707,81 +692,7 @@ namespace Utils
 
                 EventWaitHandle.SignalAndWait(watchdogHandle1, watchdogHandle1Proceed);
 
-                double maxCoVMean = double.MinValue;
-                double maxCoVStdDev = double.MinValue;
-                double minESS = -1;
-
-                for (int j = 0; j < variables[0].Length; j++)
-                {
-                    if (variables[0][j].Type == MCMCVariable.VariableType.Uni || ((MCMCMultiVariable)variables[0][j]).ProposalType != MCMCMultiVariable.ProposalTypes.Multinomial)
-                    {
-                        for (int k = 0; k < variables[0][j].Length; k++)
-                        {
-                            double ex = 0;
-                            double exSq = 0;
-
-                            double exStdDev = 0;
-                            double exVar = 0;
-
-                            for (int i = 0; i < numRuns; i++)
-                            {
-                                double singleEx = 0;
-                                double singleExSq = 0;
-                                for (int l = variableSamples[i].Count / 10; l < variableSamples[i].Count; l++)
-                                {
-                                    singleEx += variableSamples[i][l].Item2[j][k];
-                                    singleExSq += variableSamples[i][l].Item2[j][k] * variableSamples[i][l].Item2[j][k];
-                                }
-                                singleEx /= variableSamples[i].Count - variableSamples[i].Count / 10;
-                                singleExSq /= variableSamples[i].Count - variableSamples[i].Count / 10;
-                                means[j][k][i] = singleEx;
-                                ex += singleEx;
-                                exSq += singleEx * singleEx;
-
-                                double singleVariance = singleExSq - singleEx * singleEx;
-                                exStdDev += Math.Sqrt(singleVariance);
-                                exVar += singleVariance;
-                            }
-
-                            ex /= numRuns;
-                            exSq /= numRuns;
-
-                            exStdDev /= numRuns;
-                            exVar /= numRuns;
-
-                            double covMean = Math.Sqrt(exSq - ex * ex) / ex;
-                            double covStdDev = Math.Sqrt(exVar - exStdDev * exStdDev) / exStdDev;
-
-                            maxCoVMean = Utils.Max(covMean, maxCoVMean);
-                            maxCoVStdDev = Utils.Max(covStdDev, maxCoVStdDev);
-                        }
-                    }
-                }
-
-                if (maxCoVMean < convergenceCoVThreshold && maxCoVStdDev < convergenceCoVThreshold && (diagnosticCount - diagnosticCount / 10) * diagnosticFrequency >= minSamples * sampleFrequency)
-                {
-                    minESS = double.MaxValue;
-                    for (int i = 0; i < numRuns; i++)
-                    {
-                        minEffSizes[i] = double.MaxValue;
-                    }
-
-                    for (int j = 0; j < variables[0].Length; j++)
-                    {
-                        for (int k = 0; k < variables[0][j].Length; k++)
-                        {
-                            if (variables[0][j].Type == MCMCVariable.VariableType.Uni || ((MCMCMultiVariable)variables[0][j]).ProposalType != MCMCMultiVariable.ProposalTypes.Multinomial)
-                            {
-                                for (int i = 0; i < numRuns; i++)
-                                {
-                                    double ess = Utils.computeESS(variableSamples, means[j][k][i], i, j, k, variableSamples[i].Count / 10);
-                                    minEffSizes[i] = Math.Min(minEffSizes[i], ess);
-                                    minESS = Math.Min(minESS, ess);
-                                }
-                            }
-                        }
-                    }
-                }
+                (double maxCoVMean, double maxCoVStdDev, double minESS, _) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, false);
 
                 double avgAR = 0;
                 double avgSAR = 0;
@@ -798,6 +709,7 @@ namespace Utils
                 for (int i = 0; i < numRuns; i++)
                 {
                     proceedHandles[i].Set();
+
                 }
 
                 ConsoleWrapper.WriteLine("{0}│{1}│{2}│{3}│{4}│{5}", (variableSamples[0].Count).ToString().Pad(12, Extensions.PadType.Center), avgAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), avgSAR.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVMean.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), maxCoVStdDev.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture).Pad(12, Extensions.PadType.Center), (minESS >= 0 ? minESS.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) : "NC").Pad(12, Extensions.PadType.Center));
@@ -821,37 +733,7 @@ namespace Utils
             Console.CancelKeyPress -= ctrlCHandler;
             cancelEventHandlers.TryRemove(guid, out ConsoleCancelEventHandler ignored);
 
-            {
-                double minESS = double.MaxValue;
-                for (int i = 0; i < numRuns; i++)
-                {
-                    minEffSizes[i] = double.MaxValue;
-                }
-
-                for (int j = 0; j < variables[0].Length; j++)
-                {
-                    for (int k = 0; k < variables[0][j].Length; k++)
-                    {
-                        if (variables[0][j].Type == MCMCVariable.VariableType.Uni || ((MCMCMultiVariable)variables[0][j]).ProposalType != MCMCMultiVariable.ProposalTypes.Multinomial)
-                        {
-                            for (int i = 0; i < numRuns; i++)
-                            {
-                                double ess = Utils.computeESS(variableSamples, means[j][k][i], i, j, k, variableSamples[i].Count / 10);
-                                minEffSizes[i] = Math.Min(minEffSizes[i], ess);
-                                minESS = Math.Max(1, Math.Min(minESS, ess));
-                            }
-                        }
-                    }
-                }
-
-                for (int i = 0; i < numRuns; i++)
-                {
-                    if (minEffSizes[i] == double.MaxValue)
-                    {
-                        minEffSizes[i] = 200;
-                    }
-                }
-            }
+            (_, _, _, double[] minEffSizes) = Convergence.ComputeConvergenceStats(numRuns, variables, variableSamples, diagnosticCount, true);
 
             (int, double[][])[] samples = new (int, double[][])[sampleCount];
 
