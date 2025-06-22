@@ -1746,7 +1746,7 @@ namespace Utils
                 {
                     return val.ToString("0." + new string('0', significantDigits), System.Globalization.CultureInfo.InvariantCulture);
                 }
-                else if (val >= 1)
+                else if (Math.Abs(val) >= 1)
                 {
                     return val.ToString("0." + new string('0', significantDigits), System.Globalization.CultureInfo.InvariantCulture);
                 }
@@ -1770,7 +1770,7 @@ namespace Utils
                 {
                     return "0";
                 }
-                else if (val >= 1)
+                else if (Math.Abs(val) >= 1)
                 {
                     int OoM = (int)Math.Floor(Math.Log10(Math.Abs(val)));
 
