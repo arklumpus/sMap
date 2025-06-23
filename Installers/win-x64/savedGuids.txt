@@ -414,3 +414,4 @@ mscordaccore_amd64_amd64_8.0.824.36612.dll	a21b3b9d-8967-4559-8cf0-abf9a04f7d1d
 System.Formats.Tar.dll	e57c1f34-4035-40ab-8a90-61eebcda92c0
 System.Runtime.InteropServices.JavaScript.dll	51cd5f4a-c9c9-4ffd-9b56-b0a262ed0708
 System.Security.Cryptography.dll	305b603c-e74e-465b-89dc-541c40658bcb
+mscordaccore_amd64_amd64_8.0.1224.60305.dll	a612f5f0-c49f-4ad5-aeb9-d4d87a1ab99c
