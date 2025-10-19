@@ -8,7 +8,7 @@ cd ../../Release/mac-x64/sMap.app/Contents/sMap/
 
 chmod +x "sMap" "sMap-GUI" "Blend-sMap" "Merge-sMap" "Plot-sMap" "Stat-sMap" "ChainMonitor" "NodeInfo" "Script-sMap" "gs-mac" "createdump"
 
-version=$(strings sMap.dll | grep -A2 "Release" | head -n3 | tail -n1)
+version=$(strings sMap.dll | grep -A1 "Release" | head -n2 | tail -n1)
 
 echo -e "\033[104m\033[97m Setting version number $version \033[0m"
 echo
@@ -58,47 +58,10 @@ rm -f "sMap.zip"
 
 ditto -ck --rsrc --sequesterRsrc --keepParent "sMap.app" "sMap.zip"
 
-requestID=$(xcrun altool --notarize-app -f "sMap.zip" --primary-bundle-id "io.github.arklumpus.sMap" -u "$2" -p "$3" | grep "RequestUUID" | cut -d" " -f 3)
+xcrun notarytool submit sMap.zip --apple-id "$2" --password "$3" --team-id "$4" --wait
 
-echo "Request UUID: $requestID"
-
-breakloop="0"
-
-while [ $breakloop -lt 1 ]; do
-
-    echo "Waiting for 1 minute..."
-    sleep 60
-
-    currStatus=$(xcrun altool --notarization-info $requestID -u $2 -p $3 | grep "Status:" | cut -d":" -f 2)
-
-    echo "Status: $currStatus"
-
-    if [ "$currStatus" != " in progress" ]; then
-    	if [ "$currStatus" = " success" ]; then
-    	    breakloop="2"
-    	else
-    	    breakloop="1"
-    	fi
-    fi
-
-done
-
-if [ $breakloop -eq 2 ]; then
-
-    echo
-    echo -e "\033[104m\033[97m Stapling app \033[0m"
-    echo
-
-	xcrun stapler staple sMap.app
-	xcrun stapler validate sMap.app
-
-else
-
-    echo
-    echo -e "\033[101m\033[97m App notarization failed! \033[0m"
-    echo
-
-fi
+xcrun stapler staple sMap.app
+xcrun stapler validate sMap.app
 
 rm -f "sMap.zip"
 
@@ -108,7 +71,7 @@ echo
 echo -e "\033[104m\033[97m Creating DMG \033[0m"
 echo
 
-hdiutil create -srcfolder Release/mac-x64 -volname "sMap" -fs HFS+ -format UDRW -size 350m "sMap.rw.dmg"
+hdiutil create -srcfolder Release/mac-x64 -volname "sMap" -fs HFS+ -format UDRW -size 450m "sMap.rw.dmg"
 
 device=$(hdiutil attach -readwrite -noverify -noautoopen "sMap.rw.dmg" | grep -e "^/dev/" | head -n1 | cut -f 1)
 
@@ -164,51 +127,9 @@ echo
 echo -e "\033[104m\033[97m Notarizing DMG \033[0m"
 echo
 
-requestID=$(xcrun altool --notarize-app -f "sMap.dmg" --primary-bundle-id "io.github.arklumpus.sMap" -u "$2" -p "$3" | grep "RequestUUID" | cut -d" " -f 3)
-
-echo "Request UUID: $requestID"
-
-breakloop="0"
-
-while [ $breakloop -lt 1 ]; do
-
-    echo "Waiting for 1 minute..."
-    sleep 60
-
-    currStatus=$(xcrun altool --notarization-info $requestID -u $2 -p $3 | grep "Status:" | cut -d":" -f 2)
-
-    echo "Status: $currStatus"
-
-    if [ "$currStatus" != " in progress" ]; then
-    	if [ "$currStatus" = " success" ]; then
-    	    breakloop="2"
-    	else
-    	    breakloop="1"
-    	fi
-    fi
-
-done
-
-if [ $breakloop -eq 2 ]; then
-
-    echo
-    echo -e "\033[104m\033[97m Stapling DMG \033[0m"
-    echo
-
-	xcrun stapler staple sMap.dmg
-	xcrun stapler validate sMap.dmg
-
-else
-
-    echo
-    echo -e "\033[101m\033[97m DMG notarization failed! \033[0m"
-    echo
-
-fi
-
+xcrun notarytool submit sMap.dmg --apple-id "$2" --password "$3" --team-id "$4" --wait
+xcrun stapler staple sMap.dmg
+xcrun stapler validate sMap.dmg
 echo
 echo -e "\033[94mAll done!\033[0m"
 echo
-
-
-
