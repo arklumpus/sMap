@@ -743,6 +743,35 @@ Restart: the watchdog forces the MCMC sampler to assume that the analysis has co
                 }
             }
 
+            List<int> inconsistentNodes = new List<int>();
+
+            for (int i = 0; i < meanNodeCorresp.Length; i++)
+            {
+                if (!meanNodeCorresp[i].Any(x => x >= 0))
+                {
+                    inconsistentNodes.Add(i);
+                }
+            }
+
+            if (inconsistentNodes.Count > 0)
+            {
+                ConsoleWrapper.WriteLine();
+                ConsoleWrapper.WriteLine("Error: {0} node{1} from the summary tree do{2} not appear in any of the trees:", inconsistentNodes.Count, inconsistentNodes.Count > 1 ? "s" : "", inconsistentNodes.Count > 1 ? "" : "es");
+                for (int i = 0; i < inconsistentNodes.Count; i++)
+                {
+                    TreeNode node = meanTreeNodeList[meanLikModel.BranchLengths.Length - inconsistentNodes[i] - 1].Clone();
+                    foreach (TreeNode child in node.GetChildrenRecursive())
+                    {
+                        child.Length = double.NaN;
+                        child.Support = double.NaN;
+                    }
+
+                    ConsoleWrapper.WriteLine("\tNode {0}: {1}", inconsistentNodes[i], node.ToString());
+                }
+                ConsoleWrapper.WriteLine();
+                return 1;
+            }
+
             treeNodeStrings.Clear();
             meanTreeNodeList.Clear();
 
