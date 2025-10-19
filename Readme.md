@@ -120,7 +120,7 @@ To be able to compile sMap from source, you will need to install the [.NET Core 
 
 You can use [Microsoft Visual Studio](https://visualstudio.microsoft.com/it/vs/) to compile the program. The following instructions will cover compiling sMap from the command line, instead.
 
-First of all, you will need to download the sMap source code: [sMap-1.0.7.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.7.tar.gz) and extract it somewhere.
+First of all, you will need to download the sMap source code: [sMap-1.0.8.tar.gz](https://github.com/arklumpus/sMap/archive/v1.0.8.tar.gz) and extract it somewhere.
 
 ### Windows
 Open a command-line window in the folder where you have extracted the source code, and type:
@@ -148,16 +148,16 @@ To create the installers, you will need a Windows machine with Visual Studio to 
 
 After building the sMap release, open a Developer Command Prompt in the sMap source code folder, and type:
 
-	BuildBinaries-Win-x64 "path/to/certificate.pfx" "certificate_password"
+	BuildBinaries-Win-x64 "<subject_name>" <yubikey_pin>
 	bash -c ./BuildBinaries-Linux-x64.sh
 
-These commands will create the installer for Windows and Linux, which will be placed in the `Binary` folder. To create the Windows installer, you need to supply a code-signing certificate in PFX or P12 format, together with the associated password. Such a certificate can be obtained (for a fee) from a [certificate authority](https://docs.microsoft.com/en-us/windows-hardware/drivers/dashboard/get-a-code-signing-certificate) or can be a self-signed certificate.
+These commands will create the installer for Windows and Linux, which will be placed in the `Binary` folder. The arguments for the `BuildBinaries-Win-x64` script are the subject name of a code signing certificate and the PIN of the YubiKey/smart card where the certificate is stored. Such a certificate can be obtained (for a fee) from a [certificate authority](https://docs.microsoft.com/en-us/windows-hardware/drivers/dashboard/get-a-code-signing-certificate) or can be a self-signed certificate.
 
 You should now move to the macOS machine. To sign the app and the installer on macOS, you will need an Apple "Developer ID Application" certificate and a "Developer ID Installer" certificate, as well as an Apple ID and an app-specific password (which can be generated from the Apple ID page).
 
 On the macOS machine, open a terminal in the folder where you have extracted the sMap source code and type:
 
-	./BuildBinaries-Mac-x64.sh "<Developer ID Application Identity>" "<Developer ID Installer Identity>" "<Apple ID>" "<app-specific password>"
+	./BuildBinaries-Mac-x64.sh "<Developer ID Application Identity>" "<Developer ID Installer Identity>" "<Apple ID>" "<app-specific password>" "<developer team ID>"
 
 Where `<Developer ID Application Identity>` and `<Developer ID Installer Identity>` are the names of the certificates in your keychain (e.g. `"Developer ID Application: John Smith"`). This should create, sign and notarize the installers for macOS in the Binary folder.
 
