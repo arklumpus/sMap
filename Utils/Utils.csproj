@@ -18,7 +18,7 @@
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
     <PackageReference Include="MathNet.Numerics" Version="4.9.1" />
     <PackageReference Include="Mono.Options" Version="6.6.0.161" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="VectSharp" Version="1.1.4" />
     <PackageReference Include="VectSharp.PDF" Version="1.0.4" />
   </ItemGroup>
